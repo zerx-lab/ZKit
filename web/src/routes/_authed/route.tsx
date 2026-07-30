@@ -8,7 +8,7 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { ChevronDownIcon, LogOutIcon, PanelLeftIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -34,6 +34,7 @@ import { getUserMenus } from "@/gen/zerx/v1/menu-MenuService_connectquery";
 import { auth, getSessionId } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { menuIcon } from "@/lib/menu-icons";
+import { useIsMobile } from "@/lib/use-mobile";
 import { useSidebarGroups } from "@/lib/use-sidebar-groups";
 import { queryClient } from "@/lib/query-client";
 import { PermissionProvider } from "@/lib/permissions";
@@ -61,21 +62,75 @@ function AuthedLayout() {
 
 const EMPTY_MENUS: Menu[] = [];
 
+const COLLAPSED_KEY = "zerx.sidebar.collapsed";
+
+function getStoredCollapsed(): boolean {
+  try {
+    return localStorage.getItem(COLLAPSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 function AuthedShell() {
   const { t } = useI18n();
   const site = useSite();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const isMobile = useIsMobile();
+  const [collapsed, setCollapsed] = useState(getStoredCollapsed);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { data, isPending } = useQuery(getUserMenus);
   const menus = data?.menus ?? EMPTY_MENUS;
   const { isGroupOpen, toggleGroup, activeGroupId } = useSidebarGroups(menus, location.pathname);
 
+  // The drawer always shows full labels; the icon rail is desktop-only.
+  const railCollapsed = !isMobile && collapsed;
+
+  // Persist in an effect so the state updater stays pure (mirrors
+  // use-sidebar-groups).
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0");
+    } catch {
+      // ignore: persistence is best-effort.
+    }
+  }, [collapsed]);
+
+  // Close the drawer after navigating so the new page is visible.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      return;
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen]);
+
   return (
     <div className="flex h-svh w-full overflow-hidden">
+      {mobileOpen && (
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
       <aside
+        {...(isMobile && !mobileOpen && { inert: true })}
         className={cn(
-          "flex h-full flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200",
-          collapsed ? "w-16" : "w-60",
+          "flex h-full flex-col border-r border-sidebar-border bg-sidebar duration-200",
+          // Mobile: off-canvas drawer; desktop: static rail with width transition.
+          "fixed inset-y-0 left-0 z-50 w-60 transition-transform md:static md:z-auto md:translate-x-0 md:transition-[width]",
+          mobileOpen ? "translate-x-0" : "-translate-x-full",
+          railCollapsed ? "md:w-16" : "md:w-60",
         )}
       >
         <div className="flex h-14 items-center gap-2.5 border-b border-sidebar-border px-4">
@@ -84,7 +139,7 @@ function AuthedShell() {
           ) : (
             <BrandLogo className="size-7" />
           )}
-          {!collapsed && (
+          {!railCollapsed && (
             <span className="truncate font-semibold text-sidebar-accent-foreground">
               {site.name || t("app.name")}
             </span>
@@ -102,7 +157,7 @@ function AuthedShell() {
               <SidebarNode
                 key={String(menu.id)}
                 menu={menu}
-                collapsed={collapsed}
+                collapsed={railCollapsed}
                 isGroupOpen={isGroupOpen}
                 onToggleGroup={toggleGroup}
                 activeGroupId={activeGroupId}
@@ -113,8 +168,14 @@ function AuthedShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col bg-background">
-        <Header collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} menus={menus} />
-        <main className="flex-1 overflow-auto p-6">
+        <Header
+          collapsed={railCollapsed}
+          onToggle={() =>
+            isMobile ? setMobileOpen((value) => !value) : setCollapsed((value) => !value)
+          }
+          menus={menus}
+        />
+        <main className="flex-1 overflow-auto p-4 md:p-6">
           <Outlet />
         </main>
       </div>
@@ -306,7 +367,7 @@ function Header({
       <Button variant="ghost" size="icon" onClick={onToggle} aria-label="Toggle sidebar">
         <PanelLeftIcon className="size-4" />
       </Button>
-      <span className="text-sm font-medium">{title}</span>
+      <span className="min-w-0 truncate text-sm font-medium">{title}</span>
       {collapsed ? <span className="sr-only">collapsed</span> : null}
 
       <div className="ml-auto flex items-center gap-1">
