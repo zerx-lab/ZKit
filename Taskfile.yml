@@ -1,5 +1,7 @@
 version: "3"
 
+dotenv: [".env"]
+
 vars:
   BIN: 'bin/zerxlabkit{{if eq OS "windows"}}.exe{{end}}'
   GOBIN: "{{.ROOT_DIR}}/.bin"

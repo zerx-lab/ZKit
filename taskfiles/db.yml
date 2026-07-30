@@ -10,9 +10,9 @@ tasks:
       - "{{.GORM}} gen -i ./internal/model -o ./internal/query"
 
   up:
-    desc: Start the local dev PostgreSQL and wait until it is ready
+    desc: Start the local dev PostgreSQL and wait until it is ready (skipped unless DB_DRIVER=postgres)
     cmds:
-      - docker compose up -d --wait postgres
+      - cmd: '{{if eq (default "postgres" .DB_DRIVER) "postgres"}}docker compose up -d --wait postgres{{else}}echo "DB_DRIVER={{.DB_DRIVER}} — 跳过 dev PostgreSQL 容器"{{end}}'
 
   down:
     desc: Stop the local dev PostgreSQL container
