@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // LoginGuard tracks failed attempts per key (typically "email|ip") within a

@@ -8,7 +8,7 @@ import (
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 
-	zerxv1 "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
+	zerxv1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
 )
 
 func newShopDB(t *testing.T) *gorm.DB {

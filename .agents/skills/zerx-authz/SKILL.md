@@ -1,10 +1,10 @@
 ---
 name: zerx-authz
-description: "zerxLabKit 接口授权与访问控制。当新增/修改 connectRPC handler、注册 service、配置 public/selfServe、调整 Casbin 策略、角色权限、菜单/按钮可见性时使用。Keywords: 授权, 鉴权, 权限, Casbin, RequireRole, public, selfServe, admin 绕过, procedure, RBAC, 角色, role, 三层访问控制, enforcer, SetRolePermissions, RoleMenu, RoleButton, Can, 菜单权限, 按钮权限, authorization, access control"
+description: "ZKit 接口授权与访问控制。当新增/修改 connectRPC handler、注册 service、配置 public/selfServe、调整 Casbin 策略、角色权限、菜单/按钮可见性时使用。Keywords: 授权, 鉴权, 权限, Casbin, RequireRole, public, selfServe, admin 绕过, procedure, RBAC, 角色, role, 三层访问控制, enforcer, SetRolePermissions, RoleMenu, RoleButton, Can, 菜单权限, 按钮权限, authorization, access control"
 ---
-# zerxLabKit 授权与三层访问控制
+# ZKit 授权与三层访问控制
 
-> Claude 已熟悉 Casbin / RBAC 概念;以下是 zerxLabKit 特有规则。
+> Claude 已熟悉 Casbin / RBAC 概念;以下是 ZKit 特有规则。
 
 ## 铁律(必读)
 - handler **一律不写** `auth.RequireRole(...)`。授权的**唯一权威**是 Casbin 拦截器(`internal/auth/casbin_interceptor.go`):`sub=角色 code`、`obj=connectRPC procedure`,精确匹配。

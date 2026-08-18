@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // TestDBLockerMutualExclusion proves that of two instances racing for the same

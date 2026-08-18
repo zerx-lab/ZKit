@@ -2,8 +2,8 @@ version: "3"
 
 vars:
   GOBIN: "{{.ROOT_DIR}}/.bin"
-  BIN: 'bin/zerxlabkit{{if eq OS "windows"}}.exe{{end}}'
-  MODULE: github.com/zerx-lab/zerxlabkit
+  BIN: 'bin/zkit{{if eq OS "windows"}}.exe{{end}}'
+  MODULE: github.com/zerx-lab/zkit
 
 tasks:
   tools:
@@ -34,7 +34,7 @@ tasks:
       GOOS: linux
       GOARCH: amd64
     cmds:
-      - go build -trimpath -tags netgo,osusergo -ldflags "-s -w -X main.version={{.VERSION | default "dev"}}" -o bin/zerxlabkit-linux-amd64 ./cmd/server
+      - go build -trimpath -tags netgo,osusergo -ldflags "-s -w -X main.version={{.VERSION | default "dev"}}" -o bin/zkit-linux-amd64 ./cmd/server
 
   lint:
     desc: Run golangci-lint and nilaway (generated code excluded)
@@ -50,9 +50,9 @@ tasks:
   new-plugin:
     desc: 'Scaffold a plugin (proto+impl+web+all.go). Usage: task new-plugin -- <name> [field:type,...]'
     cmds:
-      - go run ./cmd/zerxKit plugin new {{.CLI_ARGS}}
+      - go run ./cmd/zkit plugin new {{.CLI_ARGS}}
 
   plugin-pack:
     desc: 'Pack an installed plugin into a distributable <name>.zip. Usage: task plugin-pack -- <name>'
     cmds:
-      - go run ./cmd/zerxKit plugin pack {{.CLI_ARGS}}
+      - go run ./cmd/zkit plugin pack {{.CLI_ARGS}}

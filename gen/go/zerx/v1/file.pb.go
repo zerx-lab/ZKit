@@ -345,7 +345,7 @@ const file_zerx_v1_file_proto_rawDesc = "" +
 	"\vFileService\x12B\n" +
 	"\tListFiles\x12\x19.zerx.v1.ListFilesRequest\x1a\x1a.zerx.v1.ListFilesResponse\x12E\n" +
 	"\n" +
-	"DeleteFile\x12\x1a.zerx.v1.DeleteFileRequest\x1a\x1b.zerx.v1.DeleteFileResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"DeleteFile\x12\x1a.zerx.v1.DeleteFileRequest\x1a\x1b.zerx.v1.DeleteFileResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_file_proto_rawDescOnce sync.Once

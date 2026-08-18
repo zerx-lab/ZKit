@@ -12,12 +12,12 @@ import (
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/auth"
-	"github.com/zerx-lab/zerxlabkit/internal/config"
-	"github.com/zerx-lab/zerxlabkit/internal/database"
-	"github.com/zerx-lab/zerxlabkit/internal/media"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
-	"github.com/zerx-lab/zerxlabkit/internal/storage"
+	"github.com/zerx-lab/zkit/internal/auth"
+	"github.com/zerx-lab/zkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/database"
+	"github.com/zerx-lab/zkit/internal/media"
+	"github.com/zerx-lab/zkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/storage"
 )
 
 func get(t *testing.T, h http.Handler, target, bearer string) int {

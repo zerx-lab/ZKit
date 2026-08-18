@@ -6,9 +6,9 @@ package service
 import (
 	"time"
 
-	zerxv1 "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
-	"github.com/zerx-lab/zerxlabkit/internal/media"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	zerxv1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
+	"github.com/zerx-lab/zkit/internal/media"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // toProtoUser maps a data-layer user to its public proto representation

@@ -16,9 +16,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
-	"github.com/zerx-lab/zerxlabkit/internal/storage"
+	"github.com/zerx-lab/zkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/storage"
 )
 
 const avatarTTL = 24 * time.Hour

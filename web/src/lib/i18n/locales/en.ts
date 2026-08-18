@@ -3,7 +3,7 @@
 // As features grow, split this object into per-namespace files under
 // `locales/en/` and re-export a merged object from here; `zh.ts` mirrors it.
 export const en = {
-  app: { name: "zerxLabKit", tagline: "Full-stack admin starter" },
+  app: { name: "ZKit", tagline: "Full-stack admin starter" },
   common: {
     signIn: "Sign in",
     signOut: "Sign out",

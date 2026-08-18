@@ -885,7 +885,7 @@ const file_zerx_v1_log_proto_rawDesc = "" +
 	"\x11ListOperationLogs\x12!.zerx.v1.ListOperationLogsRequest\x1a\".zerx.v1.ListOperationLogsResponse\x12N\n" +
 	"\rListErrorLogs\x12\x1d.zerx.v1.ListErrorLogsRequest\x1a\x1e.zerx.v1.ListErrorLogsResponse\x12N\n" +
 	"\rListLoginLogs\x12\x1d.zerx.v1.ListLoginLogsRequest\x1a\x1e.zerx.v1.ListLoginLogsResponse\x12B\n" +
-	"\tCleanLogs\x12\x19.zerx.v1.CleanLogsRequest\x1a\x1a.zerx.v1.CleanLogsResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\tCleanLogs\x12\x19.zerx.v1.CleanLogsRequest\x1a\x1a.zerx.v1.CleanLogsResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_log_proto_rawDescOnce sync.Once

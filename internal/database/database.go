@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/config"
 )
 
 // Open connects to the configured data source. The driver is selected by

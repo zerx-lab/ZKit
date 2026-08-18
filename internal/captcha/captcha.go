@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // captchaTTL is how long a generated code remains verifiable.

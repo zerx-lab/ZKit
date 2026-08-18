@@ -1,10 +1,10 @@
 ---
 name: zerx-backend
-description: "zerxLabKit 后端开发规约(Go + connectRPC + GORM)。当新增/修改 RPC、实现 service handler、写数据访问、用 GORM 泛型 API、自定义 querier SQL、跑 codegen 时使用。Keywords: connectRPC, handler, service, GORM, gorm.G, 泛型, Count, FirstOrCreate, nilaway, getter, querier, 自定义 SQL, deleted_at, 软删, convert, proto, task gen, buf, 代码生成, JS 保留字, 后端, backend, Go"
+description: "ZKit 后端开发规约(Go + connectRPC + GORM)。当新增/修改 RPC、实现 service handler、写数据访问、用 GORM 泛型 API、自定义 querier SQL、跑 codegen 时使用。Keywords: connectRPC, handler, service, GORM, gorm.G, 泛型, Count, FirstOrCreate, nilaway, getter, querier, 自定义 SQL, deleted_at, 软删, convert, proto, task gen, buf, 代码生成, JS 保留字, 后端, backend, Go"
 ---
-# zerxLabKit 后端开发规约
+# ZKit 后端开发规约
 
-> Claude 已熟悉 Go / GORM / connectRPC;以下是 zerxLabKit 特有规则。
+> Claude 已熟悉 Go / GORM / connectRPC;以下是 ZKit 特有规则。
 
 ## 新增一个 RPC(流程)
 1. 编辑 `proto/zerx/v1/*.proto`,加 message / rpc。**方法名避开 JS 保留字**。校验约束写在字段上:`string email = 1 [(buf.validate.field).string.email = true];`(亦有 `min_len`、`pattern:"^[a-z][a-z0-9_]*$"`)。

@@ -12,10 +12,10 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/auth"
-	"github.com/zerx-lab/zerxlabkit/internal/media"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
-	"github.com/zerx-lab/zerxlabkit/internal/storage"
+	"github.com/zerx-lab/zkit/internal/auth"
+	"github.com/zerx-lab/zkit/internal/media"
+	"github.com/zerx-lab/zkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/storage"
 )
 
 const maxUploadBytes = 20 << 20 // 20 MiB

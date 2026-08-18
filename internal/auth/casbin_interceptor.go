@@ -7,7 +7,7 @@ import (
 	"connectrpc.com/connect"
 	casbin "github.com/casbin/casbin/v3"
 
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // NewCasbinInterceptor authorizes procedures using Casbin (subject = role code,

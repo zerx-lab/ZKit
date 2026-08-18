@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file zerx/v1/common.proto.
  */
 export const file_zerx_v1_common: GenFile = /*@__PURE__*/
-  fileDesc("ChR6ZXJ4L3YxL2NvbW1vbi5wcm90bxIHemVyeC52MSIuCgtQYWdlUmVxdWVzdBIMCgRwYWdlGAEgASgFEhEKCXBhZ2Vfc2l6ZRgCIAEoBSIdCgxQYWdlUmVzcG9uc2USDQoFdG90YWwYASABKANCNlo0Z2l0aHViLmNvbS96ZXJ4LWxhYi96ZXJ4bGFia2l0L2dlbi9nby96ZXJ4L3YxO3plcnh2MWIGcHJvdG8z");
+  fileDesc("ChR6ZXJ4L3YxL2NvbW1vbi5wcm90bxIHemVyeC52MSIuCgtQYWdlUmVxdWVzdBIMCgRwYWdlGAEgASgFEhEKCXBhZ2Vfc2l6ZRgCIAEoBSIdCgxQYWdlUmVzcG9uc2USDQoFdG90YWwYASABKANCMFouZ2l0aHViLmNvbS96ZXJ4LWxhYi96a2l0L2dlbi9nby96ZXJ4L3YxO3plcnh2MWIGcHJvdG8z");
 
 /**
  * PageRequest is a reusable pagination request fragment.

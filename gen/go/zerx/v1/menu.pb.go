@@ -965,7 +965,7 @@ const file_zerx_v1_menu_proto_rawDesc = "" +
 	"\x10CreateMenuButton\x12 .zerx.v1.CreateMenuButtonRequest\x1a\x13.zerx.v1.MenuButton\x12W\n" +
 	"\x10DeleteMenuButton\x12 .zerx.v1.DeleteMenuButtonRequest\x1a!.zerx.v1.DeleteMenuButtonResponse\x12K\n" +
 	"\fGetUserMenus\x12\x1c.zerx.v1.GetUserMenusRequest\x1a\x1d.zerx.v1.GetUserMenusResponse\x12Q\n" +
-	"\x0eGetUserButtons\x12\x1e.zerx.v1.GetUserButtonsRequest\x1a\x1f.zerx.v1.GetUserButtonsResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\x0eGetUserButtons\x12\x1e.zerx.v1.GetUserButtonsRequest\x1a\x1f.zerx.v1.GetUserButtonsResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_menu_proto_rawDescOnce sync.Once

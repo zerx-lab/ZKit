@@ -12,7 +12,7 @@ import (
 	// must stay here unconditionally so the registry is populated even when this
 	// package is exercised in isolation (e.g. its own unit test), which does not
 	// otherwise compile the service package.
-	_ "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
+	_ "github.com/zerx-lab/zkit/gen/go/zerx/v1"
 )
 
 // Proc identifies one RPC procedure.

@@ -11,8 +11,8 @@ import (
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/database"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/database"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 func newJobDB(t *testing.T) *gorm.DB {

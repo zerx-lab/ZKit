@@ -60,7 +60,7 @@ type SMTPConfig struct {
 	Username string `env:"SMTP_USERNAME"`
 	Password string `env:"SMTP_PASSWORD"`
 	FromAddr string `env:"SMTP_FROM_ADDR"`
-	FromName string `env:"SMTP_FROM_NAME" envDefault:"zerxLabKit"`
+	FromName string `env:"SMTP_FROM_NAME" envDefault:"ZKit"`
 }
 
 // RateLimitConfig configures the global per-IP rate limiter.

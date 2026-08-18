@@ -675,7 +675,7 @@ const file_zerx_v1_role_proto_rawDesc = "" +
 	"\n" +
 	"DeleteRole\x12\x1a.zerx.v1.DeleteRoleRequest\x1a\x1b.zerx.v1.DeleteRoleResponse\x12]\n" +
 	"\x12GetRolePermissions\x12\".zerx.v1.GetRolePermissionsRequest\x1a#.zerx.v1.GetRolePermissionsResponse\x12]\n" +
-	"\x12SetRolePermissions\x12\".zerx.v1.SetRolePermissionsRequest\x1a#.zerx.v1.SetRolePermissionsResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\x12SetRolePermissions\x12\".zerx.v1.SetRolePermissionsRequest\x1a#.zerx.v1.SetRolePermissionsResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_role_proto_rawDescOnce sync.Once

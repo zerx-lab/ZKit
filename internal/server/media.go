@@ -9,9 +9,9 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/auth"
-	"github.com/zerx-lab/zerxlabkit/internal/media"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/auth"
+	"github.com/zerx-lab/zkit/internal/media"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // mediaHandler serves locally stored blobs with visibility-aware authorization.

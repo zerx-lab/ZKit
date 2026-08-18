@@ -9,16 +9,16 @@ import (
 	"connectrpc.com/connect"
 	"gorm.io/gorm"
 
-	zerxv1 "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
-	"github.com/zerx-lab/zerxlabkit/internal/auth"
-	"github.com/zerx-lab/zerxlabkit/internal/captcha"
-	"github.com/zerx-lab/zerxlabkit/internal/config"
-	"github.com/zerx-lab/zerxlabkit/internal/mailer"
-	"github.com/zerx-lab/zerxlabkit/internal/media"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
-	"github.com/zerx-lab/zerxlabkit/internal/param"
-	"github.com/zerx-lab/zerxlabkit/internal/ratelimit"
-	"github.com/zerx-lab/zerxlabkit/internal/storage"
+	zerxv1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
+	"github.com/zerx-lab/zkit/internal/auth"
+	"github.com/zerx-lab/zkit/internal/captcha"
+	"github.com/zerx-lab/zkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/mailer"
+	"github.com/zerx-lab/zkit/internal/media"
+	"github.com/zerx-lab/zkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/param"
+	"github.com/zerx-lab/zkit/internal/ratelimit"
+	"github.com/zerx-lab/zkit/internal/storage"
 )
 
 func newAuthService(t *testing.T, db *gorm.DB, cfg config.AuthConfig) *AuthService {

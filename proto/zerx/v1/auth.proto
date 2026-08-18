@@ -5,7 +5,7 @@ package zerx.v1;
 import "buf/validate/validate.proto";
 import "zerx/v1/user.proto";
 
-option go_package = "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1";
+option go_package = "github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1";
 
 // AuthService handles authentication and session management. Login, Register,
 // Refresh and GetCaptcha are public; the session and self-serve RPCs require a

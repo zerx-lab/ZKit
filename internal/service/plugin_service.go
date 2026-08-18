@@ -11,12 +11,12 @@ import (
 	"connectrpc.com/connect"
 	"gorm.io/gorm"
 
-	zerxv1 "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
-	"github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1/zerxv1connect"
-	"github.com/zerx-lab/zerxlabkit/internal/audit"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
-	"github.com/zerx-lab/zerxlabkit/internal/plugin"
-	"github.com/zerx-lab/zerxlabkit/internal/plugin/installer"
+	zerxv1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
+	"github.com/zerx-lab/zkit/gen/go/zerx/v1/zerxv1connect"
+	"github.com/zerx-lab/zkit/internal/audit"
+	"github.com/zerx-lab/zkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/plugin"
+	"github.com/zerx-lab/zkit/internal/plugin/installer"
 )
 
 // PluginService exposes the compiled-in plugin registry, runtime enable/disable

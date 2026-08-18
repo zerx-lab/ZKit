@@ -12,9 +12,9 @@ import (
 	"connectrpc.com/connect"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/audit"
-	"github.com/zerx-lab/zerxlabkit/internal/auth"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/audit"
+	"github.com/zerx-lab/zkit/internal/auth"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // mutatingPrefixes are the procedure method-name prefixes considered mutating.

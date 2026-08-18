@@ -89,8 +89,8 @@ volumes:
   # Named explicitly (project-prefixed) so they don't collide with generic
   # "pgdata"/"mysqldata" volumes from other compose projects.
   pgdata:
-    name: zerxlabkit_pgdata
+    name: zkit_pgdata
   # mysqldata:
-  #   name: zerxlabkit_mysqldata
+  #   name: zkit_mysqldata
   # miniodata:
-  #   name: zerxlabkit_miniodata
+  #   name: zkit_miniodata

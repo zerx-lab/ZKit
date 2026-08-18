@@ -1,4 +1,4 @@
-// Package plugin defines the compile-time plugin contract for zerxLabKit.
+// Package plugin defines the compile-time plugin contract for ZKit.
 //
 // A plugin bundles everything needed to add a back-office module without
 // touching the core wiring: its connectRPC handlers, GORM migrations, seed
@@ -23,7 +23,7 @@ import (
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/media"
+	"github.com/zerx-lab/zkit/internal/media"
 )
 
 // RegFunc mirrors the reg closure in internal/server/server.go: it records the

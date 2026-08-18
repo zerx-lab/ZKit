@@ -1,10 +1,10 @@
 ---
 name: zerx-security
-description: "zerxLabKit 认证与安全机制(JWT/会话/刷新/验证码/防爆破/审计日志/文件上传/对象存储)。当处理登录注册、token 刷新、会话管理、登录限流、操作日志、上传、存储 driver 时使用。Keywords: JWT, access token, refresh token, 会话, session, jti, 单点登录, AUTH_SINGLE_SESSION, 验证码, captcha, 防爆破, ratelimit, 锁定, 审计, 操作日志, OperationLog, login_logs, 上传, upload, 对象存储, storage, local, s3, minio, password policy, password reset, SMTP, mailer, TOTP, 2FA, MFA, export, import, xlsx, OpenAPI, docs, cron, job, scheduler, readyz, 安全, security, 认证, auth"
+description: "ZKit 认证与安全机制(JWT/会话/刷新/验证码/防爆破/审计日志/文件上传/对象存储)。当处理登录注册、token 刷新、会话管理、登录限流、操作日志、上传、存储 driver 时使用。Keywords: JWT, access token, refresh token, 会话, session, jti, 单点登录, AUTH_SINGLE_SESSION, 验证码, captcha, 防爆破, ratelimit, 锁定, 审计, 操作日志, OperationLog, login_logs, 上传, upload, 对象存储, storage, local, s3, minio, password policy, password reset, SMTP, mailer, TOTP, 2FA, MFA, export, import, xlsx, OpenAPI, docs, cron, job, scheduler, readyz, 安全, security, 认证, auth"
 ---
-# zerxLabKit 认证与安全机制
+# ZKit 认证与安全机制
 
-> Claude 已熟悉 JWT / RBAC / 限流概念;以下是 zerxLabKit 特有规则。授权裁决见 `skill://zerx-authz`。
+> Claude 已熟悉 JWT / RBAC / 限流概念;以下是 ZKit 特有规则。授权裁决见 `skill://zerx-authz`。
 
 ## JWT 与启动
 - **生产必设 `JWT_SECRET`**:缺失则启动失败(`os.Exit(1)`)。

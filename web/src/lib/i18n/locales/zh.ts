@@ -4,7 +4,7 @@ import type { en } from "./en";
 // key-for-key; a missing or extra key is a compile error. Mirror any future
 // per-namespace split of `en.ts` here.
 export const zh: typeof en = {
-  app: { name: "zerxLabKit", tagline: "全栈后台脚手架" },
+  app: { name: "ZKit", tagline: "全栈后台脚手架" },
   common: {
     signIn: "登录",
     signOut: "退出登录",

@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
-	"github.com/zerx-lab/zerxlabkit/internal/storage"
+	"github.com/zerx-lab/zkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/storage"
 )
 
 func newLocal(t *testing.T) *Media {

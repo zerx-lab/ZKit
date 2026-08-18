@@ -5,7 +5,7 @@ package zerx.v1;
 import "buf/validate/validate.proto";
 import "zerx/v1/common.proto";
 
-option go_package = "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1";
+option go_package = "github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1";
 
 // ShopProductService is the example plugin's product CRUD. Provided by the
 // "shop" plugin (internal/plugin/impl/shop); guarded by Casbin like any core

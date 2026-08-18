@@ -1,10 +1,10 @@
 ---
 name: zerx-frontend
-description: "zerxLabKit 前端开发规约(React 19 + TanStack + connect-query + Zod4 + Tailwind v4)。当新增/修改路由页、CRUD 列表/表单、调用 connect-query hooks、做缓存失效、i18n、主题时使用。Keywords: React, TanStack Router, react-query, useQuery, useMutation, connect-query, createConnectQueryKey, invalidateQueries, react-form, Zod, Tailwind v4, bigint, uint64, table v8, i18n, 主题, theme, 语义 token, Can, permissions, gcTime, placeholderData, 前端, frontend"
+description: "ZKit 前端开发规约(React 19 + TanStack + connect-query + Zod4 + Tailwind v4)。当新增/修改路由页、CRUD 列表/表单、调用 connect-query hooks、做缓存失效、i18n、主题时使用。Keywords: React, TanStack Router, react-query, useQuery, useMutation, connect-query, createConnectQueryKey, invalidateQueries, react-form, Zod, Tailwind v4, bigint, uint64, table v8, i18n, 主题, theme, 语义 token, Can, permissions, gcTime, placeholderData, 前端, frontend"
 ---
-# zerxLabKit 前端开发规约
+# ZKit 前端开发规约
 
-> Claude 已熟悉 React 19 / TanStack / Zod;以下是 zerxLabKit 特有规则。最全范式页:`web/src/routes/_authed/users.tsx`(次选 `params.tsx`)。
+> Claude 已熟悉 React 19 / TanStack / Zod;以下是 ZKit 特有规则。最全范式页:`web/src/routes/_authed/users.tsx`(次选 `params.tsx`)。
 
 ## 数据访问与失效
 - hook 导入:`import { createConnectQueryKey, useMutation, useQuery } from "@connectrpc/connect-query"`。

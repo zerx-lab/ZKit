@@ -1559,7 +1559,7 @@ const file_zerx_v1_auth_proto_rawDesc = "" +
 	"\x14ConfirmPasswordReset\x12$.zerx.v1.ConfirmPasswordResetRequest\x1a%.zerx.v1.ConfirmPasswordResetResponse\x12B\n" +
 	"\tSetupTotp\x12\x19.zerx.v1.SetupTotpRequest\x1a\x1a.zerx.v1.SetupTotpResponse\x12K\n" +
 	"\fActivateTotp\x12\x1c.zerx.v1.ActivateTotpRequest\x1a\x1d.zerx.v1.ActivateTotpResponse\x12H\n" +
-	"\vDisableTotp\x12\x1b.zerx.v1.DisableTotpRequest\x1a\x1c.zerx.v1.DisableTotpResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\vDisableTotp\x12\x1b.zerx.v1.DisableTotpRequest\x1a\x1c.zerx.v1.DisableTotpResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_auth_proto_rawDescOnce sync.Once

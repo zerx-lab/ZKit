@@ -992,7 +992,7 @@ const file_zerx_v1_dict_proto_rawDesc = "" +
 	"\x0eCreateDictItem\x12\x1e.zerx.v1.CreateDictItemRequest\x1a\x11.zerx.v1.DictItem\x12C\n" +
 	"\x0eUpdateDictItem\x12\x1e.zerx.v1.UpdateDictItemRequest\x1a\x11.zerx.v1.DictItem\x12Q\n" +
 	"\x0eDeleteDictItem\x12\x1e.zerx.v1.DeleteDictItemRequest\x1a\x1f.zerx.v1.DeleteDictItemResponse\x12N\n" +
-	"\rGetDictByType\x12\x1d.zerx.v1.GetDictByTypeRequest\x1a\x1e.zerx.v1.GetDictByTypeResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\rGetDictByType\x12\x1d.zerx.v1.GetDictByTypeRequest\x1a\x1e.zerx.v1.GetDictByTypeResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_dict_proto_rawDescOnce sync.Once

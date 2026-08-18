@@ -1,6 +1,6 @@
 <div align="center">
 
-# ZerxLabKit
+# ZKit
 
 **生产可部署、AI 友好的全栈后台管理脚手架**
 
@@ -54,7 +54,7 @@ task dev:web       # 前端 Vite(:5173 代理到 :8080)
 
 ## 🧬 基于本模板创建新项目
 
-用内置 CLI `zerxKit` 从本模板克隆并改名,一键生成独立可运行的新项目(改 Go module 路径、二进制名、Docker 镜像/卷名、前端包名、品牌显示名、默认库名、localStorage key 前缀)。
+用内置 CLI `zkit` 从本模板克隆并改名,一键生成独立可运行的新项目(改 Go module 路径、二进制名、Docker 镜像/卷名、前端包名、品牌显示名、默认库名、localStorage key 前缀)。
 
 **两种用法:**
 
@@ -63,15 +63,15 @@ task dev:web       # 前端 Vite(:5173 代理到 :8080)
 task new -- github.com/acme/foo ../foo [--brand Foo] [--db foo]
 
 # 2) 全局安装(无需先 clone):
-go install github.com/zerx-lab/zerxlabkit/cmd/zerxKit@latest
-zerxKit new github.com/acme/foo ../foo [--brand Foo] [--db foo]
+go install github.com/zerx-lab/zkit/cmd/zkit@latest
+zkit new github.com/acme/foo ../foo [--brand Foo] [--db foo]
 ```
 
-> 提示:`zerxKit help` 查看命令列表、`zerxKit --version` 查看版本、`zerxKit help new` 查看 `new` 用法。
+> 提示:`zkit help` 查看命令列表、`zkit --version` 查看版本、`zkit help new` 查看 `new` 用法。
 
 - 位置参数:新 module 路径(必填)、目标目录(可选,缺省 `./<module 末段>`)。
 - `--brand` 缺省=module 末段;`--db` 缺省=经 sanitize 的 module 末段;`--from <dir>` 显式指定模板根(跳过缓存)。
-- **模板来源(三态)**:`--from` 指定 → 用该目录;`go run`(仓库内 `(devel)` 态)→ 用当前目录;`go install` 的二进制 → 按其版本把模板克隆/checkout 到 `~/.ZerxLabKit/<version>` 再用。**CLI 版本与模板版本同 tag 锁定**(`@v1.2.0` 装的二进制生成时模板也 checkout `v1.2.0`,tag 不可变,几乎免联网);发版前的伪版本则跟远程默认分支最新提交。缓存视为只读镜像,更新时 `reset --hard` 丢弃任何手改;离线无法检查更新时回退缓存并提示。需要本机有 `git`。
+- **模板来源(三态)**:`--from` 指定 → 用该目录;`go run`(仓库内 `(devel)` 态)→ 用当前目录;`go install` 的二进制 → 按其版本把模板克隆/checkout 到 `~/.ZKit/<version>` 再用。**CLI 版本与模板版本同 tag 锁定**(`@v1.2.0` 装的二进制生成时模板也 checkout `v1.2.0`,tag 不可变,几乎免联网);发版前的伪版本则跟远程默认分支最新提交。缓存视为只读镜像,更新时 `reset --hard` 丢弃任何手改;离线无法检查更新时回退缓存并提示。需要本机有 `git`。
 - **proto 包名 `zerx.v1` 保留不改**(内部 RPC 命名空间,终端用户不可见;改它需重跑 codegen)。
 - 生成码(`*.pb.go` / `*_pb.ts`)逐字节拷贝,其内嵌 descriptor 残留的旧元数据在运行期无害,任意一次 `task gen` 即自愈。
 
@@ -90,8 +90,8 @@ go build ./...            # 离线编译,无需 codegen
 ## 📦 构建与部署
 
 ```bash
-task build        # 本机单二进制(内嵌 SPA)→ bin/zerxlabkit
-task build:dist   # 静态 linux/amd64 二进制 → bin/zerxlabkit-linux-amd64
+task build        # 本机单二进制(内嵌 SPA)→ bin/zkit
+task build:dist   # 静态 linux/amd64 二进制 → bin/zkit-linux-amd64
 task docker:build # 构建 distroless 镜像
 task docker:up    # 起整套 compose(app + postgres)
 ```

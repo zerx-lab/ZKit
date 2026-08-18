@@ -8,8 +8,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // Policy enforces password strength and reuse rules from configuration.

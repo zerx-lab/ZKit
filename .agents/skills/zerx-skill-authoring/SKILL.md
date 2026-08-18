@@ -1,8 +1,8 @@
 ---
 name: zerx-skill-authoring
-description: "为 zerxLabKit 编写/维护/更新 .agents/skills 下 AI skill 的元规约:token 高效、陈述事实而非教学、进步式披露、frontmatter 与描述关键词写法、何时该新增 skill、代码变更后如何定位并同步对应 skill。当用户要新增/修改/审查/更新本仓库的 skill 或 AI 指令文件、或某子系统代码变更需同步 skill 时使用。Keywords: skill, SKILL.md, .agents/skills, 编写规约, 元技能, frontmatter, description, 关键词, 进步式披露, progressive disclosure, token 高效, 上下文, AGENTS.md, prompt, 提示词, 编写技巧, 更新 skill, 维护 skill, 同步, 变更, 调研源码, 代码变更, 漂移, sync, update, maintain"
+description: "为 ZKit 编写/维护/更新 .agents/skills 下 AI skill 的元规约:token 高效、陈述事实而非教学、进步式披露、frontmatter 与描述关键词写法、何时该新增 skill、代码变更后如何定位并同步对应 skill。当用户要新增/修改/审查/更新本仓库的 skill 或 AI 指令文件、或某子系统代码变更需同步 skill 时使用。Keywords: skill, SKILL.md, .agents/skills, 编写规约, 元技能, frontmatter, description, 关键词, 进步式披露, progressive disclosure, token 高效, 上下文, AGENTS.md, prompt, 提示词, 编写技巧, 更新 skill, 维护 skill, 同步, 变更, 调研源码, 代码变更, 漂移, sync, update, maintain"
 ---
-# zerxLabKit Skill 编写规约
+# ZKit Skill 编写规约
 
 > Claude 已熟悉通用写作与 Markdown;以下是本仓库 skill 的特有规则,目标是**降低每轮 token**且**减少行为漂移**。
 
@@ -20,7 +20,7 @@ description: "为 zerxLabKit 编写/维护/更新 .agents/skills 下 AI skill �
 | 资产用绝对路径 / `..` | `skill://<name>/<相对路径>` |
 
 ## 九条编写规约
-1. **陈述事实,不教学**:模型已懂通用技术(Go/GORM/React/RBAC 概念)。只写**本项目非显然的决定**——确切路径、符号、签名、字面量、坑。固定范式句:`Claude 已熟悉 X;以下是 zerxLabKit 特有规则。`
+1. **陈述事实,不教学**:模型已懂通用技术(Go/GORM/React/RBAC 概念)。只写**本项目非显然的决定**——确切路径、符号、签名、字面量、坑。固定范式句:`Claude 已熟悉 X;以下是 ZKit 特有规则。`
 2. **指向源码,不整文件复制**:范式写成"以 `path:symbol` 为模板转写",或截 ≤15 行代表片段;不整文件粘贴(随代码腐烂)。
 3. **密集格式**:表格 / 清单 / 签名块优先,每行=一个可执行事实;坑用"错误写法/错误码 → 正解"两列表。
 4. **description 写法**:一句"当…时使用" + 中英双语关键词清单覆盖触发词。
@@ -42,7 +42,7 @@ name: zerx-<topic>
 description: "<当…时使用,一句>。Keywords: <中英关键词,逗号分隔>"
 ---
 # <标题>
-> Claude 已熟悉 <通用技术>;以下是 zerxLabKit 特有规则。
+> Claude 已熟悉 <通用技术>;以下是 ZKit 特有规则。
 ## <小节>
 | 错误写法 / 错误码 | 正解 |
 |---|---|

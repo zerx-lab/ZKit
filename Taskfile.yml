@@ -3,9 +3,9 @@ version: "3"
 dotenv: [".env"]
 
 vars:
-  BIN: 'bin/zerxlabkit{{if eq OS "windows"}}.exe{{end}}'
+  BIN: 'bin/zkit{{if eq OS "windows"}}.exe{{end}}'
   GOBIN: "{{.ROOT_DIR}}/.bin"
-  MODULE: github.com/zerx-lab/zerxlabkit
+  MODULE: github.com/zerx-lab/zkit
 
 includes:
   backend: { taskfile: ./taskfiles/backend.yml, dir: "{{.ROOT_DIR}}" }
@@ -98,4 +98,4 @@ tasks:
   new:
     desc: 'Scaffold a new project from this template (rename module/brand/db). Usage: task new -- github.com/acme/foo ../foo [--brand Foo] [--db foo]'
     cmds:
-      - go run ./cmd/zerxKit new {{.CLI_ARGS}} --from {{.ROOT_DIR}}
+      - go run ./cmd/zkit new {{.CLI_ARGS}} --from {{.ROOT_DIR}}

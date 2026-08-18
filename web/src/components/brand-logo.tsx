@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * BrandLogo — the zerxLabKit mark.
+ * BrandLogo — the ZKit mark.
  *
  * A rounded-square tile in the brand blue with a stylized "z" whose lower
  * stroke extends into a baseline bar, evoking a lab bench / toolkit shelf.
@@ -12,7 +12,7 @@ export function BrandLogo({ className }: { className?: string }) {
     <svg
       viewBox="0 0 32 32"
       role="img"
-      aria-label="zerxLabKit"
+      aria-label="ZKit"
       className={cn("size-8 shrink-0", className)}
     >
       <defs>

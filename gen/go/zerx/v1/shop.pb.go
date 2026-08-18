@@ -793,7 +793,7 @@ const file_zerx_v1_shop_proto_rawDesc = "" +
 	"\x13ShopCategoryService\x12Q\n" +
 	"\x0eListCategories\x12\x1e.zerx.v1.ListCategoriesRequest\x1a\x1f.zerx.v1.ListCategoriesResponse\x12G\n" +
 	"\x0eCreateCategory\x12\x1e.zerx.v1.CreateCategoryRequest\x1a\x15.zerx.v1.ShopCategory\x12Q\n" +
-	"\x0eDeleteCategory\x12\x1e.zerx.v1.DeleteCategoryRequest\x1a\x1f.zerx.v1.DeleteCategoryResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\x0eDeleteCategory\x12\x1e.zerx.v1.DeleteCategoryRequest\x1a\x1f.zerx.v1.DeleteCategoryResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_shop_proto_rawDescOnce sync.Once

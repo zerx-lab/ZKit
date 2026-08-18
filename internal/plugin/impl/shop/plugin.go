@@ -1,4 +1,4 @@
-// Package shop is the example zerxLabKit plugin: a product CRUD module that
+// Package shop is the example ZKit plugin: a product CRUD module that
 // exercises the full plugin contract (proto service, migration, namespaced
 // table, seed menu, dynamic frontend page, public page, and an optional job).
 package shop
@@ -10,8 +10,8 @@ import (
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1/zerxv1connect"
-	"github.com/zerx-lab/zerxlabkit/internal/plugin"
+	"github.com/zerx-lab/zkit/gen/go/zerx/v1/zerxv1connect"
+	"github.com/zerx-lab/zkit/internal/plugin"
 )
 
 // pluginName is the plugin identifier (lower snake_case).

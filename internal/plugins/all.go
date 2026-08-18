@@ -7,8 +7,8 @@
 package plugins
 
 import (
-	"github.com/zerx-lab/zerxlabkit/internal/plugin"
-	"github.com/zerx-lab/zerxlabkit/internal/plugin/impl/shop"
+	"github.com/zerx-lab/zkit/internal/plugin"
+	"github.com/zerx-lab/zkit/internal/plugin/impl/shop"
 	// plugin-import-anchor (do not remove: new plugin imports inserted above this line)
 )
 

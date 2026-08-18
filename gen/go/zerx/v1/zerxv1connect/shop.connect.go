@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	v1 "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
+	v1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
 	http "net/http"
 	strings "strings"
 )

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/config"
 )
 
 func newIssuer(secret string, access, refresh time.Duration) *Issuer {

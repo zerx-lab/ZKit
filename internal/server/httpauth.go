@@ -6,8 +6,8 @@ import (
 
 	casbin "github.com/casbin/casbin/v3"
 
-	"github.com/zerx-lab/zerxlabkit/internal/auth"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/auth"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // authorizeHTTP parses the bearer access token and authorizes the caller against

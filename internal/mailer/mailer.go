@@ -8,7 +8,7 @@ import (
 
 	"github.com/wneessen/go-mail"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/config"
 )
 
 // Mailer sends HTML email via SMTP.

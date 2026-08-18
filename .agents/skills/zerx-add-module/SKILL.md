@@ -1,8 +1,8 @@
 ---
 name: zerx-add-module
-description: "在 zerxLabKit 端到端新增一个管理模块的完整清单(proto→model→migrate→service→server→前端页→i18n→seed→routeTree→授权)。当用户要新增一个后台管理模块/资源/CRUD 页面(如商品、订单、配置项)时使用。Keywords: 新增模块, 管理模块, 后台模块, CRUD, 资源, 端到端, 完整流程, scaffold, 新建页面, add module, new module, 菜单, seed, 迁移, 全栈新增"
+description: "在 ZKit 端到端新增一个管理模块的完整清单(proto→model→migrate→service→server→前端页→i18n→seed→routeTree→授权)。当用户要新增一个后台管理模块/资源/CRUD 页面(如商品、订单、配置项)时使用。Keywords: 新增模块, 管理模块, 后台模块, CRUD, 资源, 端到端, 完整流程, scaffold, 新建页面, add module, new module, 菜单, seed, 迁移, 全栈新增"
 ---
-# zerxLabKit 端到端新增管理模块
+# ZKit 端到端新增管理模块
 
 > 编排清单;各步细节互链对应 skill,不复制其正文。
 

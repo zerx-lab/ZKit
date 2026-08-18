@@ -1,8 +1,8 @@
 ---
 name: zerx-plugin
-description: "zerxLabKit 编译期插件机制:以低侵入方式新增后台管理模块(后端 RPC + 表 + 前端动态页 + 菜单 + 授权),不破坏单二进制 / CGO-free / Casbin 唯一授权 / proto 唯一契约。当用户要用插件方式扩展、用 task new-plugin 脚手架、新增/启用/禁用/卸载插件、或排查插件注册/校验/动态前端页问题时使用。Keywords: plugin, 插件, plugin system, 插件机制, task new-plugin, task plugin-pack, 脚手架, scaffold, 上传插件, 安装插件, 卸载插件, install plugin, uninstall plugin, upload, zip, InstallPlugin, UninstallPlugin, internal/plugin, installer, all.go, ValidateAll, RegisterHandlers, 动态路由, import.meta.glob, p.$, pub.$, plugin-components, 编译期插件, compile-time plugin, 插件注册, 插件禁用, 插件卸载, teardown, PLUGIN_UPLOAD_ENABLED"
+description: "ZKit 编译期插件机制:以低侵入方式新增后台管理模块(后端 RPC + 表 + 前端动态页 + 菜单 + 授权),不破坏单二进制 / CGO-free / Casbin 唯一授权 / proto 唯一契约。当用户要用插件方式扩展、用 task new-plugin 脚手架、新增/启用/禁用/卸载插件、或排查插件注册/校验/动态前端页问题时使用。Keywords: plugin, 插件, plugin system, 插件机制, task new-plugin, task plugin-pack, 脚手架, scaffold, 上传插件, 安装插件, 卸载插件, install plugin, uninstall plugin, upload, zip, InstallPlugin, UninstallPlugin, internal/plugin, installer, all.go, ValidateAll, RegisterHandlers, 动态路由, import.meta.glob, p.$, pub.$, plugin-components, 编译期插件, compile-time plugin, 插件注册, 插件禁用, 插件卸载, teardown, PLUGIN_UPLOAD_ENABLED"
 ---
-# zerxLabKit 编译期插件机制
+# ZKit 编译期插件机制
 
 > 编译期静态插件(源码内置 + 重新构建):自带 RPC/表/迁移/菜单/授权声明/可选 job;显式 `Register()` 注册;启动期 `ValidateAll` 强校验;前端单一动态路由按 `menu.component` 加载页。**有意不用** WASM/.so/go-plugin/init() 魔法(理由见设计裁决)。
 
@@ -82,4 +82,4 @@ main.go 在 `plugins.Register()` 后、任何 DB 操作前调用,校验:名字�
 两道防线根除 `database→plugin→jobs` 环:(1) Plugin 接口不出现 `jobs.*` 类型(用 `plugin.JobHandler`);(2) `database` 包不 import `plugin`——`Migrate(db, extra)` / `Seed(db, extraMenus []MenuSeed)` 取普通 slice,由 `cmd/server/main.go`(可同时 import 两者)组装入参。job 收集落 main.go(调度器 registry)+ server.go(UI registry)。破坏任一边会让 `go test ./internal/jobs` 编译失败。
 
 ## 源码锚点
-`internal/plugin/{plugin,registry,validate}.go`、`internal/plugins/all.go`、`internal/plugin/impl/shop/`(示例)、`cmd/zerxKit/`(脚手架 + 插件生成器:zerxKit plugin new)、`web/src/routes/_authed/p.$.tsx`(后台 splat)、`web/src/routes/pub.$.tsx`(公开 splat)、`web/src/plugin-components/`、`internal/database/{migrate,seed}.go`、`internal/server/server.go`、`internal/jobs/scheduler.go`。设计全文:`.plans/plugin-system-plan.md`。
+`internal/plugin/{plugin,registry,validate}.go`、`internal/plugins/all.go`、`internal/plugin/impl/shop/`(示例)、`cmd/zkit/`(脚手架 + 插件生成器:zkit plugin new)、`web/src/routes/_authed/p.$.tsx`(后台 splat)、`web/src/routes/pub.$.tsx`(公开 splat)、`web/src/plugin-components/`、`internal/database/{migrate,seed}.go`、`internal/server/server.go`、`internal/jobs/scheduler.go`。设计全文:`.plans/plugin-system-plan.md`。

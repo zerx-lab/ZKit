@@ -1,4 +1,4 @@
-# zerxLabKit — AI 开发指南
+# ZKit — AI 开发指南
 
 > 本文件指导在本仓库之上进行的后续开发(人类与 AI 通用)。所有面向用户的叙述请用**简体中文**(与全局规则一致);代码、命令、标识符保持原样。
 
@@ -67,14 +67,14 @@
 |---|---|
 | `task sync` | 首次设置:装工具/依赖 → 生成代码 → `go mod tidy` → 创建 `.env` → 启动 dev PostgreSQL(`docker compose up -d --wait postgres`) |
 | `task dev:backend` / `task dev:web` | 各自前台运行(自行在两个终端管理,Ctrl+C 停止),**无热重载/无 TUI**。`dev:backend` 先 `db:up` 再 `go run ./cmd/server`(改代码后重跑即可);`dev:web` 跑 Vite,前端 `:5173` 代理到后端 `:8080`。改 `.proto` 后手动 `task gen` 再重跑后端 |
-| `task new` | 基于本模板创建新项目(改 module / 品牌 / 库名);仓库内 `task new -- github.com/acme/foo ../foo [--brand Foo] [--db foo]`;也可 `go install .../cmd/zerxKit@latest` 全局用。模板来源三态:`--from` 指定 / `go run`(devel)用当前目录 / 安装态按 tag clone 到 `~/.ZerxLabKit/<version>`(CLI 与模板同 tag 锁定)。proto 包名 `zerx.v1` 保留;新项目仅需 `go build` |
+| `task new` | 基于本模板创建新项目(改 module / 品牌 / 库名);仓库内 `task new -- github.com/acme/foo ../foo [--brand Foo] [--db foo]`;也可 `go install .../cmd/zkit@latest` 全局用。模板来源三态:`--from` 指定 / `go run`(devel)用当前目录 / 安装态按 tag clone 到 `~/.ZKit/<version>`(CLI 与模板同 tag 锁定)。proto 包名 `zerx.v1` 保留;新项目仅需 `go build` |
 | `task gen` | 生成全部代码(proto Go/TS + GORM 查询) |
-| `task build` | 构建 SPA → 本机单二进制(内嵌 SPA),产物 `bin/zerxlabkit[.exe]` |
-| `task build:dist` | 构建 SPA → 静态 `linux/amd64` 二进制 `bin/zerxlabkit-linux-amd64` |
+| `task build` | 构建 SPA → 本机单二进制(内嵌 SPA),产物 `bin/zkit[.exe]` |
+| `task build:dist` | 构建 SPA → 静态 `linux/amd64` 二进制 `bin/zkit-linux-amd64` |
 | `task lint` | 后端 golangci-lint + nilaway;前端 ESLint + `tsc --noEmit` |
 | `task test` | `go test ./...`(前端暂无测试) |
 | `task run` | 运行已构建二进制(需 `JWT_SECRET`,`.env` 在 dev 即可) |
-| `task docker:build` / `docker:up` / `docker:down` / `db:up` / `db:down` | 构建镜像 / 起停整套 compose(app + postgres,数据持久化于命名卷 `zerxlabkit_pgdata`)/ 起停本地 dev PostgreSQL。MySQL 在 `docker-compose.yml` 中默认注释,需手动取消注释启用 |
+| `task docker:build` / `docker:up` / `docker:down` / `db:up` / `db:down` | 构建镜像 / 起停整套 compose(app + postgres,数据持久化于命名卷 `zkit_pgdata`)/ 起停本地 dev PostgreSQL。MySQL 在 `docker-compose.yml` 中默认注释,需手动取消注释启用 |
 | `task deps:update` / `deps:rollback` | 升级全部依赖(先快照)/ 从快照回退 |
 
 **提交前务必**:`task lint && task test`。

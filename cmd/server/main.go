@@ -1,4 +1,4 @@
-// Command server is the zerxLabKit all-in-one binary: connectRPC API plus the
+// Command server is the ZKit all-in-one binary: connectRPC API plus the
 // embedded SPA, served over HTTP/1.1 and h2c.
 package main
 
@@ -13,12 +13,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
-	"github.com/zerx-lab/zerxlabkit/internal/database"
-	"github.com/zerx-lab/zerxlabkit/internal/jobs"
-	"github.com/zerx-lab/zerxlabkit/internal/plugin"
-	"github.com/zerx-lab/zerxlabkit/internal/plugins"
-	"github.com/zerx-lab/zerxlabkit/internal/server"
+	"github.com/zerx-lab/zkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/database"
+	"github.com/zerx-lab/zkit/internal/jobs"
+	"github.com/zerx-lab/zkit/internal/plugin"
+	"github.com/zerx-lab/zkit/internal/plugins"
+	"github.com/zerx-lab/zkit/internal/server"
 )
 
 // version is overridden at build time via -ldflags "-X main.version=...".

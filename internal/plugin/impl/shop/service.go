@@ -9,9 +9,9 @@ import (
 	"connectrpc.com/connect"
 	"gorm.io/gorm"
 
-	zerxv1 "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
-	"github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1/zerxv1connect"
-	"github.com/zerx-lab/zerxlabkit/internal/audit"
+	zerxv1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
+	"github.com/zerx-lab/zkit/gen/go/zerx/v1/zerxv1connect"
+	"github.com/zerx-lab/zkit/internal/audit"
 )
 
 // ProductService implements zerxv1connect.ShopProductServiceHandler.

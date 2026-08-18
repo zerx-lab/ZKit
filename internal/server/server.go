@@ -18,21 +18,21 @@ import (
 	"connectrpc.com/validate"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1/zerxv1connect"
-	"github.com/zerx-lab/zerxlabkit/internal/apispec"
-	"github.com/zerx-lab/zerxlabkit/internal/auth"
-	"github.com/zerx-lab/zerxlabkit/internal/captcha"
-	"github.com/zerx-lab/zerxlabkit/internal/casbin"
-	"github.com/zerx-lab/zerxlabkit/internal/config"
-	"github.com/zerx-lab/zerxlabkit/internal/jobs"
-	"github.com/zerx-lab/zerxlabkit/internal/mailer"
-	"github.com/zerx-lab/zerxlabkit/internal/media"
-	"github.com/zerx-lab/zerxlabkit/internal/param"
-	"github.com/zerx-lab/zerxlabkit/internal/plugin"
-	"github.com/zerx-lab/zerxlabkit/internal/ratelimit"
-	"github.com/zerx-lab/zerxlabkit/internal/service"
-	"github.com/zerx-lab/zerxlabkit/internal/storage"
-	"github.com/zerx-lab/zerxlabkit/internal/web"
+	"github.com/zerx-lab/zkit/gen/go/zerx/v1/zerxv1connect"
+	"github.com/zerx-lab/zkit/internal/apispec"
+	"github.com/zerx-lab/zkit/internal/auth"
+	"github.com/zerx-lab/zkit/internal/captcha"
+	"github.com/zerx-lab/zkit/internal/casbin"
+	"github.com/zerx-lab/zkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/jobs"
+	"github.com/zerx-lab/zkit/internal/mailer"
+	"github.com/zerx-lab/zkit/internal/media"
+	"github.com/zerx-lab/zkit/internal/param"
+	"github.com/zerx-lab/zkit/internal/plugin"
+	"github.com/zerx-lab/zkit/internal/ratelimit"
+	"github.com/zerx-lab/zkit/internal/service"
+	"github.com/zerx-lab/zkit/internal/storage"
+	"github.com/zerx-lab/zkit/internal/web"
 )
 
 // New builds the root HTTP handler: connectRPC services under /api, a multipart
@@ -232,7 +232,7 @@ const pluginUploadMaxBytes = 25 << 20 // 25 MB
 // import lines), falling back to the canonical module if unreadable. Keeping it
 // runtime-derived makes install correct in forks created via `task new`.
 func modulePath(root string) string {
-	const fallback = "github.com/zerx-lab/zerxlabkit"
+	const fallback = "github.com/zerx-lab/zkit"
 	b, err := os.ReadFile(filepath.Join(root, "go.mod"))
 	if err != nil {
 		return fallback

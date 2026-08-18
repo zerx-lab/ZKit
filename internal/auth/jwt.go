@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/config"
 )
 
 // Token types embedded in the JWT to prevent refresh tokens being used as

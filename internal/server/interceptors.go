@@ -8,7 +8,7 @@ import (
 
 	"connectrpc.com/connect"
 
-	"github.com/zerx-lab/zerxlabkit/internal/ratelimit"
+	"github.com/zerx-lab/zkit/internal/ratelimit"
 )
 
 // NewLoggingInterceptor logs every unary RPC with its procedure, duration, and

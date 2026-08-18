@@ -510,7 +510,7 @@ const file_zerx_v1_param_proto_rawDesc = "" +
 	"\vCreateParam\x12\x1b.zerx.v1.CreateParamRequest\x1a\x11.zerx.v1.SysParam\x12=\n" +
 	"\vUpdateParam\x12\x1b.zerx.v1.UpdateParamRequest\x1a\x11.zerx.v1.SysParam\x12H\n" +
 	"\vDeleteParam\x12\x1b.zerx.v1.DeleteParamRequest\x1a\x1c.zerx.v1.DeleteParamResponse\x127\n" +
-	"\bGetParam\x12\x18.zerx.v1.GetParamRequest\x1a\x11.zerx.v1.SysParamB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\bGetParam\x12\x18.zerx.v1.GetParamRequest\x1a\x11.zerx.v1.SysParamB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_param_proto_rawDescOnce sync.Once

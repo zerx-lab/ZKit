@@ -455,7 +455,7 @@ const file_zerx_v1_api_proto_rawDesc = "" +
 	"\bListApis\x12\x18.zerx.v1.ListApisRequest\x1a\x19.zerx.v1.ListApisResponse\x12?\n" +
 	"\bSyncApis\x12\x18.zerx.v1.SyncApisRequest\x1a\x19.zerx.v1.SyncApisResponse\x124\n" +
 	"\tUpdateApi\x12\x19.zerx.v1.UpdateApiRequest\x1a\f.zerx.v1.Api\x12B\n" +
-	"\tDeleteApi\x12\x19.zerx.v1.DeleteApiRequest\x1a\x1a.zerx.v1.DeleteApiResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\tDeleteApi\x12\x19.zerx.v1.DeleteApiRequest\x1a\x1a.zerx.v1.DeleteApiResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_api_proto_rawDescOnce sync.Once

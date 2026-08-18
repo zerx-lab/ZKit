@@ -1767,11 +1767,7 @@ paths:
       tags:
         - zerx.v1.PluginService
       summary: InstallPlugin
-      description: |-
-        InstallPlugin unpacks an uploaded plugin source package into the repo and
-         wires it into all.go. Compile-time model: it does NOT run the new code in
-         the current process; a rebuild/restart (auto via air in dev) applies it.
-         Admin-only and gated by PLUGIN_UPLOAD_ENABLED (off in prod by default).
+      description: "InstallPlugin unpacks an uploaded plugin source package into the repo and\r\n wires it into all.go. Compile-time model: it does NOT run the new code in\r\n the current process; a rebuild/restart (auto via air in dev) applies it.\r\n Admin-only and gated by PLUGIN_UPLOAD_ENABLED (off in prod by default)."
       operationId: zerx.v1.PluginService.InstallPlugin
       parameters:
         - name: Connect-Protocol-Version
@@ -1842,9 +1838,7 @@ paths:
       tags:
         - zerx.v1.PluginService
       summary: ListPublicPages
-      description: |-
-        ListPublicPages is anonymous (public): it returns the public-facing pages of
-         enabled plugins so the unauthenticated /pub/$ route can resolve them.
+      description: "ListPublicPages is anonymous (public): it returns the public-facing pages of\r\n enabled plugins so the unauthenticated /pub/$ route can resolve them."
       operationId: zerx.v1.PluginService.ListPublicPages
       parameters:
         - name: Connect-Protocol-Version
@@ -1915,9 +1909,7 @@ paths:
       tags:
         - zerx.v1.PluginService
       summary: UninstallPlugin
-      description: |-
-        UninstallPlugin removes a plugin's source + all.go lines (and optionally its
-         data) so a rebuild/restart drops it. Admin-only, same gate.
+      description: "UninstallPlugin removes a plugin's source + all.go lines (and optionally its\r\n data) so a rebuild/restart drops it. Admin-only, same gate."
       operationId: zerx.v1.PluginService.UninstallPlugin
       parameters:
         - name: Connect-Protocol-Version
@@ -3855,9 +3847,7 @@ components:
         pendingRestart:
           type: boolean
           title: pending_restart
-          description: |-
-            pending_restart is always true on success: the new code takes effect only
-             after a rebuild/restart (air auto-restarts in dev).
+          description: "pending_restart is always true on success: the new code takes effect only\r\n after a rebuild/restart (air auto-restarts in dev)."
         message:
           type: string
           title: message
@@ -4295,9 +4285,7 @@ components:
         uploadAllowed:
           type: boolean
           title: upload_allowed
-          description: |-
-            upload_allowed mirrors the server gate (admin + non-prod by default); the UI
-             hides Upload/Uninstall when false so controls don't appear then 403.
+          description: "upload_allowed mirrors the server gate (admin + non-prod by default); the UI\r\n hides Upload/Uninstall when false so controls don't appear then 403."
       title: ListPluginsResponse
       additionalProperties: false
     zerx.v1.ListProductsRequest:
@@ -4708,10 +4696,7 @@ components:
         pendingRemoval:
           type: boolean
           title: pending_removal
-          description: |-
-            pending_removal: this plugin is still compiled into the running binary but its
-             source was uninstalled on disk — it disappears after the next rebuild/restart.
-             The UI disables its controls and shows a "pending restart" badge.
+          description: "pending_removal: this plugin is still compiled into the running binary but its\r\n source was uninstalled on disk — it disappears after the next rebuild/restart.\r\n The UI disables its controls and shows a \"pending restart\" badge."
       title: PluginInfo
       additionalProperties: false
     zerx.v1.PluginMenu:
@@ -4728,9 +4713,7 @@ components:
           title: title
       title: PluginMenu
       additionalProperties: false
-      description: |-
-        PluginMenu is a flattened menu entry a plugin contributes (for the admin
-         detail view). Path is empty for a group heading.
+      description: "PluginMenu is a flattened menu entry a plugin contributes (for the admin\r\n detail view). Path is empty for a group heading."
     zerx.v1.PluginPublicPage:
       type: object
       properties:
@@ -4747,9 +4730,7 @@ components:
           title: title
       title: PluginPublicPage
       additionalProperties: false
-      description: |-
-        PluginPublicPage is an anonymous-accessible front-end page a plugin serves at
-         /pub/<path>, rendered by the component glob id.
+      description: "PluginPublicPage is an anonymous-accessible front-end page a plugin serves at\r\n /pub/<path>, rendered by the component glob id."
     zerx.v1.RefreshRequest:
       type: object
       properties:
@@ -5434,58 +5415,30 @@ tags:
   - name: zerx.v1.ApiService
     description: ApiService manages the catalog of connectRPC procedures used for RBAC.
   - name: zerx.v1.UserService
-    description: |-
-      UserService manages user accounts. Authorization is enforced by the Casbin
-       interceptor (admin bypasses); handlers carry no role checks.
+    description: "UserService manages user accounts. Authorization is enforced by the Casbin\r\n interceptor (admin bypasses); handlers carry no role checks."
   - name: zerx.v1.AuthService
-    description: |-
-      AuthService handles authentication and session management. Login, Register,
-       Refresh and GetCaptcha are public; the session and self-serve RPCs require a
-       valid access token.
+    description: "AuthService handles authentication and session management. Login, Register,\r\n Refresh and GetCaptcha are public; the session and self-serve RPCs require a\r\n valid access token."
   - name: zerx.v1.DashboardService
-    description: |-
-      DashboardService exposes aggregate statistics for the admin dashboard.
-       Authorization is enforced by the Casbin interceptor (admin bypasses).
+    description: "DashboardService exposes aggregate statistics for the admin dashboard.\r\n Authorization is enforced by the Casbin interceptor (admin bypasses)."
   - name: zerx.v1.DictService
     description: DictService manages lookup dictionaries. GetDictByType is self-serve.
   - name: zerx.v1.FileService
-    description: |-
-      FileService lists and deletes uploaded files. Uploading itself is a plain
-       multipart HTTP endpoint at /api/upload (not a connectRPC method).
+    description: "FileService lists and deletes uploaded files. Uploading itself is a plain\r\n multipart HTTP endpoint at /api/upload (not a connectRPC method)."
   - name: zerx.v1.JobService
-    description: |-
-      JobService manages cron-scheduled jobs. Authorization is enforced by the
-       Casbin interceptor (admin bypasses); handlers carry no role checks.
+    description: "JobService manages cron-scheduled jobs. Authorization is enforced by the\r\n Casbin interceptor (admin bypasses); handlers carry no role checks."
   - name: zerx.v1.LogService
-    description: |-
-      LogService exposes operation, error (operation rows with non-ok status), and
-       login logs.
+    description: "LogService exposes operation, error (operation rows with non-ok status), and\r\n login logs."
   - name: zerx.v1.MenuService
-    description: |-
-      MenuService manages the navigation tree and button permissions. GetUserMenus
-       and GetUserButtons are self-serve; the rest are Casbin-gated.
+    description: "MenuService manages the navigation tree and button permissions. GetUserMenus\r\n and GetUserButtons are self-serve; the rest are Casbin-gated."
   - name: zerx.v1.SysParamService
     description: SysParamService manages runtime system parameters.
   - name: zerx.v1.PluginService
-    description: |-
-      PluginService exposes the compiled-in plugin registry and runtime enable/
-       disable state. Compile-time plugins cannot be installed/uninstalled at
-       runtime (that needs a rebuild); enable/disable is a runtime gate that hides a
-       plugin's menus, denies its procedures, and skips its jobs. Admin-only.
+    description: "PluginService exposes the compiled-in plugin registry and runtime enable/\r\n disable state. Compile-time plugins cannot be installed/uninstalled at\r\n runtime (that needs a rebuild); enable/disable is a runtime gate that hides a\r\n plugin's menus, denies its procedures, and skips its jobs. Admin-only."
   - name: zerx.v1.RoleService
-    description: |-
-      RoleService manages RBAC roles and their permission assignments. Authorization
-       is enforced by the Casbin interceptor (admin bypasses).
+    description: "RoleService manages RBAC roles and their permission assignments. Authorization\r\n is enforced by the Casbin interceptor (admin bypasses)."
   - name: zerx.v1.ShopProductService
-    description: |-
-      ShopProductService is the example plugin's product CRUD. Provided by the
-       "shop" plugin (internal/plugin/impl/shop); guarded by Casbin like any core
-       service.
+    description: "ShopProductService is the example plugin's product CRUD. Provided by the\r\n \"shop\" plugin (internal/plugin/impl/shop); guarded by Casbin like any core\r\n service."
   - name: zerx.v1.ShopCategoryService
-    description: |-
-      ShopCategoryService is the second sub-page of the grouped "shop" plugin,
-       demonstrating a one-group / multiple-sub-page navigation layout.
+    description: "ShopCategoryService is the second sub-page of the grouped \"shop\" plugin,\r\n demonstrating a one-group / multiple-sub-page navigation layout."
   - name: zerx.v1.SiteSettingsService
-    description: |-
-      SiteSettingsService manages site-wide presentation settings (name, logo,
-       access domain), stored as fixed-key system parameters.
+    description: "SiteSettingsService manages site-wide presentation settings (name, logo,\r\n access domain), stored as fixed-key system parameters."

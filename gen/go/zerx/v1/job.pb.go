@@ -939,7 +939,7 @@ const file_zerx_v1_job_proto_rawDesc = "" +
 	"\tDeleteJob\x12\x19.zerx.v1.DeleteJobRequest\x1a\x1a.zerx.v1.DeleteJobResponse\x12B\n" +
 	"\tRunJobNow\x12\x19.zerx.v1.RunJobNowRequest\x1a\x1a.zerx.v1.RunJobNowResponse\x12Z\n" +
 	"\x11ListJobExecutions\x12!.zerx.v1.ListJobExecutionsRequest\x1a\".zerx.v1.ListJobExecutionsResponse\x12K\n" +
-	"\fListHandlers\x12\x1c.zerx.v1.ListHandlersRequest\x1a\x1d.zerx.v1.ListHandlersResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\fListHandlers\x12\x1c.zerx.v1.ListHandlersRequest\x1a\x1d.zerx.v1.ListHandlersResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_job_proto_rawDescOnce sync.Once

@@ -1,4 +1,4 @@
-module github.com/zerx-lab/zerxlabkit
+module github.com/zerx-lab/zkit
 
 go 1.26.4
 

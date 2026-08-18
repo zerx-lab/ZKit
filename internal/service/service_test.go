@@ -9,11 +9,11 @@ import (
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 
-	zerxv1 "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
-	"github.com/zerx-lab/zerxlabkit/internal/auth"
-	casbinpkg "github.com/zerx-lab/zerxlabkit/internal/casbin"
-	"github.com/zerx-lab/zerxlabkit/internal/database"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	zerxv1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
+	"github.com/zerx-lab/zkit/internal/auth"
+	casbinpkg "github.com/zerx-lab/zkit/internal/casbin"
+	"github.com/zerx-lab/zkit/internal/database"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 func newTestDB(t *testing.T) *gorm.DB {

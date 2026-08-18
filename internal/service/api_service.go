@@ -9,11 +9,11 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	zerxv1 "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
-	"github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1/zerxv1connect"
-	"github.com/zerx-lab/zerxlabkit/internal/apispec"
-	"github.com/zerx-lab/zerxlabkit/internal/casbin"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	zerxv1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
+	"github.com/zerx-lab/zkit/gen/go/zerx/v1/zerxv1connect"
+	"github.com/zerx-lab/zkit/internal/apispec"
+	"github.com/zerx-lab/zkit/internal/casbin"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // ApiService implements zerxv1connect.ApiServiceHandler.

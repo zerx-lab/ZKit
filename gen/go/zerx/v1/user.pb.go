@@ -764,7 +764,7 @@ const file_zerx_v1_user_proto_rawDesc = "" +
 	"\n" +
 	"DeleteUser\x12\x1a.zerx.v1.DeleteUserRequest\x1a\x1b.zerx.v1.DeleteUserResponse\x12N\n" +
 	"\rResetPassword\x12\x1d.zerx.v1.ResetPasswordRequest\x1a\x1e.zerx.v1.ResetPasswordResponse\x12T\n" +
-	"\x0fDisableUserTotp\x12\x1f.zerx.v1.DisableUserTotpRequest\x1a .zerx.v1.DisableUserTotpResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\x0fDisableUserTotp\x12\x1f.zerx.v1.DisableUserTotpRequest\x1a .zerx.v1.DisableUserTotpResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_user_proto_rawDescOnce sync.Once

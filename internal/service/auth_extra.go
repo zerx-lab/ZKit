@@ -14,9 +14,9 @@ import (
 	"github.com/pquerna/otp/totp"
 	"gorm.io/gorm"
 
-	zerxv1 "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1"
-	"github.com/zerx-lab/zerxlabkit/internal/auth"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	zerxv1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
+	"github.com/zerx-lab/zkit/internal/auth"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // ChangePassword changes the caller's own password and revokes their sessions.
@@ -161,7 +161,7 @@ func (s *AuthService) SetupTotp(ctx context.Context, _ *connect.Request[zerxv1.S
 	}
 	issuer, _ := s.param.Get(siteNameKey)
 	if issuer == "" {
-		issuer = "zerxLabKit"
+		issuer = "ZKit"
 	}
 	key, err := totp.Generate(totp.GenerateOpts{Issuer: issuer, AccountName: u.Email})
 	if err != nil {

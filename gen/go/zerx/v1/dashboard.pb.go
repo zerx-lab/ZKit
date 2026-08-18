@@ -231,7 +231,7 @@ const file_zerx_v1_dashboard_proto_rawDesc = "" +
 	"\rlogin_failure\x18\a \x03(\v2\x12.zerx.v1.TimePointR\floginFailure\x12;\n" +
 	"\x0foperation_count\x18\b \x03(\v2\x12.zerx.v1.TimePointR\x0eoperationCount2n\n" +
 	"\x10DashboardService\x12Z\n" +
-	"\x11GetDashboardStats\x12!.zerx.v1.GetDashboardStatsRequest\x1a\".zerx.v1.GetDashboardStatsResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\x11GetDashboardStats\x12!.zerx.v1.GetDashboardStatsRequest\x1a\".zerx.v1.GetDashboardStatsResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_dashboard_proto_rawDescOnce sync.Once

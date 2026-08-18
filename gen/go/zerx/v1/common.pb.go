@@ -128,7 +128,7 @@ const file_zerx_v1_common_proto_rawDesc = "" +
 	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"$\n" +
 	"\fPageResponse\x12\x14\n" +
-	"\x05total\x18\x01 \x01(\x03R\x05totalB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\x05total\x18\x01 \x01(\x03R\x05totalB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_common_proto_rawDescOnce sync.Once

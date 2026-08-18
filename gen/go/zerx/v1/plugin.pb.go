@@ -753,7 +753,7 @@ const file_zerx_v1_plugin_proto_rawDesc = "" +
 	"\x10SetPluginEnabled\x12 .zerx.v1.SetPluginEnabledRequest\x1a\x13.zerx.v1.PluginInfo\x12T\n" +
 	"\x0fListPublicPages\x12\x1f.zerx.v1.ListPublicPagesRequest\x1a .zerx.v1.ListPublicPagesResponse\x12N\n" +
 	"\rInstallPlugin\x12\x1d.zerx.v1.InstallPluginRequest\x1a\x1e.zerx.v1.InstallPluginResponse\x12T\n" +
-	"\x0fUninstallPlugin\x12\x1f.zerx.v1.UninstallPluginRequest\x1a .zerx.v1.UninstallPluginResponseB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\x0fUninstallPlugin\x12\x1f.zerx.v1.UninstallPluginRequest\x1a .zerx.v1.UninstallPluginResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_plugin_proto_rawDescOnce sync.Once

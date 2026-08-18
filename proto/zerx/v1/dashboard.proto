@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package zerx.v1;
 
-option go_package = "github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1";
+option go_package = "github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1";
 
 // DashboardService exposes aggregate statistics for the admin dashboard.
 // Authorization is enforced by the Casbin interceptor (admin bypasses).

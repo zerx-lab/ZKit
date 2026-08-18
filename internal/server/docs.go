@@ -26,7 +26,7 @@ func docsHandler() http.HandlerFunc {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>zerxLabKit API</title>
+    <title>ZKit API</title>
   </head>
   <body>
     <script id="api-reference" data-url="/api/openapi.yaml"></script>

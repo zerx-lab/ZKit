@@ -11,7 +11,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/config"
 )
 
 // Storage saves, deletes, and reads blobs by key.

@@ -9,10 +9,10 @@ import (
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/config"
-	"github.com/zerx-lab/zerxlabkit/internal/database"
-	"github.com/zerx-lab/zerxlabkit/internal/plugin"
-	"github.com/zerx-lab/zerxlabkit/internal/plugins"
+	"github.com/zerx-lab/zkit/internal/config"
+	"github.com/zerx-lab/zkit/internal/database"
+	"github.com/zerx-lab/zkit/internal/plugin"
+	"github.com/zerx-lab/zkit/internal/plugins"
 )
 
 func TestAssertServicesRegisteredDetectsMissing(t *testing.T) {

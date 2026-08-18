@@ -194,7 +194,7 @@ const file_zerx_v1_site_proto_rawDesc = "" +
 	"\x06domain\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x02R\x06domain2\xb1\x01\n" +
 	"\x13SiteSettingsService\x12I\n" +
 	"\x0fGetSiteSettings\x12\x1f.zerx.v1.GetSiteSettingsRequest\x1a\x15.zerx.v1.SiteSettings\x12O\n" +
-	"\x12UpdateSiteSettings\x12\".zerx.v1.UpdateSiteSettingsRequest\x1a\x15.zerx.v1.SiteSettingsB6Z4github.com/zerx-lab/zerxlabkit/gen/go/zerx/v1;zerxv1b\x06proto3"
+	"\x12UpdateSiteSettings\x12\".zerx.v1.UpdateSiteSettingsRequest\x1a\x15.zerx.v1.SiteSettingsB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
 var (
 	file_zerx_v1_site_proto_rawDescOnce sync.Once

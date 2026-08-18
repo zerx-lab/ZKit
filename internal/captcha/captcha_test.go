@@ -6,7 +6,7 @@ import (
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/database"
+	"github.com/zerx-lab/zkit/internal/database"
 )
 
 func newTestDB(t *testing.T) *gorm.DB {

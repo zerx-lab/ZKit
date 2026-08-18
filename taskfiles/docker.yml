@@ -4,12 +4,12 @@ tasks:
   build:
     desc: Build the Docker image
     cmds:
-      - docker build --build-arg VERSION={{.VERSION | default "dev"}} -t zerxlabkit:{{.TAG | default "latest"}} .
+      - docker build --build-arg VERSION={{.VERSION | default "dev"}} -t zkit:{{.TAG | default "latest"}} .
 
   run:
     desc: Run the image (JWT_SECRET required)
     cmds:
-      - docker run --rm -p 8080:8080 -e JWT_SECRET={{.JWT_SECRET | default "dev-insecure-change-me"}} zerxlabkit:{{.TAG | default "latest"}}
+      - docker run --rm -p 8080:8080 -e JWT_SECRET={{.JWT_SECRET | default "dev-insecure-change-me"}} zkit:{{.TAG | default "latest"}}
 
   up:
     desc: Start the full stack (app + postgres) via docker compose

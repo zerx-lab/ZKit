@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // Scheduler runs enabled ScheduledJob rows on their cron schedules, recording a

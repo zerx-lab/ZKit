@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"github.com/zerx-lab/zerxlabkit/internal/apispec"
-	"github.com/zerx-lab/zerxlabkit/internal/model"
+	"github.com/zerx-lab/zkit/internal/apispec"
+	"github.com/zerx-lab/zkit/internal/model"
 )
 
 // seedMenu is the declarative source of truth for a menu node and its buttons.
