@@ -60,17 +60,18 @@ task dev:web       # 前端 Vite(:5173 代理到 :8080)
 
 ```bash
 # 1) 仓库内开发:在本仓库根目录跑(task 自动传 --from 仓库根)
-task new -- github.com/acme/foo ../foo [--brand Foo] [--db foo]
+task new -- github.com/acme/foo ../foo --agent omp [--brand Foo] [--db foo]
 
 # 2) 全局安装(无需先 clone):
 go install github.com/zerx-lab/zkit/cmd/zkit@latest
-zkit new github.com/acme/foo ../foo [--brand Foo] [--db foo]
+zkit new github.com/acme/foo ../foo --agent omp [--brand Foo] [--db foo]
 ```
 
 > 提示:`zkit help` 查看命令列表、`zkit --version` 查看版本、`zkit help new` 查看 `new` 用法。
 
 - 位置参数:新 module 路径(必填)、目标目录(可选,缺省 `./<module 末段>`)。
 - `--brand` 缺省=module 末段;`--db` 缺省=经 sanitize 的 module 末段;`--from <dir>` 显式指定模板根(跳过缓存)。
+- `--agent <name>` 选择新项目保留的 AI CLI 资产:`omp` / `pi` / `claude` / `opencode` / `codex`;`none` 全部移除;`all` 全部保留。缺省为 `all`,兼容既有脚本与生成结果。具体 agent 会保留公共 `AGENTS.md` 与 `.agents/skills`;pi / Claude / OpenCode 还会保留其配置依赖的 `tools/arch-guard`。从已裁剪的派生项目继续创建时,若所选 agent 资产已不存在,CLI 会在写入目标目录前明确报错。
 - **模板来源(三态)**:`--from` 指定 → 用该目录;`go run`(仓库内 `(devel)` 态)→ 用当前目录;`go install` 的二进制 → 按其版本把模板克隆/checkout 到 `~/.ZKit/<version>` 再用。**CLI 版本与模板版本同 tag 锁定**(`@v1.2.0` 装的二进制生成时模板也 checkout `v1.2.0`,tag 不可变,几乎免联网);发版前的伪版本则跟远程默认分支最新提交。缓存视为只读镜像,更新时 `reset --hard` 丢弃任何手改;离线无法检查更新时回退缓存并提示。需要本机有 `git`。
 - **proto 包名 `zerx.v1` 保留不改**(内部 RPC 命名空间,终端用户不可见;改它需重跑 codegen)。
 - 生成码(`*.pb.go` / `*_pb.ts`)逐字节拷贝,其内嵌 descriptor 残留的旧元数据在运行期无害,任意一次 `task gen` 即自愈。
@@ -85,7 +86,7 @@ go build ./...            # 离线编译,无需 codegen
 # 完整开发体验(重生成代码、起 dev DB):task sync && task dev
 ```
 
-生成的项目会带上 agent-host 配置(`.pi` / `.claude` / `.opencode`),按需删除即可。
+推荐显式传 `--agent <name>` 只带目标 CLI 所需资产;需要无 AI 配置的纯项目时传 `--agent none`。
 
 ## 📦 构建与部署
 

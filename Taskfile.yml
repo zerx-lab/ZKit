@@ -96,6 +96,6 @@ tasks:
       - task: backend:plugin-pack
 
   new:
-    desc: 'Scaffold a new project from this template (rename module/brand/db). Usage: task new -- github.com/acme/foo ../foo [--brand Foo] [--db foo]'
+    desc: 'Scaffold a new project from this template. Usage: task new -- github.com/acme/foo ../foo [--agent omp|pi|claude|opencode|codex|none|all] [--brand Foo] [--db foo]'
     cmds:
       - go run ./cmd/zkit new {{.CLI_ARGS}} --from {{.ROOT_DIR}}

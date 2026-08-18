@@ -31,10 +31,11 @@ func newRootCmd() *cobra.Command {
 
 func newNewCmd() *cobra.Command {
 	var brand, db, from string
+	agent := agentAll
 	cmd := &cobra.Command{
 		Use:   "new <module> [dir]",
 		Short: "Scaffold a new project from this template (rename module/brand/db)",
-		Long:  "Clone this template into a new directory, rewriting the Go module path, binary/image/volume names, the frontend package name, the brand display name, the default database name, and the localStorage key prefix.\n\n<module> is the new Go module path (e.g. github.com/acme/foo). [dir] defaults to ./<base of module>.\n--brand defaults to the module base name; --db defaults to the sanitized module base name.\n\nTemplate source (auto): --from <dir> uses that dir; `go run` in a checkout uses the cwd; an installed binary checks out the template at its own version into ~/.ZKit/<version>.\nThe proto package name (zerx.v1) is preserved. The new project needs only `go build` (no codegen at creation).",
+		Long:  "Clone this template into a new directory, rewriting the Go module path, binary/image/volume names, the frontend package name, the brand display name, the default database name, and the localStorage key prefix.\n\n<module> is the new Go module path (e.g. github.com/acme/foo). [dir] defaults to ./<base of module>.\n--brand defaults to the module base name; --db defaults to the sanitized module base name.\n--agent selects which AI CLI assets to keep and defaults to all for backward compatibility.\n\nTemplate source (auto): --from <dir> uses that dir; `go run` in a checkout uses the cwd; an installed binary checks out the template at its own version into ~/.ZKit/<version>.\nThe proto package name (zerx.v1) is preserved. The new project needs only `go build` (no codegen at creation).",
 		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true // args validated; from here errors are runtime, not usage
@@ -42,11 +43,12 @@ func newNewCmd() *cobra.Command {
 			if len(args) == 2 {
 				dir = args[1]
 			}
-			return runNew(args[0], dir, brand, db, from)
+			return runNew(args[0], dir, brand, db, from, agent)
 		},
 	}
 	cmd.Flags().StringVar(&brand, "brand", "", "brand display name (default: module base name)")
 	cmd.Flags().StringVar(&db, "db", "", "default database name (default: sanitized module base name)")
+	cmd.Flags().Var(&agent, "agent", "AI CLI assets to keep: all, omp, pi, claude, opencode, codex, or none")
 	cmd.Flags().StringVar(&from, "from", "", "explicit template root directory (skip the version cache)")
 	return cmd
 }

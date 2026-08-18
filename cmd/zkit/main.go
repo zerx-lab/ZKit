@@ -11,11 +11,12 @@
 //
 // Usage:
 //
-//	zkit new <module> [dir] [--brand Name] [--db dbname]
+//	zkit new <module> [dir] [--brand Name] [--db dbname] [--agent <name>]
 //
 // <module> is the new Go module path (e.g. github.com/acme/foo). dir defaults
 // to ./<base of module>. --brand defaults to the new short name; --db
-// defaults to the sanitized new short name.
+// defaults to the sanitized new short name. --agent selects one AI CLI's
+// assets; it defaults to all to preserve the historical scaffold output.
 //
 // Only `go build` is required to compile the generated project; codegen tools
 // (buf, protoc, gorm cli) are not needed at creation time.
@@ -57,7 +58,45 @@ import (
 const (
 	oldBrand = "ZKit"
 	oldDB    = "zerxlab"
+
+	agentAll      agentTarget = "all"
+	agentOMP      agentTarget = "omp"
+	agentPi       agentTarget = "pi"
+	agentClaude   agentTarget = "claude"
+	agentOpenCode agentTarget = "opencode"
+	agentCodex    agentTarget = "codex"
+	agentNone     agentTarget = "none"
 )
+
+const agentTargetValues = "all, omp, pi, claude, opencode, codex, none"
+
+type agentTarget string
+
+func (a agentTarget) valid() bool {
+	switch a {
+	case agentAll, agentOMP, agentPi, agentClaude, agentOpenCode, agentCodex, agentNone:
+		return true
+	default:
+		return false
+	}
+}
+
+func (a *agentTarget) Set(value string) error {
+	target := agentTarget(value)
+	if !target.valid() {
+		return fmt.Errorf("must be one of: %s", agentTargetValues)
+	}
+	*a = target
+	return nil
+}
+
+func (a *agentTarget) String() string {
+	return string(*a)
+}
+
+func (*agentTarget) Type() string {
+	return "agent"
+}
 
 // templateRepoURL is the canonical template repository cloned into the per-version
 // cache when this binary is installed via `go install` (not run from a checkout).
@@ -74,7 +113,10 @@ var localStorageKeys = []string{
 	"zerx.sessionId",
 }
 
-func runNew(newModule, destDir, brand, db, from string) error {
+func runNew(newModule, destDir, brand, db, from string, agent agentTarget) error {
+	if !agent.valid() {
+		return fmt.Errorf("invalid agent target %q; must be one of: %s", agent, agentTargetValues)
+	}
 	if err := module.CheckPath(newModule); err != nil {
 		return fmt.Errorf("invalid module path %q: %w", newModule, err)
 	}
@@ -121,6 +163,10 @@ func runNew(newModule, destDir, brand, db, from string) error {
 	if err != nil {
 		return err
 	}
+	if err := validateAgentAssets(files.paths, agent); err != nil {
+		return err
+	}
+	files.paths = filterAgentAssets(files.paths, agent)
 
 	r := &rewriter{
 		oldModule: oldModule,
@@ -159,7 +205,7 @@ func runNew(newModule, destDir, brand, db, from string) error {
 		return wErr
 	}
 
-	printNextSteps(destDir, brand)
+	printNextSteps(destDir, brand, agent)
 	return nil
 }
 
@@ -344,6 +390,94 @@ func filterDest(srcRoot, destAbs string, files []string) []string {
 		kept = append(kept, rel)
 	}
 	return kept
+}
+
+// validateAgentAssets prevents a project that was already pruned for one CLI
+// from silently claiming it can scaffold another CLI's missing configuration.
+func validateAgentAssets(files []string, target agentTarget) error {
+	if target == agentAll || target == agentNone {
+		return nil
+	}
+
+	required := []string(nil)
+	switch target {
+	case agentOMP:
+		required = []string{".omp"}
+	case agentPi:
+		required = []string{".pi", "tools/arch-guard"}
+	case agentClaude:
+		required = []string{".claude", "tools/arch-guard"}
+	case agentOpenCode:
+		required = []string{".opencode", "tools/arch-guard"}
+	case agentCodex:
+		if hasAgentAsset(files, "AGENTS.md") || hasAgentAsset(files, ".agents") {
+			return nil
+		}
+		required = []string{"AGENTS.md or .agents"}
+	}
+
+	missing := required[:0]
+	for _, root := range required {
+		if !hasAgentAsset(files, root) {
+			missing = append(missing, root)
+		}
+	}
+	if len(missing) > 0 {
+		return fmt.Errorf("template does not contain required %s agent assets: %s", target, strings.Join(missing, ", "))
+	}
+	return nil
+}
+
+func hasAgentAsset(files []string, root string) bool {
+	for _, rel := range files {
+		rel = filepath.ToSlash(rel)
+		if rel == root || strings.HasPrefix(rel, root+"/") {
+			return true
+		}
+	}
+	return false
+}
+
+// filterAgentAssets removes AI CLI files that do not belong to the selected
+// target. Shared AGENTS.md and .agents skills accompany every concrete target;
+// pi, Claude, and OpenCode also need the shared arch-guard implementation.
+func filterAgentAssets(files []string, target agentTarget) []string {
+	if target == agentAll {
+		return files
+	}
+	kept := files[:0]
+	for _, rel := range files {
+		if keepAgentAsset(rel, target) {
+			kept = append(kept, rel)
+		}
+	}
+	return kept
+}
+
+func keepAgentAsset(rel string, target agentTarget) bool {
+	if target == agentAll {
+		return true
+	}
+	rel = filepath.ToSlash(rel)
+	if rel == "AGENTS.md" || rel == ".agents" || strings.HasPrefix(rel, ".agents/") {
+		return target != agentNone
+	}
+	if rel == ".omp" || strings.HasPrefix(rel, ".omp/") {
+		return target == agentOMP
+	}
+	if rel == ".pi" || strings.HasPrefix(rel, ".pi/") {
+		return target == agentPi
+	}
+	if rel == ".claude" || strings.HasPrefix(rel, ".claude/") {
+		return target == agentClaude
+	}
+	if rel == ".opencode" || strings.HasPrefix(rel, ".opencode/") {
+		return target == agentOpenCode
+	}
+	if rel == "tools/arch-guard" || strings.HasPrefix(rel, "tools/arch-guard/") {
+		return target == agentPi || target == agentClaude || target == agentOpenCode
+	}
+	return true
 }
 
 var walkExclude = []string{
@@ -576,8 +710,14 @@ func gitOutput(dir string, args ...string) (string, error) {
 	return string(out), err
 }
 
-func printNextSteps(dir, brand string) {
-	fmt.Printf("Scaffolded %q in %s\n\n", brand, dir)
+func printNextSteps(dir, brand string, agent agentTarget) {
+	fmt.Printf("Scaffolded %q in %s\n", brand, dir)
+	if agent == agentNone {
+		fmt.Println("AI agent assets: none")
+	} else {
+		fmt.Printf("AI agent assets: %s\n", agent)
+	}
+	fmt.Println()
 	fmt.Println("Next steps:")
 	fmt.Printf("  cd %s\n", dir)
 	fmt.Println("  cp .env.example .env   # then set JWT_SECRET")
@@ -586,6 +726,4 @@ func printNextSteps(dir, brand string) {
 	fmt.Println()
 	fmt.Println("For the full dev experience (regenerates code, starts dev DB):")
 	fmt.Println("  task sync && task dev")
-	fmt.Println()
-	fmt.Println("Agent-host configs (.pi/.claude/.opencode) are copied; delete them if unwanted.")
 }
