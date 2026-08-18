@@ -1,6 +1,6 @@
 ---
 name: zerx-frontend
-description: "ZKit 前端开发规约(React 19 + TanStack + connect-query + Zod4 + Tailwind v4)。当新增/修改路由页、CRUD 列表/表单、调用 connect-query hooks、做缓存失效、i18n、主题时使用。Keywords: React, TanStack Router, react-query, useQuery, useMutation, connect-query, createConnectQueryKey, invalidateQueries, react-form, Zod, Tailwind v4, bigint, uint64, table v8, i18n, 主题, theme, 语义 token, Can, permissions, gcTime, placeholderData, 前端, frontend"
+description: "ZKit 前端开发规约(React 19 + TanStack + connect-query + Zod4 + Tailwind v4)。当新增/修改路由页、CRUD 列表/表单、调用 connect-query hooks、做缓存失效、i18n、主题、按钮样式时使用。Keywords: React, TanStack Router, react-query, useQuery, useMutation, connect-query, createConnectQueryKey, invalidateQueries, react-form, Zod, Tailwind v4, bigint, uint64, table v8, i18n, 主题, theme, 语义 token, Can, permissions, gcTime, placeholderData, Button, outline, ghost, 按钮, 透明, 按钮背景, 前端, frontend, bun, pnpm"
 ---
 # ZKit 前端开发规约
 
@@ -30,6 +30,7 @@ description: "ZKit 前端开发规约(React 19 + TanStack + connect-query + Zod4
 | `id` 当 number | `uint64`→`bigint`;显示 `String(id)`,列/key 用 `String(info.getValue())` |
 | 用 shadcn `form` / react-hook-form | 表单用 `@tanstack/react-form` |
 | 依赖 `exactOptionalPropertyTypes` | 已**关闭**(与 shadcn/Radix 不兼容);其余严格 flag(`strict`/`noUncheckedIndexedAccess`/`noUnused*`)保留 |
+| `pnpm` / `npm` 装前端依赖 | 包管理器是 bun(`web/packageManager: bun@1.4.0`)。进 `web/` 再 `bun install` / `bun run <script>`(`bun build` 是 bun 自带打包器,不是 vite) |
 
 ## 表格(react-table v8)
 `const columnHelper = createColumnHelper<User>()` → `columnHelper.accessor("col", { header, cell })` / `columnHelper.display({ id, header, cell })` → `useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() })` → `flexRender`。
@@ -46,6 +47,18 @@ description: "ZKit 前端开发规约(React 19 + TanStack + connect-query + Zod4
 - 样式一律用**语义 token**(`bg-background` / `text-foreground` 等,定义于 `web/src/styles.css` 的 `:root`/`.dark`,`@theme inline` 映射),**勿写死颜色**。
 - Toaster 主题由 `__root.tsx` 透传 `useTheme()`。
 
+## 按钮(`web/src/components/ui/button.tsx`)
+页级操作默认不透明白底;`ghost`/`link` 才是显式透明。
+
+| 场景 | variant |
+|---|---|
+| 主操作(新建) | `default`(primary) |
+| 次操作(导出/清理/搜索/分页/取消) | `outline`(`bg-card` 白底,禁 `bg-background`/`bg-transparent`) |
+| 顶栏 icon、表格行内编辑删除 | `ghost`(唯一默认透明变体;须明确要透明才用) |
+| 危险确认 | `destructive` |
+
+禁止在 `Button` 上覆写 `bg-background` / `bg-transparent`(与页面灰底融为一体)。
+
 ## 权限显隐(纯 UX,非安全边界)
 - `<Can code="user:create">…</Can>`(组件 `web/src/components/can.tsx`,props `{ code, children }`)。
 - 判定源 `web/src/lib/permissions.tsx`:`usePermissions().can(code)` = `roles.includes("admin") || codes.has(code)`(`roles: string[]` 多角色;接口 `PermissionContextValue{ roles, can }`;`me` 返 `user.roles`);数据来自 `me` + `getUserButtons` query。
@@ -60,4 +73,4 @@ description: "ZKit 前端开发规约(React 19 + TanStack + connect-query + Zod4
 - 路由:`web/vite.config.ts` 用 `tanstackRouter({ target:"react", autoCodeSplitting:true })` 生成并提交 `src/routeTree.gen.ts`。
 
 ## 源码锚点
-`web/src/routes/_authed/users.tsx`、`web/src/components/can.tsx`、`web/src/lib/{permissions.tsx,i18n.tsx,transport.ts,theme.tsx,query-client.ts,form.ts,auth.ts,menu-icons.ts}`。
+`web/src/routes/_authed/users.tsx`、`web/src/components/ui/button.tsx`、`web/src/components/can.tsx`、`web/src/lib/{permissions.tsx,i18n.tsx,transport.ts,theme.tsx,query-client.ts,form.ts,auth.ts,menu-icons.ts}`。

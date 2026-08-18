@@ -31,6 +31,7 @@
 ## 前端
 - 新增 i18n key 时 en/zh 是否同步;`t(key)` 的 key 是否真实存在于字典。
 - 误用 react-hook-form / shadcn `form` 组件而非 `@tanstack/react-form`;Zod 须用 v4 顶层格式函数(`z.email()`)。
+- 页级功能按钮须不透明白底(`outline`=`bg-card`);`ghost` 仅顶栏 icon / 表格行内。禁止 `Button` 覆写 `bg-transparent`/`bg-background`。
 
 ## 构建
 - 新增依赖必须纯 Go(`CGO_ENABLED=0`),不得引入 cgo 依赖。

@@ -66,5 +66,16 @@
     "globs": ["internal/**/*.go", "cmd/**/*.go"],
     "regex": "import \"C\"",
     "message": "纯 Go / CGO_ENABLED=0:禁止 import \"C\"(cgo),否则破坏全静态二进制与 distroless 镜像、令 build:dist 交叉编译失败。改用纯 Go 实现;新增依赖须无 cgo。"
+  },
+  {
+    "name": "arch-no-transparent-button-bg",
+    "tools": ["write", "edit", "apply_patch"],
+    "globs": [
+      "web/src/routes/**/*.tsx",
+      "web/src/components/**/*.tsx",
+      "web/src/plugin-components/**/*.tsx"
+    ],
+    "regex": "<Button[^>]*(?:bg-transparent|bg-background)",
+    "message": "按钮默认不透明白底:禁止在 Button 上覆写 bg-transparent/bg-background。页级操作用 outline(bg-card);ghost 仅顶栏 icon/表格行内等明确要透明时用。见 skill://zerx-frontend。"
   }
 ]
