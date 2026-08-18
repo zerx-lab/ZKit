@@ -2,7 +2,7 @@ import { ConnectError } from "@connectrpc/connect";
 import { createConnectQueryKey, useMutation, useQuery } from "@connectrpc/connect-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, ShieldCheckIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -268,10 +268,15 @@ function PermissionsDialog({ role }: { role: Role }) {
           {t("rolePage.assign")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{t("rolePage.assignTitle", { name: role.name })}</DialogTitle>
-          <DialogDescription>{t("rolePage.permissions")}</DialogDescription>
+      <DialogContent className="max-h-[85vh] gap-0 overflow-hidden p-0 sm:max-w-[44rem]">
+        <DialogHeader className="border-b px-6 py-5">
+          <div className="flex items-center gap-2.5">
+            <DialogTitle>{t("rolePage.assignTitle")}</DialogTitle>
+            <Badge variant="secondary" className="font-normal">
+              {role.name}
+            </Badge>
+          </div>
+          <DialogDescription>{t("rolePage.permissionsDescription")}</DialogDescription>
         </DialogHeader>
         {open ? <PermissionsForm role={role} onClose={() => setOpen(false)} /> : null}
       </DialogContent>
@@ -301,6 +306,8 @@ function PermissionsForm({ role, onClose }: { role: Role; onClose: () => void })
   const [menuIds, setMenuIds] = useState<Set<bigint>>(new Set());
   const [buttonIds, setButtonIds] = useState<Set<bigint>>(new Set());
   const [procedures, setProcedures] = useState<Set<string>>(new Set());
+  const isAdmin = role.code === "admin";
+  const effectiveProcedureCount = isAdmin ? (apiData?.apis.length ?? 0) : procedures.size;
 
   useEffect(() => {
     if (perms) {
@@ -361,23 +368,52 @@ function PermissionsForm({ role, onClose }: { role: Role; onClose: () => void })
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <Tabs defaultValue="menus">
-        <TabsList>
-          <TabsTrigger value="menus">{t("rolePage.tabMenus")}</TabsTrigger>
-          <TabsTrigger value="apis">{t("rolePage.tabApis")}</TabsTrigger>
-          <TabsTrigger value="buttons">{t("rolePage.tabButtons")}</TabsTrigger>
-        </TabsList>
+    <div className="flex h-[min(68vh,34rem)] min-h-0 flex-col">
+      <Tabs defaultValue="menus" className="min-h-0 flex-1 gap-0">
+        <div className="px-6">
+          <TabsList className="h-12 w-full justify-start gap-8 rounded-none border-b bg-transparent p-0">
+            <TabsTrigger
+              value="menus"
+              className="group relative h-12 flex-none rounded-none border-0 px-0 text-muted-foreground shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:scale-x-0 after:bg-primary after:transition-transform data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:after:scale-x-100"
+            >
+              <span>{t("rolePage.tabMenus")}</span>
+              <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground group-data-[state=active]:bg-primary/10 group-data-[state=active]:text-primary">
+                {menuIds.size}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="apis"
+              className="group relative h-12 flex-none rounded-none border-0 px-0 text-muted-foreground shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:scale-x-0 after:bg-primary after:transition-transform data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:after:scale-x-100"
+            >
+              <span>{t("rolePage.tabApis")}</span>
+              <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground group-data-[state=active]:bg-primary/10 group-data-[state=active]:text-primary">
+                {effectiveProcedureCount}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="buttons"
+              className="group relative h-12 flex-none rounded-none border-0 px-0 text-muted-foreground shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:scale-x-0 after:bg-primary after:transition-transform data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:after:scale-x-100"
+            >
+              <span>{t("rolePage.tabButtons")}</span>
+              <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground group-data-[state=active]:bg-primary/10 group-data-[state=active]:text-primary">
+                {buttonIds.size}
+              </span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="menus" className="max-h-96 overflow-y-auto">
-          <div className="flex flex-col gap-1 py-2">
+        <TabsContent
+          value="menus"
+          className="mx-6 min-h-0 flex-1 overflow-y-scroll py-3 pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/40 [&::-webkit-scrollbar-track]:bg-muted/50 [&::-webkit-scrollbar]:w-2.5"
+        >
+          <div className="flex flex-col gap-0.5 py-1">
             {flatMenus.map(({ menu, depth, isGroup }) => (
               <label
                 key={String(menu.id)}
-                className={`flex items-center gap-2 rounded px-2 py-1 hover:bg-accent ${
-                  isGroup ? "mt-1 first:mt-0" : ""
+                className={`flex h-9 cursor-pointer items-center gap-2 rounded-md px-2 transition-colors hover:bg-accent ${
+                  isGroup ? "mt-2 bg-muted/50 first:mt-0" : ""
                 }`}
-                style={{ paddingLeft: depth * 24 + 8 }}
+                style={{ paddingLeft: depth * 22 + 8 }}
               >
                 <Checkbox
                   checked={menuIds.has(menu.id)}
@@ -385,7 +421,7 @@ function PermissionsForm({ role, onClose }: { role: Role; onClose: () => void })
                 />
                 <span
                   className={
-                    isGroup ? "text-sm font-semibold text-muted-foreground" : "text-sm"
+                    isGroup ? "text-sm font-medium text-foreground" : "text-sm"
                   }
                 >
                   {t(menu.title)}
@@ -395,26 +431,54 @@ function PermissionsForm({ role, onClose }: { role: Role; onClose: () => void })
           </div>
         </TabsContent>
 
-        <TabsContent value="apis" className="max-h-96 overflow-y-auto">
-          <div className="flex flex-col gap-4 py-2">
+        <TabsContent
+          value="apis"
+          className="mx-6 min-h-0 flex-1 overflow-y-scroll py-3 pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/40 [&::-webkit-scrollbar-track]:bg-muted/50 [&::-webkit-scrollbar]:w-2.5"
+        >
+          <div className="flex flex-col gap-5 py-1">
+            {isAdmin ? (
+              <div
+                role="status"
+                className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5 text-sm"
+              >
+                <ShieldCheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
+                <div>
+                  <p className="font-medium">{t("rolePage.adminApiAccessTitle")}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {t("rolePage.adminApiAccessDescription")}
+                  </p>
+                </div>
+              </div>
+            ) : null}
             {[...apisByGroup.entries()].map(([group, groupApis]) => {
-              const allChecked = groupApis.every((a) => procedures.has(a.procedure));
+              const allChecked = isAdmin || groupApis.every((a) => procedures.has(a.procedure));
               return (
                 <div key={group} className="flex flex-col gap-1">
-                  <div className="flex items-center justify-between border-b pb-1">
-                    <span className="text-sm font-semibold">{group}</span>
-                    <label className="flex items-center gap-2 text-xs">
-                      <Checkbox
-                        checked={allChecked}
-                        onCheckedChange={(v) => toggleGroup(group, v === true)}
-                      />
-                      {t("rolePage.selectAllGroup")}
-                    </label>
+                  <div className="flex h-9 items-center justify-between rounded-md bg-muted/50 px-3">
+                    <span className="text-sm font-medium">{group}</span>
+                    {isAdmin ? (
+                      <span className="flex items-center gap-1.5 text-xs font-medium text-primary">
+                        <ShieldCheckIcon className="size-3.5" />
+                        {t("rolePage.allApisAccessible")}
+                      </span>
+                    ) : (
+                      <label className="flex items-center gap-2 text-xs">
+                        <Checkbox
+                          checked={allChecked}
+                          onCheckedChange={(v) => toggleGroup(group, v === true)}
+                        />
+                        {t("rolePage.selectAllGroup")}
+                      </label>
+                    )}
                   </div>
                   {groupApis.map((a) => (
-                    <label key={String(a.id)} className="flex items-center gap-2 rounded px-2 py-1 hover:bg-accent">
+                    <label
+                      key={String(a.id)}
+                      className="flex h-9 cursor-pointer items-center gap-2 rounded-md px-3 transition-colors hover:bg-accent"
+                    >
                       <Checkbox
-                        checked={procedures.has(a.procedure)}
+                        checked={isAdmin || procedures.has(a.procedure)}
+                        disabled={isAdmin}
                         onCheckedChange={() => toggleProc(a.procedure)}
                       />
                       <span className="font-mono text-xs">{a.method}</span>
@@ -427,13 +491,18 @@ function PermissionsForm({ role, onClose }: { role: Role; onClose: () => void })
           </div>
         </TabsContent>
 
-        <TabsContent value="buttons" className="max-h-96 overflow-y-auto">
-          <div className="flex flex-col gap-4 py-2">
+        <TabsContent
+          value="buttons"
+          className="mx-6 min-h-0 flex-1 overflow-y-scroll py-3 pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/40 [&::-webkit-scrollbar-track]:bg-muted/50 [&::-webkit-scrollbar]:w-2.5"
+        >
+          <div className="flex flex-col gap-5 py-1">
             {flatMenus
               .filter(({ menu }) => menu.buttons.length > 0)
               .map(({ menu }) => (
                 <div key={String(menu.id)} className="flex flex-col gap-1">
-                  <span className="border-b pb-1 text-sm font-semibold">{t(menu.title)}</span>
+                  <span className="flex h-9 items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
+                    {t(menu.title)}
+                  </span>
                   {menu.buttons.map((b) => (
                     <label key={String(b.id)} className="flex items-center gap-2 rounded px-2 py-1 hover:bg-accent">
                       <Checkbox
@@ -450,7 +519,10 @@ function PermissionsForm({ role, onClose }: { role: Role; onClose: () => void })
         </TabsContent>
       </Tabs>
 
-      <DialogFooter>
+      <DialogFooter className="border-t px-6 py-4">
+        <Button variant="outline" onClick={onClose} disabled={setMut.isPending}>
+          {t("common.cancel")}
+        </Button>
         <Button onClick={() => void save()} disabled={setMut.isPending}>
           {t("common.save")}
         </Button>

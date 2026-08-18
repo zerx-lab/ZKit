@@ -150,7 +150,7 @@ func (*Plugin) SeedMenus() []plugin.MenuNode {
 			Component: "{{.Name}}/{{.Pascal}}",
 			Title:     "plg.{{.Name}}.title",
 			Icon:      "CircleIcon",
-			Sort:      50,
+			Sort:      2,
 			Buttons: []plugin.MenuButton{
 				{Code: "plg_{{.Name}}_{{.Name}}:create", Name: "{{.Pascal}} create"},
 				{Code: "plg_{{.Name}}_{{.Name}}:update", Name: "{{.Pascal}} update"},

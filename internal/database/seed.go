@@ -41,7 +41,7 @@ var seedMenuTree = []seedMenuNode{
 	{node: seedMenu{menu: model.Menu{Path: "/dashboard", Name: "dashboard", Title: "nav.dashboard", Icon: "LayoutDashboardIcon", Sort: 1}, userVisible: true}},
 	{node: seedMenu{menu: model.Menu{Path: "/profile", Name: "profile", Title: "nav.profile", Icon: "UserIcon", Sort: 99, Hidden: true}, userVisible: true}},
 	{
-		node: seedMenu{menu: model.Menu{Path: "", Name: "system", Title: "nav.system", Icon: "SettingsIcon", Sort: 2}},
+		node: seedMenu{menu: model.Menu{Path: "", Name: "system", Title: "nav.system", Icon: "SettingsIcon", Sort: 10}},
 		children: []seedMenuNode{
 			{node: seedMenu{menu: model.Menu{Path: "/users", Name: "users", Title: "nav.users", Icon: "UsersIcon", Sort: 1}, buttons: append(crudButtons("user", "用户"), model.MenuButton{Code: "user:reset", Name: "用户重置密码"}, model.MenuButton{Code: "user:export", Name: "用户导出"}, model.MenuButton{Code: "user:import", Name: "用户导入"})}},
 			{node: seedMenu{menu: model.Menu{Path: "/roles", Name: "roles", Title: "nav.roles", Icon: "ShieldIcon", Sort: 2}, buttons: crudButtons("role", "角色")}},
@@ -57,7 +57,7 @@ var seedMenuTree = []seedMenuNode{
 		},
 	},
 	{
-		node: seedMenu{menu: model.Menu{Path: "", Name: "audit", Title: "nav.audit", Icon: "ScrollTextIcon", Sort: 3}},
+		node: seedMenu{menu: model.Menu{Path: "", Name: "audit", Title: "nav.audit", Icon: "ScrollTextIcon", Sort: 20}},
 		children: []seedMenuNode{
 			{node: seedMenu{menu: model.Menu{Path: "/operation-logs", Name: "operation-logs", Title: "nav.operationLogs", Icon: "ScrollTextIcon", Sort: 1}, buttons: []model.MenuButton{{Code: "operation-log:export", Name: "操作日志导出"}}}},
 			{node: seedMenu{menu: model.Menu{Path: "/login-logs", Name: "login-logs", Title: "nav.loginLogs", Icon: "LogInIcon", Sort: 2}, buttons: []model.MenuButton{{Code: "login-log:export", Name: "登录日志导出"}}}},
@@ -188,15 +188,25 @@ func Seed(db *gorm.DB, extraMenus []MenuSeed) error {
 		adminButtonIDs []uint64
 	)
 
+	dashboardSort := 1
 	var insertTree func(nodes []seedMenuNode, parentID uint64) error
 	insertTree = func(nodes []seedMenuNode, parentID uint64) error {
 		for i := range nodes {
 			m := nodes[i].node.menu
 			m.ParentID = parentID
+			if parentID == 0 && isPluginMenuName(m.Name) {
+				// Plugin features sit under the dashboard, above system/audit.
+				// SeedMenus.Sort is ignored for new top-level plugin rows so a
+				// leftover 50 does not dump them at the bottom of the sidebar.
+				m.Sort = dashboardSort + 1
+			}
 			if err := gorm.G[model.Menu](db).Create(ctx, &m); err != nil {
 				return fmt.Errorf("seed menu %q: %w", m.Name, err)
 			}
 			adminMenuIDs = append(adminMenuIDs, m.ID)
+			if m.Name == "dashboard" {
+				dashboardSort = m.Sort
+			}
 			if nodes[i].node.userVisible {
 				userMenuIDs = append(userMenuIDs, m.ID)
 			}
@@ -267,8 +277,12 @@ func syncMenus(db *gorm.DB, tree []seedMenuNode) error {
 		return fmt.Errorf("sync menus: load menus: %w", err)
 	}
 	byName := make(map[string]uint64, len(existing))
+	dashboardSort := 1
 	for i := range existing {
 		byName[existing[i].Name] = existing[i].ID
+		if existing[i].Name == "dashboard" {
+			dashboardSort = existing[i].Sort
+		}
 	}
 
 	existingButtons, err := gorm.G[model.MenuButton](db).Find(ctx)
@@ -289,6 +303,8 @@ func syncMenus(db *gorm.DB, tree []seedMenuNode) error {
 				m := seed.menu
 				if parentName != "" {
 					m.ParentID = byName[parentName] // parent walked first; always present
+				} else if isPluginMenuName(m.Name) {
+					m.Sort = dashboardSort + 1
 				}
 				if err := gorm.G[model.Menu](db).Create(ctx, &m); err != nil {
 					return fmt.Errorf("sync menu %q: %w", m.Name, err)
@@ -305,11 +321,11 @@ func syncMenus(db *gorm.DB, tree []seedMenuNode) error {
 					}
 				}
 			} else if isPluginMenuName(seed.menu.Name) {
-				// Plugin menus are reconciled (not insert-only): their layout fields are
-				// owned by the plugin's SeedMenus declaration, so a changed path/
-				// component/parent/title/icon/sort/hidden (e.g. a flat page becoming a
-				// grouped sub-page across versions) is synced rather than left stale.
-				// Core menus stay insert-only above so admin edits are preserved.
+				// Plugin menus are reconciled (not insert-only): path/component/
+				// parent/title/icon/hidden stay owned by SeedMenus so a flat page
+				// becoming a grouped sub-page across versions is not left stale.
+				// Sort is NOT overwritten — admin drag-reorder / UpdateMenu persist
+				// across restarts. Core menus stay insert-only above.
 				var parentID uint64
 				if parentName != "" {
 					parentID = byName[parentName]
@@ -320,7 +336,6 @@ func syncMenus(db *gorm.DB, tree []seedMenuNode) error {
 					"component": seed.menu.Component,
 					"title":     seed.menu.Title,
 					"icon":      seed.menu.Icon,
-					"sort":      seed.menu.Sort,
 					"hidden":    seed.menu.Hidden,
 				}).Error; err != nil {
 					return fmt.Errorf("sync menu reconcile %q: %w", seed.menu.Name, err)

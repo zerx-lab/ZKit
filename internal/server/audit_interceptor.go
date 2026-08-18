@@ -18,7 +18,7 @@ import (
 )
 
 // mutatingPrefixes are the procedure method-name prefixes considered mutating.
-var mutatingPrefixes = []string{"Create", "Update", "Delete", "Set", "Sync", "Clean", "Revoke", "Logout"}
+var mutatingPrefixes = []string{"Create", "Update", "Delete", "Set", "Sync", "Clean", "Revoke", "Logout", "Reorder"}
 
 // NewOperationLogInterceptor records an OperationLog for every mutating or
 // failed RPC, and recovers handler panics (replacing connect.WithRecover so the

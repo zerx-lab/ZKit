@@ -183,6 +183,104 @@ func TestSyncMenusReconcilesPluginMenuLayout(t *testing.T) {
 	if page.Path != "/p/demo/page" || page.Component != "demo/Page" || page.ParentID != group.ID {
 		t.Fatalf("plugin menu not reconciled: path=%q component=%q parent=%d (want /p/demo/page, demo/Page, %d)", page.Path, page.Component, page.ParentID, group.ID)
 	}
+	// Sort is admin-owned after insert: the stale page's 9 must survive seed Sort 1.
+	if page.Sort != 9 {
+		t.Fatalf("plugin page Sort = %d, want 9 (sync must not overwrite sort)", page.Sort)
+	}
+}
+
+func TestSeedPlacesPluginMenuAfterDashboard(t *testing.T) {
+	dsn := "file:" + t.Name() + "?mode=memory&cache=shared"
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	if err := Migrate(db, nil); err != nil {
+		t.Fatalf("migrate: %v", err)
+	}
+	extra := []MenuSeed{{
+		Name: "plg_demo", Path: "", Title: "plg.demo", Icon: "CircleIcon", Sort: 50,
+	}}
+	if err := Seed(db, extra); err != nil {
+		t.Fatalf("seed: %v", err)
+	}
+
+	var menus []model.Menu
+	if err := db.Where("parent_id = ?", 0).Order("sort ASC, id ASC").Find(&menus).Error; err != nil {
+		t.Fatalf("list top menus: %v", err)
+	}
+	var visible []string
+	for i := range menus {
+		if !menus[i].Hidden {
+			visible = append(visible, menus[i].Name)
+		}
+	}
+	want := []string{"dashboard", "plg_demo", "system", "audit"}
+	if len(visible) != len(want) {
+		t.Fatalf("visible top menus = %v, want %v", visible, want)
+	}
+	for i := range want {
+		if visible[i] != want[i] {
+			t.Fatalf("visible top menus = %v, want %v", visible, want)
+		}
+	}
+}
+
+func TestSyncMenusInsertsPluginAfterDashboard(t *testing.T) {
+	db := newSeededDB(t)
+
+	tree := append([]seedMenuNode{}, seedMenuTree...)
+	tree = append(tree, seedMenuNode{
+		node: seedMenu{menu: model.Menu{Name: "plg_demo", Path: "", Title: "plg.demo", Sort: 50}},
+	})
+	if err := syncMenus(db, tree); err != nil {
+		t.Fatalf("syncMenus: %v", err)
+	}
+
+	var dash, plugin, system model.Menu
+	if err := db.Where("name = ?", "dashboard").First(&dash).Error; err != nil {
+		t.Fatalf("dashboard: %v", err)
+	}
+	if err := db.Where("name = ?", "plg_demo").First(&plugin).Error; err != nil {
+		t.Fatalf("plugin: %v", err)
+	}
+	if err := db.Where("name = ?", "system").First(&system).Error; err != nil {
+		t.Fatalf("system: %v", err)
+	}
+	if plugin.Sort != dash.Sort+1 {
+		t.Fatalf("plugin Sort = %d, want dashboard+1 (%d)", plugin.Sort, dash.Sort+1)
+	}
+	if plugin.Sort >= system.Sort {
+		t.Fatalf("plugin Sort %d should be < system Sort %d", plugin.Sort, system.Sort)
+	}
+}
+
+func TestSyncMenusPreservesPluginSort(t *testing.T) {
+	db := newSeededDB(t)
+
+	existing := model.Menu{Name: "plg_demo", Path: "", Title: "plg.demo", Sort: 7}
+	if err := db.Create(&existing).Error; err != nil {
+		t.Fatalf("create plugin menu: %v", err)
+	}
+
+	tree := append([]seedMenuNode{}, seedMenuTree...)
+	tree = append(tree, seedMenuNode{
+		node: seedMenu{menu: model.Menu{Name: "plg_demo", Path: "", Title: "plg.demo.updated", Sort: 50}},
+	})
+	if err := syncMenus(db, tree); err != nil {
+		t.Fatalf("syncMenus: %v", err)
+	}
+
+	var got model.Menu
+	if err := db.Where("name = ?", "plg_demo").First(&got).Error; err != nil {
+		t.Fatalf("load plugin menu: %v", err)
+	}
+	if got.Sort != 7 {
+		t.Fatalf("plugin Sort = %d, want 7 (admin order must persist)", got.Sort)
+	}
+	if got.Title != "plg.demo.updated" {
+		t.Fatalf("plugin Title = %q, want plg.demo.updated (layout still syncs)", got.Title)
+	}
 }
 
 func TestSyncMenusPreservesExistingEdits(t *testing.T) {

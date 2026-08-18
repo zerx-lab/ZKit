@@ -15,6 +15,7 @@ service MenuService {
   rpc DeleteMenu(DeleteMenuRequest) returns (DeleteMenuResponse);
   rpc CreateMenuButton(CreateMenuButtonRequest) returns (MenuButton);
   rpc DeleteMenuButton(DeleteMenuButtonRequest) returns (DeleteMenuButtonResponse);
+  rpc ReorderMenus(ReorderMenusRequest) returns (ReorderMenusResponse);
   rpc GetUserMenus(GetUserMenusRequest) returns (GetUserMenusResponse);
   rpc GetUserButtons(GetUserButtonsRequest) returns (GetUserButtonsResponse);
 }
@@ -87,6 +88,13 @@ message DeleteMenuButtonRequest {
 }
 
 message DeleteMenuButtonResponse {}
+
+message ReorderMenusRequest {
+  uint64 parent_id = 1;
+  repeated uint64 ids = 2 [(buf.validate.field).repeated.min_items = 1];
+}
+
+message ReorderMenusResponse {}
 
 message GetUserMenusRequest {}
 

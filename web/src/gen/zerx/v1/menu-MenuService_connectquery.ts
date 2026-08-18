@@ -35,6 +35,11 @@ export const createMenuButton = MenuService.method.createMenuButton;
 export const deleteMenuButton = MenuService.method.deleteMenuButton;
 
 /**
+ * @generated from rpc zerx.v1.MenuService.ReorderMenus
+ */
+export const reorderMenus = MenuService.method.reorderMenus;
+
+/**
  * @generated from rpc zerx.v1.MenuService.GetUserMenus
  */
 export const getUserMenus = MenuService.method.getUserMenus;

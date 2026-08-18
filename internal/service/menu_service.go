@@ -190,6 +190,56 @@ func (s *MenuService) DeleteMenuButton(ctx context.Context, req *connect.Request
 	return connect.NewResponse(&zerxv1.DeleteMenuButtonResponse{}), nil
 }
 
+func (s *MenuService) ReorderMenus(ctx context.Context, req *connect.Request[zerxv1.ReorderMenusRequest]) (*connect.Response[zerxv1.ReorderMenusResponse], error) {
+	parentID := req.Msg.GetParentId()
+	ids := req.Msg.GetIds()
+	if len(ids) == 0 {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("ids required"))
+	}
+
+	siblings, err := gorm.G[model.Menu](s.db).Where("parent_id = ?", parentID).Order("sort ASC, id ASC").Find(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	byID := make(map[uint64]model.Menu, len(siblings))
+	for i := range siblings {
+		byID[siblings[i].ID] = siblings[i]
+	}
+
+	seen := make(map[uint64]bool, len(ids))
+	order := make([]uint64, 0, len(siblings))
+	for _, id := range ids {
+		if _, ok := byID[id]; !ok {
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("menu is not a sibling of the given parent"))
+		}
+		if seen[id] {
+			continue
+		}
+		seen[id] = true
+		order = append(order, id)
+	}
+	for i := range siblings {
+		if !seen[siblings[i].ID] {
+			order = append(order, siblings[i].ID)
+		}
+	}
+
+	txErr := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for i, id := range order {
+			if err := tx.Model(&model.Menu{}).Where("id = ?", id).Update("sort", i+1).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if txErr != nil {
+		return nil, connect.NewError(connect.CodeInternal, txErr)
+	}
+
+	audit.Record(ctx, auditJSON(map[string]any{"after": map[string]any{"parent_id": parentID, "ids": order}}))
+	return connect.NewResponse(&zerxv1.ReorderMenusResponse{}), nil
+}
+
 func (s *MenuService) GetUserMenus(ctx context.Context, _ *connect.Request[zerxv1.GetUserMenusRequest]) (*connect.Response[zerxv1.GetUserMenusResponse], error) {
 	claims, ok := auth.ClaimsFromContext(ctx)
 	if !ok {

@@ -71,7 +71,7 @@ func (*Plugin) SeedMenus() []plugin.MenuNode {
 			Path:  "", // group heading
 			Title: "plg.shop.group",
 			Icon:  "ShoppingBagIcon",
-			Sort:  50,
+			Sort:  2,
 			Children: []plugin.MenuNode{
 				{
 					Name:      "plg_shop_products",

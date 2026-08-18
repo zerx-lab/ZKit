@@ -1727,6 +1727,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/zerx.v1.ListMenusResponse'
+  /zerx.v1.MenuService/ReorderMenus:
+    post:
+      tags:
+        - zerx.v1.MenuService
+      summary: ReorderMenus
+      operationId: zerx.v1.MenuService.ReorderMenus
+      parameters:
+        - name: Connect-Protocol-Version
+          in: header
+          required: true
+          schema:
+            $ref: '#/components/schemas/connect-protocol-version'
+        - name: Connect-Timeout-Ms
+          in: header
+          schema:
+            $ref: '#/components/schemas/connect-timeout-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/zerx.v1.ReorderMenusRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/zerx.v1.ReorderMenusResponse'
   /zerx.v1.MenuService/UpdateMenu:
     post:
       tags:
@@ -4781,6 +4816,30 @@ components:
           type: string
           title: session_id
       title: RegisterResponse
+      additionalProperties: false
+    zerx.v1.ReorderMenusRequest:
+      type: object
+      properties:
+        parentId:
+          type:
+            - integer
+            - string
+          title: parent_id
+          format: int64
+        ids:
+          type: array
+          items:
+            type:
+              - integer
+              - string
+            format: int64
+          title: ids
+          minItems: 1
+      title: ReorderMenusRequest
+      additionalProperties: false
+    zerx.v1.ReorderMenusResponse:
+      type: object
+      title: ReorderMenusResponse
       additionalProperties: false
     zerx.v1.RequestPasswordResetRequest:
       type: object

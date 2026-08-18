@@ -41,7 +41,7 @@ description: "ZKit 认证与安全机制(JWT/会话/刷新/验证码/防爆破/�
 - 验证码内存 store(进程内)。
 
 ## 审计 / 错误日志(`internal/server/audit_interceptor.go`)
-- `OperationLog` 的**唯一写入者**:记录所有写操作与失败请求,**永不记录 body**。
+- `OperationLog` 的**唯一写入者**:记录所有写操作与失败请求,**永不记录 body**。写操作判定=`mutatingPrefixes`:`Create/Update/Delete/Set/Sync/Clean/Revoke/Logout/Reorder`。
 - 兼 panic 兜底(具名返回 + recover,替代 `connect.WithRecover`,把 panic 与栈写入同一行)。
 - handler 可经 `audit.Record(ctx, detail)`(或 `audit.WithHolder` 取 holder)写 `OperationLog.Detail` 字段;拦截器落库时读 `holder.Detail`。
 - 错误日志 = OperationLog 中 `status != "ok"` 的行,**无独立表**;LoginLog / ListOperationLogs / ListErrorLogs 支持 status/method/start_at/end_at 过滤。

@@ -11,7 +11,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file zerx/v1/menu.proto.
  */
 export const file_zerx_v1_menu: GenFile = /*@__PURE__*/
-  fileDesc("ChJ6ZXJ4L3YxL21lbnUucHJvdG8SB3plcngudjEi6gEKBE1lbnUSCgoCaWQYASABKAQSEQoJcGFyZW50X2lkGAIgASgEEgwKBHBhdGgYAyABKAkSDAoEbmFtZRgEIAEoCRIRCgljb21wb25lbnQYBSABKAkSDQoFdGl0bGUYBiABKAkSDAoEaWNvbhgHIAEoCRIMCgRzb3J0GAggASgFEg4KBmhpZGRlbhgJIAEoCBIkCgdidXR0b25zGAogAygLMhMuemVyeC52MS5NZW51QnV0dG9uEh8KCGNoaWxkcmVuGAsgAygLMg0uemVyeC52MS5NZW51EhIKCmNyZWF0ZWRfYXQYDCABKAkiRQoKTWVudUJ1dHRvbhIKCgJpZBgBIAEoBBIPCgdtZW51X2lkGAIgASgEEgwKBGNvZGUYAyABKAkSDAoEbmFtZRgEIAEoCSISChBMaXN0TWVudXNSZXF1ZXN0IjEKEUxpc3RNZW51c1Jlc3BvbnNlEhwKBW1lbnVzGAEgAygLMg0uemVyeC52MS5NZW51IqIBChFDcmVhdGVNZW51UmVxdWVzdBIRCglwYXJlbnRfaWQYASABKAQSDAoEcGF0aBgCIAEoCRIVCgRuYW1lGAMgASgJQge6SARyAhABEhEKCWNvbXBvbmVudBgEIAEoCRIWCgV0aXRsZRgFIAEoCUIHukgEcgIQARIMCgRpY29uGAYgASgJEgwKBHNvcnQYByABKAUSDgoGaGlkZGVuGAggASgIIrcBChFVcGRhdGVNZW51UmVxdWVzdBITCgJpZBgBIAEoBEIHukgEMgIgABIRCglwYXJlbnRfaWQYAiABKAQSDAoEcGF0aBgDIAEoCRIVCgRuYW1lGAQgASgJQge6SARyAhABEhEKCWNvbXBvbmVudBgFIAEoCRIWCgV0aXRsZRgGIAEoCUIHukgEcgIQARIMCgRpY29uGAcgASgJEgwKBHNvcnQYCCABKAUSDgoGaGlkZGVuGAkgASgIIigKEURlbGV0ZU1lbnVSZXF1ZXN0EhMKAmlkGAEgASgEQge6SAQyAiAAIhQKEkRlbGV0ZU1lbnVSZXNwb25zZSJhChdDcmVhdGVNZW51QnV0dG9uUmVxdWVzdBIYCgdtZW51X2lkGAEgASgEQge6SAQyAiAAEhUKBGNvZGUYAiABKAlCB7pIBHICEAESFQoEbmFtZRgDIAEoCUIHukgEcgIQASIuChdEZWxldGVNZW51QnV0dG9uUmVxdWVzdBITCgJpZBgBIAEoBEIHukgEMgIgACIaChhEZWxldGVNZW51QnV0dG9uUmVzcG9uc2UiFQoTR2V0VXNlck1lbnVzUmVxdWVzdCI0ChRHZXRVc2VyTWVudXNSZXNwb25zZRIcCgVtZW51cxgBIAMoCzINLnplcngudjEuTWVudSIXChVHZXRVc2VyQnV0dG9uc1JlcXVlc3QiJwoWR2V0VXNlckJ1dHRvbnNSZXNwb25zZRINCgVjb2RlcxgBIAMoCTLOBAoLTWVudVNlcnZpY2USQgoJTGlzdE1lbnVzEhkuemVyeC52MS5MaXN0TWVudXNSZXF1ZXN0GhouemVyeC52MS5MaXN0TWVudXNSZXNwb25zZRI3CgpDcmVhdGVNZW51EhouemVyeC52MS5DcmVhdGVNZW51UmVxdWVzdBoNLnplcngudjEuTWVudRI3CgpVcGRhdGVNZW51EhouemVyeC52MS5VcGRhdGVNZW51UmVxdWVzdBoNLnplcngudjEuTWVudRJFCgpEZWxldGVNZW51EhouemVyeC52MS5EZWxldGVNZW51UmVxdWVzdBobLnplcngudjEuRGVsZXRlTWVudVJlc3BvbnNlEkkKEENyZWF0ZU1lbnVCdXR0b24SIC56ZXJ4LnYxLkNyZWF0ZU1lbnVCdXR0b25SZXF1ZXN0GhMuemVyeC52MS5NZW51QnV0dG9uElcKEERlbGV0ZU1lbnVCdXR0b24SIC56ZXJ4LnYxLkRlbGV0ZU1lbnVCdXR0b25SZXF1ZXN0GiEuemVyeC52MS5EZWxldGVNZW51QnV0dG9uUmVzcG9uc2USSwoMR2V0VXNlck1lbnVzEhwuemVyeC52MS5HZXRVc2VyTWVudXNSZXF1ZXN0Gh0uemVyeC52MS5HZXRVc2VyTWVudXNSZXNwb25zZRJRCg5HZXRVc2VyQnV0dG9ucxIeLnplcngudjEuR2V0VXNlckJ1dHRvbnNSZXF1ZXN0Gh8uemVyeC52MS5HZXRVc2VyQnV0dG9uc1Jlc3BvbnNlQjBaLmdpdGh1Yi5jb20vemVyeC1sYWIvemtpdC9nZW4vZ28vemVyeC92MTt6ZXJ4djFiBnByb3RvMw", [file_buf_validate_validate]);
+  fileDesc("ChJ6ZXJ4L3YxL21lbnUucHJvdG8SB3plcngudjEi6gEKBE1lbnUSCgoCaWQYASABKAQSEQoJcGFyZW50X2lkGAIgASgEEgwKBHBhdGgYAyABKAkSDAoEbmFtZRgEIAEoCRIRCgljb21wb25lbnQYBSABKAkSDQoFdGl0bGUYBiABKAkSDAoEaWNvbhgHIAEoCRIMCgRzb3J0GAggASgFEg4KBmhpZGRlbhgJIAEoCBIkCgdidXR0b25zGAogAygLMhMuemVyeC52MS5NZW51QnV0dG9uEh8KCGNoaWxkcmVuGAsgAygLMg0uemVyeC52MS5NZW51EhIKCmNyZWF0ZWRfYXQYDCABKAkiRQoKTWVudUJ1dHRvbhIKCgJpZBgBIAEoBBIPCgdtZW51X2lkGAIgASgEEgwKBGNvZGUYAyABKAkSDAoEbmFtZRgEIAEoCSISChBMaXN0TWVudXNSZXF1ZXN0IjEKEUxpc3RNZW51c1Jlc3BvbnNlEhwKBW1lbnVzGAEgAygLMg0uemVyeC52MS5NZW51IqIBChFDcmVhdGVNZW51UmVxdWVzdBIRCglwYXJlbnRfaWQYASABKAQSDAoEcGF0aBgCIAEoCRIVCgRuYW1lGAMgASgJQge6SARyAhABEhEKCWNvbXBvbmVudBgEIAEoCRIWCgV0aXRsZRgFIAEoCUIHukgEcgIQARIMCgRpY29uGAYgASgJEgwKBHNvcnQYByABKAUSDgoGaGlkZGVuGAggASgIIrcBChFVcGRhdGVNZW51UmVxdWVzdBITCgJpZBgBIAEoBEIHukgEMgIgABIRCglwYXJlbnRfaWQYAiABKAQSDAoEcGF0aBgDIAEoCRIVCgRuYW1lGAQgASgJQge6SARyAhABEhEKCWNvbXBvbmVudBgFIAEoCRIWCgV0aXRsZRgGIAEoCUIHukgEcgIQARIMCgRpY29uGAcgASgJEgwKBHNvcnQYCCABKAUSDgoGaGlkZGVuGAkgASgIIigKEURlbGV0ZU1lbnVSZXF1ZXN0EhMKAmlkGAEgASgEQge6SAQyAiAAIhQKEkRlbGV0ZU1lbnVSZXNwb25zZSJhChdDcmVhdGVNZW51QnV0dG9uUmVxdWVzdBIYCgdtZW51X2lkGAEgASgEQge6SAQyAiAAEhUKBGNvZGUYAiABKAlCB7pIBHICEAESFQoEbmFtZRgDIAEoCUIHukgEcgIQASIuChdEZWxldGVNZW51QnV0dG9uUmVxdWVzdBITCgJpZBgBIAEoBEIHukgEMgIgACIaChhEZWxldGVNZW51QnV0dG9uUmVzcG9uc2UiPwoTUmVvcmRlck1lbnVzUmVxdWVzdBIRCglwYXJlbnRfaWQYASABKAQSFQoDaWRzGAIgAygEQgi6SAWSAQIIASIWChRSZW9yZGVyTWVudXNSZXNwb25zZSIVChNHZXRVc2VyTWVudXNSZXF1ZXN0IjQKFEdldFVzZXJNZW51c1Jlc3BvbnNlEhwKBW1lbnVzGAEgAygLMg0uemVyeC52MS5NZW51IhcKFUdldFVzZXJCdXR0b25zUmVxdWVzdCInChZHZXRVc2VyQnV0dG9uc1Jlc3BvbnNlEg0KBWNvZGVzGAEgAygJMpsFCgtNZW51U2VydmljZRJCCglMaXN0TWVudXMSGS56ZXJ4LnYxLkxpc3RNZW51c1JlcXVlc3QaGi56ZXJ4LnYxLkxpc3RNZW51c1Jlc3BvbnNlEjcKCkNyZWF0ZU1lbnUSGi56ZXJ4LnYxLkNyZWF0ZU1lbnVSZXF1ZXN0Gg0uemVyeC52MS5NZW51EjcKClVwZGF0ZU1lbnUSGi56ZXJ4LnYxLlVwZGF0ZU1lbnVSZXF1ZXN0Gg0uemVyeC52MS5NZW51EkUKCkRlbGV0ZU1lbnUSGi56ZXJ4LnYxLkRlbGV0ZU1lbnVSZXF1ZXN0GhsuemVyeC52MS5EZWxldGVNZW51UmVzcG9uc2USSQoQQ3JlYXRlTWVudUJ1dHRvbhIgLnplcngudjEuQ3JlYXRlTWVudUJ1dHRvblJlcXVlc3QaEy56ZXJ4LnYxLk1lbnVCdXR0b24SVwoQRGVsZXRlTWVudUJ1dHRvbhIgLnplcngudjEuRGVsZXRlTWVudUJ1dHRvblJlcXVlc3QaIS56ZXJ4LnYxLkRlbGV0ZU1lbnVCdXR0b25SZXNwb25zZRJLCgxSZW9yZGVyTWVudXMSHC56ZXJ4LnYxLlJlb3JkZXJNZW51c1JlcXVlc3QaHS56ZXJ4LnYxLlJlb3JkZXJNZW51c1Jlc3BvbnNlEksKDEdldFVzZXJNZW51cxIcLnplcngudjEuR2V0VXNlck1lbnVzUmVxdWVzdBodLnplcngudjEuR2V0VXNlck1lbnVzUmVzcG9uc2USUQoOR2V0VXNlckJ1dHRvbnMSHi56ZXJ4LnYxLkdldFVzZXJCdXR0b25zUmVxdWVzdBofLnplcngudjEuR2V0VXNlckJ1dHRvbnNSZXNwb25zZUIwWi5naXRodWIuY29tL3plcngtbGFiL3praXQvZ2VuL2dvL3plcngvdjE7emVyeHYxYgZwcm90bzM", [file_buf_validate_validate]);
 
 /**
  * @generated from message zerx.v1.Menu
@@ -344,6 +344,41 @@ export const DeleteMenuButtonResponseSchema: GenMessage<DeleteMenuButtonResponse
   messageDesc(file_zerx_v1_menu, 10);
 
 /**
+ * @generated from message zerx.v1.ReorderMenusRequest
+ */
+export type ReorderMenusRequest = Message<"zerx.v1.ReorderMenusRequest"> & {
+  /**
+   * @generated from field: uint64 parent_id = 1;
+   */
+  parentId: bigint;
+
+  /**
+   * @generated from field: repeated uint64 ids = 2;
+   */
+  ids: bigint[];
+};
+
+/**
+ * Describes the message zerx.v1.ReorderMenusRequest.
+ * Use `create(ReorderMenusRequestSchema)` to create a new message.
+ */
+export const ReorderMenusRequestSchema: GenMessage<ReorderMenusRequest> = /*@__PURE__*/
+  messageDesc(file_zerx_v1_menu, 11);
+
+/**
+ * @generated from message zerx.v1.ReorderMenusResponse
+ */
+export type ReorderMenusResponse = Message<"zerx.v1.ReorderMenusResponse"> & {
+};
+
+/**
+ * Describes the message zerx.v1.ReorderMenusResponse.
+ * Use `create(ReorderMenusResponseSchema)` to create a new message.
+ */
+export const ReorderMenusResponseSchema: GenMessage<ReorderMenusResponse> = /*@__PURE__*/
+  messageDesc(file_zerx_v1_menu, 12);
+
+/**
  * @generated from message zerx.v1.GetUserMenusRequest
  */
 export type GetUserMenusRequest = Message<"zerx.v1.GetUserMenusRequest"> & {
@@ -354,7 +389,7 @@ export type GetUserMenusRequest = Message<"zerx.v1.GetUserMenusRequest"> & {
  * Use `create(GetUserMenusRequestSchema)` to create a new message.
  */
 export const GetUserMenusRequestSchema: GenMessage<GetUserMenusRequest> = /*@__PURE__*/
-  messageDesc(file_zerx_v1_menu, 11);
+  messageDesc(file_zerx_v1_menu, 13);
 
 /**
  * @generated from message zerx.v1.GetUserMenusResponse
@@ -371,7 +406,7 @@ export type GetUserMenusResponse = Message<"zerx.v1.GetUserMenusResponse"> & {
  * Use `create(GetUserMenusResponseSchema)` to create a new message.
  */
 export const GetUserMenusResponseSchema: GenMessage<GetUserMenusResponse> = /*@__PURE__*/
-  messageDesc(file_zerx_v1_menu, 12);
+  messageDesc(file_zerx_v1_menu, 14);
 
 /**
  * @generated from message zerx.v1.GetUserButtonsRequest
@@ -384,7 +419,7 @@ export type GetUserButtonsRequest = Message<"zerx.v1.GetUserButtonsRequest"> & {
  * Use `create(GetUserButtonsRequestSchema)` to create a new message.
  */
 export const GetUserButtonsRequestSchema: GenMessage<GetUserButtonsRequest> = /*@__PURE__*/
-  messageDesc(file_zerx_v1_menu, 13);
+  messageDesc(file_zerx_v1_menu, 15);
 
 /**
  * @generated from message zerx.v1.GetUserButtonsResponse
@@ -401,7 +436,7 @@ export type GetUserButtonsResponse = Message<"zerx.v1.GetUserButtonsResponse"> &
  * Use `create(GetUserButtonsResponseSchema)` to create a new message.
  */
 export const GetUserButtonsResponseSchema: GenMessage<GetUserButtonsResponse> = /*@__PURE__*/
-  messageDesc(file_zerx_v1_menu, 14);
+  messageDesc(file_zerx_v1_menu, 16);
 
 /**
  * MenuService manages the navigation tree and button permissions. GetUserMenus
@@ -457,6 +492,14 @@ export const MenuService: GenService<{
     methodKind: "unary";
     input: typeof DeleteMenuButtonRequestSchema;
     output: typeof DeleteMenuButtonResponseSchema;
+  },
+  /**
+   * @generated from rpc zerx.v1.MenuService.ReorderMenus
+   */
+  reorderMenus: {
+    methodKind: "unary";
+    input: typeof ReorderMenusRequestSchema;
+    output: typeof ReorderMenusResponseSchema;
   },
   /**
    * @generated from rpc zerx.v1.MenuService.GetUserMenus

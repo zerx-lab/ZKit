@@ -49,7 +49,7 @@ main.go 在 `plugins.Register()` 后、任何 DB 操作前调用,校验:名字�
 - **编译期约束**:install/uninstall 需重建二进制,UI 不做(仅文档化指引)。enable/disable 是**运行时开关**,无需重建。
 - **运行时状态** `internal/plugin/state.go`(`plugin.State`,核心表 `plugin_states`,默认 enabled;`SetEnabled` 用 map upsert 以持久化 `enabled=false`——struct 写会被 `default:true`/零值跳过吞掉)。禁用插件三处 gate:(a) `casbin_interceptor` 在所有放行路径(含 admin)之前 `procEnabled` 拒绝 → `CodeUnavailable`;(b) `MenuService.GetUserMenus` 过滤 `PluginNameOfMenu` 命中的被禁菜单;(c) `scheduler.wrap` 在 fire time 经 `SetHandlerEnabled` 跳过被禁插件 job。三者由 `main.go` 注入同一 `plugin.State`(多副本驱动 postgres/mysql 经 `StartReloader` 周期重载,使一副本的启停传播到其他副本)。
 - **数据保留**:禁用**只**关闭菜单/接口/job,**不动表、数据、迁移**;启用即恢复对同一批数据的访问(`SetEnabled` 仅写 `plugin_states.enabled`)。
-- **菜单 reconcile**:`syncMenus` 对插件菜单(`plg_` 前缀)**同步** path/component/parent/title/icon/sort/hidden(插件 SeedMenus 是真相);核心菜单仍 insert-only(admin 可编辑)。改插件菜单结构(如扁平页变分组子页)重启即生效,无需手动清库。
+- **菜单 reconcile**:`syncMenus` 对插件菜单(`plg_` 前缀)**同步** path/component/parent/title/icon/hidden(结构仍以 SeedMenus 为准);**不覆盖 `sort`**(admin 拖拽 / `UpdateMenu` 跨重启保留)。新插入的顶层插件菜单 `Sort = dashboard.Sort+1`,排在仪表盘下、系统/审计组之上(核心 `system=10`/`audit=20` 留空档)。核心菜单仍 insert-only。改插件菜单结构(如扁平页变分组子页)重启即生效,无需手动清库。
 
 ## 上传安装 / 卸载(GVA 式,脚手架机制)
 

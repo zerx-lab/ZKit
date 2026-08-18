@@ -47,6 +47,9 @@ const (
 	// MenuServiceDeleteMenuButtonProcedure is the fully-qualified name of the MenuService's
 	// DeleteMenuButton RPC.
 	MenuServiceDeleteMenuButtonProcedure = "/zerx.v1.MenuService/DeleteMenuButton"
+	// MenuServiceReorderMenusProcedure is the fully-qualified name of the MenuService's ReorderMenus
+	// RPC.
+	MenuServiceReorderMenusProcedure = "/zerx.v1.MenuService/ReorderMenus"
 	// MenuServiceGetUserMenusProcedure is the fully-qualified name of the MenuService's GetUserMenus
 	// RPC.
 	MenuServiceGetUserMenusProcedure = "/zerx.v1.MenuService/GetUserMenus"
@@ -63,6 +66,7 @@ type MenuServiceClient interface {
 	DeleteMenu(context.Context, *connect.Request[v1.DeleteMenuRequest]) (*connect.Response[v1.DeleteMenuResponse], error)
 	CreateMenuButton(context.Context, *connect.Request[v1.CreateMenuButtonRequest]) (*connect.Response[v1.MenuButton], error)
 	DeleteMenuButton(context.Context, *connect.Request[v1.DeleteMenuButtonRequest]) (*connect.Response[v1.DeleteMenuButtonResponse], error)
+	ReorderMenus(context.Context, *connect.Request[v1.ReorderMenusRequest]) (*connect.Response[v1.ReorderMenusResponse], error)
 	GetUserMenus(context.Context, *connect.Request[v1.GetUserMenusRequest]) (*connect.Response[v1.GetUserMenusResponse], error)
 	GetUserButtons(context.Context, *connect.Request[v1.GetUserButtonsRequest]) (*connect.Response[v1.GetUserButtonsResponse], error)
 }
@@ -114,6 +118,12 @@ func NewMenuServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(menuServiceMethods.ByName("DeleteMenuButton")),
 			connect.WithClientOptions(opts...),
 		),
+		reorderMenus: connect.NewClient[v1.ReorderMenusRequest, v1.ReorderMenusResponse](
+			httpClient,
+			baseURL+MenuServiceReorderMenusProcedure,
+			connect.WithSchema(menuServiceMethods.ByName("ReorderMenus")),
+			connect.WithClientOptions(opts...),
+		),
 		getUserMenus: connect.NewClient[v1.GetUserMenusRequest, v1.GetUserMenusResponse](
 			httpClient,
 			baseURL+MenuServiceGetUserMenusProcedure,
@@ -137,6 +147,7 @@ type menuServiceClient struct {
 	deleteMenu       *connect.Client[v1.DeleteMenuRequest, v1.DeleteMenuResponse]
 	createMenuButton *connect.Client[v1.CreateMenuButtonRequest, v1.MenuButton]
 	deleteMenuButton *connect.Client[v1.DeleteMenuButtonRequest, v1.DeleteMenuButtonResponse]
+	reorderMenus     *connect.Client[v1.ReorderMenusRequest, v1.ReorderMenusResponse]
 	getUserMenus     *connect.Client[v1.GetUserMenusRequest, v1.GetUserMenusResponse]
 	getUserButtons   *connect.Client[v1.GetUserButtonsRequest, v1.GetUserButtonsResponse]
 }
@@ -171,6 +182,11 @@ func (c *menuServiceClient) DeleteMenuButton(ctx context.Context, req *connect.R
 	return c.deleteMenuButton.CallUnary(ctx, req)
 }
 
+// ReorderMenus calls zerx.v1.MenuService.ReorderMenus.
+func (c *menuServiceClient) ReorderMenus(ctx context.Context, req *connect.Request[v1.ReorderMenusRequest]) (*connect.Response[v1.ReorderMenusResponse], error) {
+	return c.reorderMenus.CallUnary(ctx, req)
+}
+
 // GetUserMenus calls zerx.v1.MenuService.GetUserMenus.
 func (c *menuServiceClient) GetUserMenus(ctx context.Context, req *connect.Request[v1.GetUserMenusRequest]) (*connect.Response[v1.GetUserMenusResponse], error) {
 	return c.getUserMenus.CallUnary(ctx, req)
@@ -189,6 +205,7 @@ type MenuServiceHandler interface {
 	DeleteMenu(context.Context, *connect.Request[v1.DeleteMenuRequest]) (*connect.Response[v1.DeleteMenuResponse], error)
 	CreateMenuButton(context.Context, *connect.Request[v1.CreateMenuButtonRequest]) (*connect.Response[v1.MenuButton], error)
 	DeleteMenuButton(context.Context, *connect.Request[v1.DeleteMenuButtonRequest]) (*connect.Response[v1.DeleteMenuButtonResponse], error)
+	ReorderMenus(context.Context, *connect.Request[v1.ReorderMenusRequest]) (*connect.Response[v1.ReorderMenusResponse], error)
 	GetUserMenus(context.Context, *connect.Request[v1.GetUserMenusRequest]) (*connect.Response[v1.GetUserMenusResponse], error)
 	GetUserButtons(context.Context, *connect.Request[v1.GetUserButtonsRequest]) (*connect.Response[v1.GetUserButtonsResponse], error)
 }
@@ -236,6 +253,12 @@ func NewMenuServiceHandler(svc MenuServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(menuServiceMethods.ByName("DeleteMenuButton")),
 		connect.WithHandlerOptions(opts...),
 	)
+	menuServiceReorderMenusHandler := connect.NewUnaryHandler(
+		MenuServiceReorderMenusProcedure,
+		svc.ReorderMenus,
+		connect.WithSchema(menuServiceMethods.ByName("ReorderMenus")),
+		connect.WithHandlerOptions(opts...),
+	)
 	menuServiceGetUserMenusHandler := connect.NewUnaryHandler(
 		MenuServiceGetUserMenusProcedure,
 		svc.GetUserMenus,
@@ -262,6 +285,8 @@ func NewMenuServiceHandler(svc MenuServiceHandler, opts ...connect.HandlerOption
 			menuServiceCreateMenuButtonHandler.ServeHTTP(w, r)
 		case MenuServiceDeleteMenuButtonProcedure:
 			menuServiceDeleteMenuButtonHandler.ServeHTTP(w, r)
+		case MenuServiceReorderMenusProcedure:
+			menuServiceReorderMenusHandler.ServeHTTP(w, r)
 		case MenuServiceGetUserMenusProcedure:
 			menuServiceGetUserMenusHandler.ServeHTTP(w, r)
 		case MenuServiceGetUserButtonsProcedure:
@@ -297,6 +322,10 @@ func (UnimplementedMenuServiceHandler) CreateMenuButton(context.Context, *connec
 
 func (UnimplementedMenuServiceHandler) DeleteMenuButton(context.Context, *connect.Request[v1.DeleteMenuButtonRequest]) (*connect.Response[v1.DeleteMenuButtonResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("zerx.v1.MenuService.DeleteMenuButton is not implemented"))
+}
+
+func (UnimplementedMenuServiceHandler) ReorderMenus(context.Context, *connect.Request[v1.ReorderMenusRequest]) (*connect.Response[v1.ReorderMenusResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("zerx.v1.MenuService.ReorderMenus is not implemented"))
 }
 
 func (UnimplementedMenuServiceHandler) GetUserMenus(context.Context, *connect.Request[v1.GetUserMenusRequest]) (*connect.Response[v1.GetUserMenusResponse], error) {

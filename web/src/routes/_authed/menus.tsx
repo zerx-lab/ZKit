@@ -2,8 +2,8 @@ import { ConnectError } from "@connectrpc/connect";
 import { createConnectQueryKey, useMutation, useQuery } from "@connectrpc/connect-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDownIcon, ChevronRightIcon, PlusIcon } from "lucide-react";
-import { Fragment, useMemo, useState } from "react";
+import { ChevronDownIcon, ChevronRightIcon, GripVerticalIcon, PlusIcon } from "lucide-react";
+import { Fragment, useMemo, useRef, useState, type DragEvent } from "react";
 import { toast } from "sonner";
 
 import { Can } from "@/components/can";
@@ -36,10 +36,13 @@ import {
   createMenuButton,
   deleteMenu,
   deleteMenuButton,
+  getUserMenus,
   listMenus,
+  reorderMenus,
   updateMenu,
 } from "@/gen/zerx/v1/menu-MenuService_connectquery";
 import { useI18n } from "@/lib/i18n";
+import { usePermissions } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_authed/menus")({ component: MenusPage });
 
@@ -61,6 +64,27 @@ function flattenTree(menu: Menu, depth = 0, out: FlatMenu[] = []): FlatMenu[] {
   return out;
 }
 
+function findSiblings(roots: Menu[], parentId: bigint): Menu[] {
+  if (parentId === 0n) return roots;
+  const walk = (nodes: Menu[]): Menu[] | null => {
+    for (const n of nodes) {
+      if (n.id === parentId) return n.children;
+      const hit = walk(n.children);
+      if (hit) return hit;
+    }
+    return null;
+  };
+  return walk(roots) ?? [];
+}
+
+function arrayMove<T>(arr: readonly T[], from: number, to: number): T[] {
+  const next = arr.slice();
+  const [item] = next.splice(from, 1);
+  if (item === undefined) return next;
+  next.splice(to, 0, item);
+  return next;
+}
+
 // True if the menu subtree contains the keyword in any title or path.
 function matchesKeyword(menu: Menu, kw: string): boolean {
   if (
@@ -70,6 +94,19 @@ function matchesKeyword(menu: Menu, kw: string): boolean {
     return true;
   }
   return menu.children.some((c) => matchesKeyword(c, kw));
+}
+
+function DragHandle({ enabled, label }: { enabled: boolean; label: string }) {
+  if (!enabled) return null;
+  return (
+    <span
+      className="inline-flex cursor-grab text-muted-foreground active:cursor-grabbing"
+      aria-label={label}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <GripVerticalIcon className="size-4" />
+    </span>
+  );
 }
 
 function MenuActionCells({ menu, invalidate }: { menu: Menu; invalidate: () => void }) {
@@ -88,16 +125,82 @@ function MenuActionCells({ menu, invalidate }: { menu: Menu; invalidate: () => v
 
 function MenusPage() {
   const { t } = useI18n();
+  const { can } = usePermissions();
   const qc = useQueryClient();
   const { data, isPending } = useQuery(listMenus);
   const topMenus = useMemo(() => data?.menus ?? [], [data]);
+  const reorderMut = useMutation(reorderMenus);
 
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(1);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [dragging, setDragging] = useState<{ id: bigint; parentId: bigint } | null>(null);
+  const [overId, setOverId] = useState<bigint | null>(null);
+  const draggingRef = useRef<{ id: bigint; parentId: bigint } | null>(null);
+  const didDrag = useRef(false);
 
-  const invalidate = () =>
-    qc.invalidateQueries({ queryKey: createConnectQueryKey({ schema: listMenus, cardinality: "finite" }) });
+  const canDrag = can("menu:update") && keyword.trim() === "";
+
+  const invalidate = () => {
+    void qc.invalidateQueries({ queryKey: createConnectQueryKey({ schema: listMenus, cardinality: "finite" }) });
+    void qc.invalidateQueries({ queryKey: createConnectQueryKey({ schema: getUserMenus, cardinality: "finite" }) });
+  };
+
+  const applyReorder = async (parentId: bigint, fromId: bigint, toId: bigint) => {
+    if (fromId === toId) return;
+    const siblings = findSiblings(topMenus, parentId);
+    const from = siblings.findIndex((s) => s.id === fromId);
+    const to = siblings.findIndex((s) => s.id === toId);
+    if (from < 0 || to < 0) return;
+    const next = arrayMove(siblings, from, to);
+    try {
+      await reorderMut.mutateAsync({ parentId, ids: next.map((s) => s.id) });
+      toast.success(t("menuPage.reorderedToast"));
+      invalidate();
+    } catch (err) {
+      toast.error(errMsg(err, t("register.failed")));
+    }
+  };
+
+  const rowDrag = (menu: Menu) => {
+    if (!canDrag) return {};
+    return {
+      draggable: true,
+      onDragStart: (e: DragEvent) => {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", String(menu.id));
+        const payload = { id: menu.id, parentId: menu.parentId };
+        draggingRef.current = payload;
+        setDragging(payload);
+        didDrag.current = false;
+      },
+      onDragOver: (e: DragEvent) => {
+        const d = draggingRef.current;
+        if (!d || d.parentId !== menu.parentId || d.id === menu.id) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        didDrag.current = true;
+        setOverId(menu.id);
+      },
+      onDrop: (e: DragEvent) => {
+        e.preventDefault();
+        const d = draggingRef.current;
+        if (!d || d.parentId !== menu.parentId) return;
+        void applyReorder(menu.parentId, d.id, menu.id);
+        draggingRef.current = null;
+        setDragging(null);
+        setOverId(null);
+      },
+      onDragEnd: () => {
+        draggingRef.current = null;
+        setDragging(null);
+        setOverId(null);
+      },
+    };
+  };
+
+  const dropClass = (id: bigint) =>
+    overId === id && dragging && dragging.id !== id ? "bg-primary/10" : "";
 
   // Filter top-level groups whose subtree matches the keyword.
   const filtered = useMemo(() => {
@@ -156,12 +259,14 @@ function MenusPage() {
         >
           {allCollapsed ? t("menuPage.expandAll") : t("menuPage.collapseAll")}
         </Button>
+        {canDrag ? <p className="text-sm text-muted-foreground">{t("menuPage.dragHint")}</p> : null}
       </div>
 
       <Card className="gap-0 overflow-hidden py-0">
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
+              <TableHead className="w-8 px-1" />
               <TableHead>{t("menuPage.title_")}</TableHead>
               <TableHead>{t("menuPage.path")}</TableHead>
               <TableHead>{t("menuPage.icon")}</TableHead>
@@ -173,13 +278,13 @@ function MenusPage() {
           <TableBody>
             {isPending ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                   {t("common.loading")}
                 </TableCell>
               </TableRow>
             ) : filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                   {t("common.noData")}
                 </TableCell>
               </TableRow>
@@ -192,9 +297,19 @@ function MenusPage() {
                 return (
                   <Fragment key={key}>
                     <TableRow
-                      className="cursor-pointer bg-muted/40 hover:bg-muted/60"
-                      onClick={() => toggleGroup(key)}
+                      className={`cursor-pointer bg-muted/40 hover:bg-muted/60 ${dropClass(group.id)}`}
+                      onClick={() => {
+                        if (didDrag.current) {
+                          didDrag.current = false;
+                          return;
+                        }
+                        toggleGroup(key);
+                      }}
+                      {...rowDrag(group)}
                     >
+                      <TableCell className="w-8 px-1">
+                        <DragHandle enabled={canDrag} label={t("menuPage.dragHandle")} />
+                      </TableCell>
                       <TableCell className="py-2.5 font-semibold">
                         <span className="flex items-center gap-1.5">
                           {isCollapsed ? (
@@ -220,7 +335,10 @@ function MenusPage() {
                     </TableRow>
                     {!isCollapsed &&
                       rows.slice(1).map(({ menu, depth }) => (
-                        <TableRow key={String(menu.id)}>
+                        <TableRow key={String(menu.id)} className={dropClass(menu.id)} {...rowDrag(menu)}>
+                          <TableCell className="w-8 px-1">
+                            <DragHandle enabled={canDrag} label={t("menuPage.dragHandle")} />
+                          </TableCell>
                           <TableCell>
                             <span className="flex items-center" style={{ paddingLeft: depth * 20 }}>
                               <span

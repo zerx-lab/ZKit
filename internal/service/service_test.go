@@ -243,3 +243,63 @@ func TestGetUserMenusIncludesAncestorGroup(t *testing.T) {
 		t.Errorf("expected ancestor group + leaf present; parent=%v leaf=%v", foundParent, foundLeaf)
 	}
 }
+
+func TestReorderMenusRewritesSiblingSort(t *testing.T) {
+	db := newTestDB(t)
+	svc := NewMenuService(db, nil)
+	ctx := context.Background()
+
+	var tops []model.Menu
+	if err := db.Where("parent_id = ?", 0).Order("sort ASC, id ASC").Find(&tops).Error; err != nil {
+		t.Fatalf("list tops: %v", err)
+	}
+	if len(tops) < 3 {
+		t.Fatalf("need at least 3 top-level menus, got %d", len(tops))
+	}
+
+	// Reverse the current sibling order.
+	ids := make([]uint64, len(tops))
+	for i := range tops {
+		ids[len(tops)-1-i] = tops[i].ID
+	}
+	if _, err := svc.ReorderMenus(ctx, connect.NewRequest(&zerxv1.ReorderMenusRequest{
+		ParentId: 0,
+		Ids:      ids,
+	})); err != nil {
+		t.Fatalf("ReorderMenus: %v", err)
+	}
+
+	var got []model.Menu
+	if err := db.Where("parent_id = ?", 0).Order("sort ASC, id ASC").Find(&got).Error; err != nil {
+		t.Fatalf("reload: %v", err)
+	}
+	if len(got) != len(ids) {
+		t.Fatalf("top count = %d, want %d", len(got), len(ids))
+	}
+	for i := range ids {
+		if got[i].ID != ids[i] || got[i].Sort != i+1 {
+			t.Fatalf("index %d: id=%d sort=%d, want id=%d sort=%d", i, got[i].ID, got[i].Sort, ids[i], i+1)
+		}
+	}
+}
+
+func TestReorderMenusRejectsCrossParent(t *testing.T) {
+	db := newTestDB(t)
+	svc := NewMenuService(db, nil)
+	ctx := context.Background()
+
+	var child model.Menu
+	if err := db.Where("parent_id <> ?", 0).First(&child).Error; err != nil {
+		t.Fatalf("find child: %v", err)
+	}
+	_, err := svc.ReorderMenus(ctx, connect.NewRequest(&zerxv1.ReorderMenusRequest{
+		ParentId: 0,
+		Ids:      []uint64{child.ID},
+	}))
+	if err == nil {
+		t.Fatal("expected error for child id under parent 0")
+	}
+	if connect.CodeOf(err) != connect.CodeInvalidArgument {
+		t.Fatalf("code = %v, want InvalidArgument", connect.CodeOf(err))
+	}
+}

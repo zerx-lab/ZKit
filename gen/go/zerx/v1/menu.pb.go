@@ -730,6 +730,94 @@ func (*DeleteMenuButtonResponse) Descriptor() ([]byte, []int) {
 	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{10}
 }
 
+type ReorderMenusRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ParentId      uint64                 `protobuf:"varint,1,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	Ids           []uint64               `protobuf:"varint,2,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReorderMenusRequest) Reset() {
+	*x = ReorderMenusRequest{}
+	mi := &file_zerx_v1_menu_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReorderMenusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReorderMenusRequest) ProtoMessage() {}
+
+func (x *ReorderMenusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_zerx_v1_menu_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReorderMenusRequest.ProtoReflect.Descriptor instead.
+func (*ReorderMenusRequest) Descriptor() ([]byte, []int) {
+	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *ReorderMenusRequest) GetParentId() uint64 {
+	if x != nil {
+		return x.ParentId
+	}
+	return 0
+}
+
+func (x *ReorderMenusRequest) GetIds() []uint64 {
+	if x != nil {
+		return x.Ids
+	}
+	return nil
+}
+
+type ReorderMenusResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReorderMenusResponse) Reset() {
+	*x = ReorderMenusResponse{}
+	mi := &file_zerx_v1_menu_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReorderMenusResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReorderMenusResponse) ProtoMessage() {}
+
+func (x *ReorderMenusResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_zerx_v1_menu_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReorderMenusResponse.ProtoReflect.Descriptor instead.
+func (*ReorderMenusResponse) Descriptor() ([]byte, []int) {
+	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{12}
+}
+
 type GetUserMenusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -738,7 +826,7 @@ type GetUserMenusRequest struct {
 
 func (x *GetUserMenusRequest) Reset() {
 	*x = GetUserMenusRequest{}
-	mi := &file_zerx_v1_menu_proto_msgTypes[11]
+	mi := &file_zerx_v1_menu_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -750,7 +838,7 @@ func (x *GetUserMenusRequest) String() string {
 func (*GetUserMenusRequest) ProtoMessage() {}
 
 func (x *GetUserMenusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_zerx_v1_menu_proto_msgTypes[11]
+	mi := &file_zerx_v1_menu_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -763,7 +851,7 @@ func (x *GetUserMenusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserMenusRequest.ProtoReflect.Descriptor instead.
 func (*GetUserMenusRequest) Descriptor() ([]byte, []int) {
-	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{11}
+	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{13}
 }
 
 type GetUserMenusResponse struct {
@@ -775,7 +863,7 @@ type GetUserMenusResponse struct {
 
 func (x *GetUserMenusResponse) Reset() {
 	*x = GetUserMenusResponse{}
-	mi := &file_zerx_v1_menu_proto_msgTypes[12]
+	mi := &file_zerx_v1_menu_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -787,7 +875,7 @@ func (x *GetUserMenusResponse) String() string {
 func (*GetUserMenusResponse) ProtoMessage() {}
 
 func (x *GetUserMenusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_zerx_v1_menu_proto_msgTypes[12]
+	mi := &file_zerx_v1_menu_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -800,7 +888,7 @@ func (x *GetUserMenusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserMenusResponse.ProtoReflect.Descriptor instead.
 func (*GetUserMenusResponse) Descriptor() ([]byte, []int) {
-	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{12}
+	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetUserMenusResponse) GetMenus() []*Menu {
@@ -818,7 +906,7 @@ type GetUserButtonsRequest struct {
 
 func (x *GetUserButtonsRequest) Reset() {
 	*x = GetUserButtonsRequest{}
-	mi := &file_zerx_v1_menu_proto_msgTypes[13]
+	mi := &file_zerx_v1_menu_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -830,7 +918,7 @@ func (x *GetUserButtonsRequest) String() string {
 func (*GetUserButtonsRequest) ProtoMessage() {}
 
 func (x *GetUserButtonsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_zerx_v1_menu_proto_msgTypes[13]
+	mi := &file_zerx_v1_menu_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -843,7 +931,7 @@ func (x *GetUserButtonsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserButtonsRequest.ProtoReflect.Descriptor instead.
 func (*GetUserButtonsRequest) Descriptor() ([]byte, []int) {
-	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{13}
+	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{15}
 }
 
 type GetUserButtonsResponse struct {
@@ -855,7 +943,7 @@ type GetUserButtonsResponse struct {
 
 func (x *GetUserButtonsResponse) Reset() {
 	*x = GetUserButtonsResponse{}
-	mi := &file_zerx_v1_menu_proto_msgTypes[14]
+	mi := &file_zerx_v1_menu_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -867,7 +955,7 @@ func (x *GetUserButtonsResponse) String() string {
 func (*GetUserButtonsResponse) ProtoMessage() {}
 
 func (x *GetUserButtonsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_zerx_v1_menu_proto_msgTypes[14]
+	mi := &file_zerx_v1_menu_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -880,7 +968,7 @@ func (x *GetUserButtonsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserButtonsResponse.ProtoReflect.Descriptor instead.
 func (*GetUserButtonsResponse) Descriptor() ([]byte, []int) {
-	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{14}
+	return file_zerx_v1_menu_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetUserButtonsResponse) GetCodes() []string {
@@ -947,13 +1035,17 @@ const file_zerx_v1_menu_proto_rawDesc = "" +
 	"\x04name\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x04name\"2\n" +
 	"\x17DeleteMenuButtonRequest\x12\x17\n" +
 	"\x02id\x18\x01 \x01(\x04B\a\xbaH\x042\x02 \x00R\x02id\"\x1a\n" +
-	"\x18DeleteMenuButtonResponse\"\x15\n" +
+	"\x18DeleteMenuButtonResponse\"N\n" +
+	"\x13ReorderMenusRequest\x12\x1b\n" +
+	"\tparent_id\x18\x01 \x01(\x04R\bparentId\x12\x1a\n" +
+	"\x03ids\x18\x02 \x03(\x04B\b\xbaH\x05\x92\x01\x02\b\x01R\x03ids\"\x16\n" +
+	"\x14ReorderMenusResponse\"\x15\n" +
 	"\x13GetUserMenusRequest\";\n" +
 	"\x14GetUserMenusResponse\x12#\n" +
 	"\x05menus\x18\x01 \x03(\v2\r.zerx.v1.MenuR\x05menus\"\x17\n" +
 	"\x15GetUserButtonsRequest\".\n" +
 	"\x16GetUserButtonsResponse\x12\x14\n" +
-	"\x05codes\x18\x01 \x03(\tR\x05codes2\xce\x04\n" +
+	"\x05codes\x18\x01 \x03(\tR\x05codes2\x9b\x05\n" +
 	"\vMenuService\x12B\n" +
 	"\tListMenus\x12\x19.zerx.v1.ListMenusRequest\x1a\x1a.zerx.v1.ListMenusResponse\x127\n" +
 	"\n" +
@@ -964,6 +1056,7 @@ const file_zerx_v1_menu_proto_rawDesc = "" +
 	"DeleteMenu\x12\x1a.zerx.v1.DeleteMenuRequest\x1a\x1b.zerx.v1.DeleteMenuResponse\x12I\n" +
 	"\x10CreateMenuButton\x12 .zerx.v1.CreateMenuButtonRequest\x1a\x13.zerx.v1.MenuButton\x12W\n" +
 	"\x10DeleteMenuButton\x12 .zerx.v1.DeleteMenuButtonRequest\x1a!.zerx.v1.DeleteMenuButtonResponse\x12K\n" +
+	"\fReorderMenus\x12\x1c.zerx.v1.ReorderMenusRequest\x1a\x1d.zerx.v1.ReorderMenusResponse\x12K\n" +
 	"\fGetUserMenus\x12\x1c.zerx.v1.GetUserMenusRequest\x1a\x1d.zerx.v1.GetUserMenusResponse\x12Q\n" +
 	"\x0eGetUserButtons\x12\x1e.zerx.v1.GetUserButtonsRequest\x1a\x1f.zerx.v1.GetUserButtonsResponseB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
@@ -979,7 +1072,7 @@ func file_zerx_v1_menu_proto_rawDescGZIP() []byte {
 	return file_zerx_v1_menu_proto_rawDescData
 }
 
-var file_zerx_v1_menu_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_zerx_v1_menu_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_zerx_v1_menu_proto_goTypes = []any{
 	(*Menu)(nil),                     // 0: zerx.v1.Menu
 	(*MenuButton)(nil),               // 1: zerx.v1.MenuButton
@@ -992,10 +1085,12 @@ var file_zerx_v1_menu_proto_goTypes = []any{
 	(*CreateMenuButtonRequest)(nil),  // 8: zerx.v1.CreateMenuButtonRequest
 	(*DeleteMenuButtonRequest)(nil),  // 9: zerx.v1.DeleteMenuButtonRequest
 	(*DeleteMenuButtonResponse)(nil), // 10: zerx.v1.DeleteMenuButtonResponse
-	(*GetUserMenusRequest)(nil),      // 11: zerx.v1.GetUserMenusRequest
-	(*GetUserMenusResponse)(nil),     // 12: zerx.v1.GetUserMenusResponse
-	(*GetUserButtonsRequest)(nil),    // 13: zerx.v1.GetUserButtonsRequest
-	(*GetUserButtonsResponse)(nil),   // 14: zerx.v1.GetUserButtonsResponse
+	(*ReorderMenusRequest)(nil),      // 11: zerx.v1.ReorderMenusRequest
+	(*ReorderMenusResponse)(nil),     // 12: zerx.v1.ReorderMenusResponse
+	(*GetUserMenusRequest)(nil),      // 13: zerx.v1.GetUserMenusRequest
+	(*GetUserMenusResponse)(nil),     // 14: zerx.v1.GetUserMenusResponse
+	(*GetUserButtonsRequest)(nil),    // 15: zerx.v1.GetUserButtonsRequest
+	(*GetUserButtonsResponse)(nil),   // 16: zerx.v1.GetUserButtonsResponse
 }
 var file_zerx_v1_menu_proto_depIdxs = []int32{
 	1,  // 0: zerx.v1.Menu.buttons:type_name -> zerx.v1.MenuButton
@@ -1008,18 +1103,20 @@ var file_zerx_v1_menu_proto_depIdxs = []int32{
 	6,  // 7: zerx.v1.MenuService.DeleteMenu:input_type -> zerx.v1.DeleteMenuRequest
 	8,  // 8: zerx.v1.MenuService.CreateMenuButton:input_type -> zerx.v1.CreateMenuButtonRequest
 	9,  // 9: zerx.v1.MenuService.DeleteMenuButton:input_type -> zerx.v1.DeleteMenuButtonRequest
-	11, // 10: zerx.v1.MenuService.GetUserMenus:input_type -> zerx.v1.GetUserMenusRequest
-	13, // 11: zerx.v1.MenuService.GetUserButtons:input_type -> zerx.v1.GetUserButtonsRequest
-	3,  // 12: zerx.v1.MenuService.ListMenus:output_type -> zerx.v1.ListMenusResponse
-	0,  // 13: zerx.v1.MenuService.CreateMenu:output_type -> zerx.v1.Menu
-	0,  // 14: zerx.v1.MenuService.UpdateMenu:output_type -> zerx.v1.Menu
-	7,  // 15: zerx.v1.MenuService.DeleteMenu:output_type -> zerx.v1.DeleteMenuResponse
-	1,  // 16: zerx.v1.MenuService.CreateMenuButton:output_type -> zerx.v1.MenuButton
-	10, // 17: zerx.v1.MenuService.DeleteMenuButton:output_type -> zerx.v1.DeleteMenuButtonResponse
-	12, // 18: zerx.v1.MenuService.GetUserMenus:output_type -> zerx.v1.GetUserMenusResponse
-	14, // 19: zerx.v1.MenuService.GetUserButtons:output_type -> zerx.v1.GetUserButtonsResponse
-	12, // [12:20] is the sub-list for method output_type
-	4,  // [4:12] is the sub-list for method input_type
+	11, // 10: zerx.v1.MenuService.ReorderMenus:input_type -> zerx.v1.ReorderMenusRequest
+	13, // 11: zerx.v1.MenuService.GetUserMenus:input_type -> zerx.v1.GetUserMenusRequest
+	15, // 12: zerx.v1.MenuService.GetUserButtons:input_type -> zerx.v1.GetUserButtonsRequest
+	3,  // 13: zerx.v1.MenuService.ListMenus:output_type -> zerx.v1.ListMenusResponse
+	0,  // 14: zerx.v1.MenuService.CreateMenu:output_type -> zerx.v1.Menu
+	0,  // 15: zerx.v1.MenuService.UpdateMenu:output_type -> zerx.v1.Menu
+	7,  // 16: zerx.v1.MenuService.DeleteMenu:output_type -> zerx.v1.DeleteMenuResponse
+	1,  // 17: zerx.v1.MenuService.CreateMenuButton:output_type -> zerx.v1.MenuButton
+	10, // 18: zerx.v1.MenuService.DeleteMenuButton:output_type -> zerx.v1.DeleteMenuButtonResponse
+	12, // 19: zerx.v1.MenuService.ReorderMenus:output_type -> zerx.v1.ReorderMenusResponse
+	14, // 20: zerx.v1.MenuService.GetUserMenus:output_type -> zerx.v1.GetUserMenusResponse
+	16, // 21: zerx.v1.MenuService.GetUserButtons:output_type -> zerx.v1.GetUserButtonsResponse
+	13, // [13:22] is the sub-list for method output_type
+	4,  // [4:13] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name
@@ -1036,7 +1133,7 @@ func file_zerx_v1_menu_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_zerx_v1_menu_proto_rawDesc), len(file_zerx_v1_menu_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

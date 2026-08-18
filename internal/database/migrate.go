@@ -1,6 +1,8 @@
 package database
 
 import (
+	"strings"
+
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 
@@ -15,7 +17,7 @@ import (
 //
 // casbin_rule is never listed here: the gorm-adapter inside casbin.New
 // auto-migrates it (later, in server.New), independent of the migrations table.
-// extra holds plugin-supplied migrations appended after the core 0001-0005 set;
+// extra holds plugin-supplied migrations appended after the core 0001-0007 set;
 // cmd/server/main.go passes plugin.CollectMigrations() (database does not import
 // the plugin package, avoiding the database->plugin->jobs import cycle).
 func Migrate(db *gorm.DB, extra []*gormigrate.Migration) error {
@@ -117,6 +119,37 @@ func Migrate(db *gorm.DB, extra []*gormigrate.Migration) error {
 			ID: "0006_plugin_states",
 			Migrate: func(tx *gorm.DB) error {
 				return tx.AutoMigrate(&model.PluginState{})
+			},
+			Rollback: func(*gorm.DB) error { return nil },
+		},
+		{
+			ID: "0007_plugin_menu_after_dashboard",
+			Migrate: func(tx *gorm.DB) error {
+				// Open a gap after dashboard so plugin top-level menus (old seed
+				// default 50) sit between dashboard and system/audit. Only rewrite
+				// rows still at original seed values so admin custom sorts survive.
+				if err := tx.Model(&model.Menu{}).
+					Where("name = ? AND parent_id = ? AND sort = ?", "system", 0, 2).
+					Update("sort", 10).Error; err != nil {
+					return err
+				}
+				if err := tx.Model(&model.Menu{}).
+					Where("name = ? AND parent_id = ? AND sort = ?", "audit", 0, 3).
+					Update("sort", 20).Error; err != nil {
+					return err
+				}
+				var tops []model.Menu
+				if err := tx.Where("parent_id = ?", 0).Find(&tops).Error; err != nil {
+					return err
+				}
+				for i := range tops {
+					if strings.HasPrefix(tops[i].Name, "plg_") && tops[i].Sort == 50 {
+						if err := tx.Model(&model.Menu{}).Where("id = ?", tops[i].ID).Update("sort", 2).Error; err != nil {
+							return err
+						}
+					}
+				}
+				return nil
 			},
 			Rollback: func(*gorm.DB) error { return nil },
 		},
