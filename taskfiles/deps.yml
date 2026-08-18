@@ -10,7 +10,7 @@ tasks:
     cmds:
       - cmd: mkdir -p {{.SNAP}}
       - cmd: cp go.mod go.sum buf.lock {{.SNAP}}/
-      - cmd: cp web/pnpm-lock.yaml {{.SNAP}}/pnpm-lock.yaml
+      - cmd: cp web/bun.lock {{.SNAP}}/bun.lock
 
   update:
     desc: Upgrade all dependencies (snapshots first), then regenerate code
@@ -18,7 +18,7 @@ tasks:
       - task: snapshot
       - go get -u ./...
       - go mod tidy
-      - pnpm -C web update --latest
+      - bun update --cwd="{{.ROOT_DIR}}/web" --latest
       - buf dep update
       - buf generate
       - buf generate --template buf.gen.web.yaml --include-imports
@@ -31,6 +31,6 @@ tasks:
       - cmd: cp {{.SNAP}}/go.mod go.mod
       - cmd: cp {{.SNAP}}/go.sum go.sum
       - cmd: cp {{.SNAP}}/buf.lock buf.lock
-      - cmd: cp {{.SNAP}}/pnpm-lock.yaml web/pnpm-lock.yaml
+      - cmd: cp {{.SNAP}}/bun.lock web/bun.lock
       - go mod download
-      - pnpm -C web install --frozen-lockfile
+      - bun install --cwd="{{.ROOT_DIR}}/web" --frozen-lockfile

@@ -3,27 +3,31 @@ version: "3"
 tasks:
   install:
     desc: Install frontend dependencies (frozen when a lockfile exists)
+    dir: "{{.ROOT_DIR}}/web"
     cmds:
-      - cmd: "[ -f web/pnpm-lock.yaml ] && pnpm -C web install --frozen-lockfile || pnpm -C web install"
+      - cmd: "[ -f bun.lock ] && bun install --frozen-lockfile || bun install"
 
   dev:
     desc: Run the Vite dev server
+    dir: "{{.ROOT_DIR}}/web"
     cmds:
-      - pnpm -C web dev
+      - bun run dev
 
   build:
     desc: Build the SPA into internal/web/dist
+    dir: "{{.ROOT_DIR}}/web"
     cmds:
-      - pnpm -C web build
+      - bun run build
       # Restore the embed placeholder vite's emptyOutDir removes, so a fresh
       # checkout (no SPA built) still compiles via //go:embed all:dist.
-      - cmd: ": > internal/web/dist/.gitkeep"
+      - cmd: ": > {{.ROOT_DIR}}/internal/web/dist/.gitkeep"
 
   lint:
     desc: ESLint + TypeScript typecheck
+    dir: "{{.ROOT_DIR}}/web"
     cmds:
-      - pnpm -C web lint
-      - pnpm -C web typecheck
+      - bun run lint
+      - bun run typecheck
 
   test:
     desc: Frontend tests (none configured yet)

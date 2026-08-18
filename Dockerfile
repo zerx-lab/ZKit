@@ -1,14 +1,13 @@
 # syntax=docker/dockerfile:1
 
 # --- Stage 1: build the SPA ---
-FROM node:26-slim AS frontend
+FROM oven/bun:1.4.0 AS frontend
 WORKDIR /app
-RUN npm install -g pnpm@10.33.0
-COPY web/package.json web/pnpm-lock.yaml ./web/
-RUN cd web && pnpm install --frozen-lockfile
+COPY web/package.json web/bun.lock ./web/
+RUN cd web && bun install --frozen-lockfile
 COPY web ./web
 # vite outputs to ../internal/web/dist; ensure the parent exists.
-RUN mkdir -p internal/web && cd web && pnpm build
+RUN mkdir -p internal/web && cd web && bun run build
 
 # --- Stage 2: build the static Go binary ---
 FROM golang:1.26-bookworm AS backend

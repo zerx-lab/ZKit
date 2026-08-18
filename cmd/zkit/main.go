@@ -582,7 +582,7 @@ func printNextSteps(dir, brand string) {
 	fmt.Printf("  cd %s\n", dir)
 	fmt.Println("  cp .env.example .env   # then set JWT_SECRET")
 	fmt.Println("  go build ./...         # compiles offline; no codegen needed")
-	fmt.Println("  (cd web && pnpm install && pnpm build)")
+	fmt.Println("  (cd web && bun install && bun run build)")
 	fmt.Println()
 	fmt.Println("For the full dev experience (regenerates code, starts dev DB):")
 	fmt.Println("  task sync && task dev")

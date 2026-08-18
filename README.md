@@ -39,7 +39,7 @@ Go · connectRPC · GORM ·  React 19 · TanStack · Tailwind v4
 
 ## 🚀 快速开始
 
-> 前置:Go 1.26+、Node + pnpm、[Task](https://taskfile.dev)、buf、Docker。
+> 前置:Go 1.26+、[Bun](https://bun.sh)、[Task](https://taskfile.dev)、buf、Docker。
 
 ```bash
 # 首次设置:装工具/依赖 → 生成代码 → 创建 .env → 启动 dev PostgreSQL
@@ -81,7 +81,7 @@ zkit new github.com/acme/foo ../foo [--brand Foo] [--db foo]
 cd ../foo
 cp .env.example .env      # 设置 JWT_SECRET
 go build ./...            # 离线编译,无需 codegen
-(cd web && pnpm install && pnpm build)
+(cd web && bun install && bun run build)
 # 完整开发体验(重生成代码、起 dev DB):task sync && task dev
 ```
 

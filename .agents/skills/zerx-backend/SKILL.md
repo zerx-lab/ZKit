@@ -47,7 +47,7 @@ description: "ZKit 后端开发规约(Go + connectRPC + GORM)。当新增/修改
 
 ## codegen 版本同步
 - `buf.gen.yaml` 内 Go 插件的 `@version`(`protoc-gen-go`、`protoc-gen-connect-go`)需与 `go.mod` 对应库版本**手动一致**;升级库后同步改字符串再 `task gen`。
-- TS 走 `buf.gen.web.yaml` + `--include-imports`(为生成 `buf/validate/validate_pb.ts`);Go 生成**不带** `--include-imports`(protovalidate 来自 Go module,避免重复 WKT)。
+- TS 走 `buf.gen.web.yaml` + `--include-imports`(为生成 `buf/validate/validate_pb.ts`);插件用 `bun` 启动 `web/node_modules` 里的 `protoc-gen-es` / `protoc-gen-connect-query`。Go 生成**不带** `--include-imports`(protovalidate 来自 Go module,避免重复 WKT)。
 - `connectrpc.com/validate` 为 unstable,升级前先读其 CHANGELOG。
 
 ## 源码锚点
