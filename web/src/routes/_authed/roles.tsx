@@ -504,7 +504,10 @@ function PermissionsForm({ role, onClose }: { role: Role; onClose: () => void })
                     {t(menu.title)}
                   </span>
                   {menu.buttons.map((b) => (
-                    <label key={String(b.id)} className="flex items-center gap-2 rounded px-2 py-1 hover:bg-accent">
+                    <label
+                      key={String(b.id)}
+                      className="flex h-9 cursor-pointer items-center gap-2 rounded-md px-3 transition-colors hover:bg-accent"
+                    >
                       <Checkbox
                         checked={buttonIds.has(b.id)}
                         onCheckedChange={() => toggleButton(b.id)}
@@ -520,11 +523,20 @@ function PermissionsForm({ role, onClose }: { role: Role; onClose: () => void })
       </Tabs>
 
       <DialogFooter className="border-t px-6 py-4">
-        <Button variant="outline" onClick={onClose} disabled={setMut.isPending}>
+        <Button
+          variant="outline"
+          className="min-w-20"
+          onClick={onClose}
+          disabled={setMut.isPending}
+        >
           {t("common.cancel")}
         </Button>
-        <Button onClick={() => void save()} disabled={setMut.isPending}>
-          {t("common.save")}
+        <Button
+          className="min-w-20"
+          onClick={() => void save()}
+          disabled={setMut.isPending}
+        >
+          {t("rolePage.savePermissions")}
         </Button>
       </DialogFooter>
     </div>
