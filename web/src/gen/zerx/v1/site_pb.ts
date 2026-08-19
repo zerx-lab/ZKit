@@ -11,7 +11,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file zerx/v1/site.proto.
  */
 export const file_zerx_v1_site: GenFile = /*@__PURE__*/
-  fileDesc("ChJ6ZXJ4L3YxL3NpdGUucHJvdG8SB3plcngudjEiOgoMU2l0ZVNldHRpbmdzEgwKBG5hbWUYASABKAkSDAoEbG9nbxgCIAEoCRIOCgZkb21haW4YAyABKAkiGAoWR2V0U2l0ZVNldHRpbmdzUmVxdWVzdCJlChlVcGRhdGVTaXRlU2V0dGluZ3NSZXF1ZXN0EhYKBG5hbWUYASABKAlCCLpIBXIDGIABEhYKBGxvZ28YAiABKAlCCLpIBXIDGIAEEhgKBmRvbWFpbhgDIAEoCUIIukgFcgMYgAIysQEKE1NpdGVTZXR0aW5nc1NlcnZpY2USSQoPR2V0U2l0ZVNldHRpbmdzEh8uemVyeC52MS5HZXRTaXRlU2V0dGluZ3NSZXF1ZXN0GhUuemVyeC52MS5TaXRlU2V0dGluZ3MSTwoSVXBkYXRlU2l0ZVNldHRpbmdzEiIuemVyeC52MS5VcGRhdGVTaXRlU2V0dGluZ3NSZXF1ZXN0GhUuemVyeC52MS5TaXRlU2V0dGluZ3NCMFouZ2l0aHViLmNvbS96ZXJ4LWxhYi96a2l0L2dlbi9nby96ZXJ4L3YxO3plcnh2MWIGcHJvdG8z", [file_buf_validate_validate]);
+  fileDesc("ChJ6ZXJ4L3YxL3NpdGUucHJvdG8SB3plcngudjEikwEKDFNpdGVTZXR0aW5ncxIMCgRuYW1lGAEgASgJEgwKBGxvZ28YAiABKAkSDgoGZG9tYWluGAMgASgJEhgKEHJlZ2lzdGVyX2VuYWJsZWQYBCABKAgSFQoNcmVnaXN0ZXJfb3BlbhgFIAEoCBImChVyZWdpc3Rlcl9kZWZhdWx0X3JvbGUYBiABKAlCB7pIBHICGEAiGAoWR2V0U2l0ZVNldHRpbmdzUmVxdWVzdCKnAQoZVXBkYXRlU2l0ZVNldHRpbmdzUmVxdWVzdBIWCgRuYW1lGAEgASgJQgi6SAVyAxiAARIWCgRsb2dvGAIgASgJQgi6SAVyAxiABBIYCgZkb21haW4YAyABKAlCCLpIBXIDGIACEhgKEHJlZ2lzdGVyX2VuYWJsZWQYBCABKAgSJgoVcmVnaXN0ZXJfZGVmYXVsdF9yb2xlGAUgASgJQge6SARyAhhAMrEBChNTaXRlU2V0dGluZ3NTZXJ2aWNlEkkKD0dldFNpdGVTZXR0aW5ncxIfLnplcngudjEuR2V0U2l0ZVNldHRpbmdzUmVxdWVzdBoVLnplcngudjEuU2l0ZVNldHRpbmdzEk8KElVwZGF0ZVNpdGVTZXR0aW5ncxIiLnplcngudjEuVXBkYXRlU2l0ZVNldHRpbmdzUmVxdWVzdBoVLnplcngudjEuU2l0ZVNldHRpbmdzQjBaLmdpdGh1Yi5jb20vemVyeC1sYWIvemtpdC9nZW4vZ28vemVyeC92MTt6ZXJ4djFiBnByb3RvMw", [file_buf_validate_validate]);
 
 /**
  * @generated from message zerx.v1.SiteSettings
@@ -31,6 +31,27 @@ export type SiteSettings = Message<"zerx.v1.SiteSettings"> & {
    * @generated from field: string domain = 3;
    */
   domain: string;
+
+  /**
+   * Stored admin switch. Absent or false means closed.
+   *
+   * @generated from field: bool register_enabled = 4;
+   */
+  registerEnabled: boolean;
+
+  /**
+   * Computed: register_enabled || the user table is empty (first-admin bootstrap).
+   *
+   * @generated from field: bool register_open = 5;
+   */
+  registerOpen: boolean;
+
+  /**
+   * Role assigned to self-registered users after bootstrap. Empty means "user".
+   *
+   * @generated from field: string register_default_role = 6;
+   */
+  registerDefaultRole: string;
 };
 
 /**
@@ -71,6 +92,16 @@ export type UpdateSiteSettingsRequest = Message<"zerx.v1.UpdateSiteSettingsReque
    * @generated from field: string domain = 3;
    */
   domain: string;
+
+  /**
+   * @generated from field: bool register_enabled = 4;
+   */
+  registerEnabled: boolean;
+
+  /**
+   * @generated from field: string register_default_role = 5;
+   */
+  registerDefaultRole: string;
 };
 
 /**

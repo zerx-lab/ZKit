@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getCaptcha, login } from "@/gen/zerx/v1/auth-AuthService_connectquery";
+import { getSiteSettings } from "@/gen/zerx/v1/site-SiteSettingsService_connectquery";
 import { auth } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/form";
 import { queryClient } from "@/lib/query-client";
@@ -47,6 +48,8 @@ function LoginPage() {
   const captchaQuery = useQuery(getCaptcha, undefined, { enabled: showCaptcha });
   const captchaImage = captchaQuery.data?.imageBase64 ?? "";
   const captchaIdFromQuery = captchaQuery.data?.captchaId ?? "";
+  const siteQuery = useQuery(getSiteSettings, {});
+  const registerOpen = siteQuery.data?.registerOpen ?? false;
 
   const emailSchema = z.email(t("validation.email"));
   const passwordSchema = z.string().min(8, t("validation.passwordMin"));
@@ -241,12 +244,14 @@ function LoginPage() {
             </form>
           )}
 
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            {t("login.noAccount")}{" "}
-            <Link to="/register" className="font-medium text-primary hover:underline">
-              {t("login.registerLink")}
-            </Link>
-          </p>
+          {registerOpen ? (
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              {t("login.noAccount")}{" "}
+              <Link to="/register" className="font-medium text-primary hover:underline">
+                {t("login.registerLink")}
+              </Link>
+            </p>
+          ) : null}
         </CardContent>
       </Card>
     </div>

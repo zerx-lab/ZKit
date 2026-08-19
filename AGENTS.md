@@ -105,7 +105,7 @@
 
 常驻三条不变量:
 - **生产必设 `JWT_SECRET`**:缺失则启动失败(`os.Exit(1)`)。
-- **无默认账号**:不 seed 管理员;首次在 `/register` 注册——首个用户即管理员,生产请尽快注册并妥善保管。
+- **无默认账号**:不 seed 管理员;首次在 `/register` 注册即管理员。公开注册默认开启,可在网站设置关闭;新用户默认角色可配(禁 admin)。
 - **纯 Go / CGO-free**:构建 `CGO_ENABLED=0`;新增依赖须纯 Go。
 
 JWT/会话/刷新/验证码/防爆破/审计/上传/存储/进程内状态/IP 来源等机制详见 `skill://zerx-security`;role-as-code 局限见 `skill://zerx-authz`。

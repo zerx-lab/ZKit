@@ -5076,6 +5076,19 @@ components:
         domain:
           type: string
           title: domain
+        registerEnabled:
+          type: boolean
+          title: register_enabled
+          description: Stored admin switch. Absent or false means closed.
+        registerOpen:
+          type: boolean
+          title: register_open
+          description: 'Computed: register_enabled || the user table is empty (first-admin bootstrap).'
+        registerDefaultRole:
+          type: string
+          title: register_default_role
+          maxLength: 64
+          description: Role assigned to self-registered users after bootstrap. Empty means "user".
       title: SiteSettings
       additionalProperties: false
     zerx.v1.SyncApisRequest:
@@ -5394,6 +5407,13 @@ components:
           type: string
           title: domain
           maxLength: 256
+        registerEnabled:
+          type: boolean
+          title: register_enabled
+        registerDefaultRole:
+          type: string
+          title: register_default_role
+          maxLength: 64
       title: UpdateSiteSettingsRequest
       additionalProperties: false
     zerx.v1.UpdateUserRequest:

@@ -1,5 +1,5 @@
 import { ConnectError } from "@connectrpc/connect";
-import { useMutation } from "@connectrpc/connect-query";
+import { useMutation, useQuery } from "@connectrpc/connect-query";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { register } from "@/gen/zerx/v1/auth-AuthService_connectquery";
+import { getSiteSettings } from "@/gen/zerx/v1/site-SiteSettingsService_connectquery";
 import { auth } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/form";
 import { queryClient } from "@/lib/query-client";
@@ -31,6 +32,8 @@ function RegisterPage() {
   const { t } = useI18n();
   const router = useRouter();
   const registerMutation = useMutation(register);
+  const siteQuery = useQuery(getSiteSettings, {});
+  const registerOpen = siteQuery.data?.registerOpen ?? false;
 
   const nameSchema = z.string().min(1, t("validation.nameRequired"));
   const emailSchema = z.email(t("validation.email"));
@@ -63,10 +66,22 @@ function RegisterPage() {
             <div className="size-8 rounded-md bg-primary" />
             <span className="text-lg font-semibold">{t("app.name")}</span>
           </div>
-          <CardTitle className="text-xl">{t("register.title")}</CardTitle>
-          <CardDescription>{t("register.subtitle")}</CardDescription>
+          <CardTitle className="text-xl">
+            {registerOpen || siteQuery.isPending ? t("register.title") : t("register.closed")}
+          </CardTitle>
+          <CardDescription>
+            {registerOpen || siteQuery.isPending ? t("register.subtitle") : t("register.closedHint")}
+          </CardDescription>
         </CardHeader>
         <CardContent>
+          {!siteQuery.isPending && !registerOpen ? (
+            <p className="text-center text-sm text-muted-foreground">
+              <Link to="/login" className="font-medium text-primary hover:underline">
+                {t("register.loginLink")}
+              </Link>
+            </p>
+          ) : (
+          <>
           <form
             className="flex flex-col gap-4"
             onSubmit={(e) => {
@@ -145,6 +160,8 @@ function RegisterPage() {
               {t("register.loginLink")}
             </Link>
           </p>
+          </>
+          )}
         </CardContent>
       </Card>
     </div>

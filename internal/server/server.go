@@ -155,7 +155,7 @@ func New(cfg *config.Config, db *gorm.DB, logger *slog.Logger, scheduler *jobs.S
 	reg(zerxv1connect.NewSysParamServiceHandler(service.NewSysParamService(db, paramCache), opts))
 	reg(zerxv1connect.NewFileServiceHandler(service.NewFileService(db, store, mediaResolver), opts))
 	reg(zerxv1connect.NewLogServiceHandler(service.NewLogService(db), opts))
-	reg(zerxv1connect.NewSiteSettingsServiceHandler(service.NewSiteSettingsService(paramCache, mediaResolver), opts))
+	reg(zerxv1connect.NewSiteSettingsServiceHandler(service.NewSiteSettingsService(db, paramCache, mediaResolver), opts))
 	reg(zerxv1connect.NewDashboardServiceHandler(service.NewDashboardService(db), opts))
 	pluginRoot := cfg.Plugin.ProjectRoot
 	if pluginRoot == "" {

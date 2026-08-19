@@ -50,7 +50,7 @@ task dev:backend   # 后端(含 db:up + go run)
 task dev:web       # 前端 Vite(:5173 代理到 :8080)
 ```
 
-打开浏览器访问 `http://localhost:5173`,在 `/register` 注册首个用户(即管理员)。
+打开浏览器访问 `http://localhost:5173`,在 `/register` 注册首个用户(即管理员)。公开注册默认开启,可在后台「网站设置」关闭,并可配置新用户默认角色。
 
 ## 🧬 基于本模板创建新项目
 

@@ -17,6 +17,12 @@ message SiteSettings {
   string name = 1;
   string logo = 2;
   string domain = 3;
+  // Stored admin switch. Absent or empty means open; only explicit false closes.
+  bool register_enabled = 4;
+  // Computed: register_enabled || the user table is empty (first-admin bootstrap).
+  bool register_open = 5;
+  // Role assigned to self-registered users after bootstrap. Empty means "user".
+  string register_default_role = 6 [(buf.validate.field).string.max_len = 64];
 }
 
 message GetSiteSettingsRequest {}
@@ -25,4 +31,6 @@ message UpdateSiteSettingsRequest {
   string name = 1 [(buf.validate.field).string.max_len = 128];
   string logo = 2 [(buf.validate.field).string.max_len = 512];
   string domain = 3 [(buf.validate.field).string.max_len = 256];
+  bool register_enabled = 4;
+  string register_default_role = 5 [(buf.validate.field).string.max_len = 64];
 }

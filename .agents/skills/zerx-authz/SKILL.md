@@ -31,7 +31,7 @@ claims.Roles 任一 ==admin    → 放行(绕过 Casbin)
   - RateLimit **故意置于 OperationLog 外层**:被限流的请求不落库(避免高压下 DB 放大),返回 `CodeResourceExhausted`。
   - OperationLog 拦截器**兼 panic 兜底**,已替代 `connect.WithRecover`(无单独 recover)。
 
-## public(免认证,共 6 项)
+## public(免认证,共 8 项)
 ```
 AuthServiceLoginProcedure
 AuthServiceRegisterProcedure
@@ -39,9 +39,11 @@ AuthServiceRefreshProcedure
 AuthServiceGetCaptchaProcedure
 AuthServiceRequestPasswordResetProcedure
 AuthServiceConfirmPasswordResetProcedure
+SiteSettingsServiceGetSiteSettingsProcedure
+PluginServiceListPublicPagesProcedure
 ```
 
-## selfServe(已登录即放行,共 13 项)
+## selfServe(已登录即放行,共 12 项)
 ```
 AuthServiceMeProcedure
 AuthServiceLogoutProcedure
@@ -50,7 +52,6 @@ AuthServiceRevokeSessionProcedure
 MenuServiceGetUserMenusProcedure
 MenuServiceGetUserButtonsProcedure
 DictServiceGetDictByTypeProcedure
-SiteSettingsServiceGetSiteSettingsProcedure
 AuthServiceChangePasswordProcedure
 AuthServiceUpdateProfileProcedure
 AuthServiceSetupTotpProcedure

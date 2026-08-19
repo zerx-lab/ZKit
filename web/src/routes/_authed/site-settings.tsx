@@ -12,6 +12,15 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { listRoles } from "@/gen/zerx/v1/role-RoleService_connectquery";
+import {
   getSiteSettings,
   updateSiteSettings,
 } from "@/gen/zerx/v1/site-SiteSettingsService_connectquery";
@@ -28,10 +37,13 @@ function SiteSettingsPage() {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const { data, isPending } = useQuery(getSiteSettings, {});
+  const { data: rolesData } = useQuery(listRoles);
 
   const [name, setName] = useState("");
   const [logo, setLogo] = useState("");
   const [domain, setDomain] = useState("");
+  const [registerEnabled, setRegisterEnabled] = useState(true);
+  const [registerDefaultRole, setRegisterDefaultRole] = useState("user");
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -40,6 +52,8 @@ function SiteSettingsPage() {
       setName(data.name);
       setLogo(data.logo);
       setDomain(data.domain);
+      setRegisterEnabled(data.registerEnabled);
+      setRegisterDefaultRole(data.registerDefaultRole || "user");
     }
   }, [data]);
 
@@ -78,7 +92,7 @@ function SiteSettingsPage() {
   };
 
   const handleSave = () => {
-    mutation.mutate({ name, logo, domain });
+    mutation.mutate({ name, logo, domain, registerEnabled, registerDefaultRole });
   };
 
   return (
@@ -146,6 +160,42 @@ function SiteSettingsPage() {
               disabled={isPending}
               onChange={(e) => setDomain(e.target.value)}
             />
+          </div>
+
+          <div className="flex items-start justify-between gap-4 rounded-lg border border-border px-4 py-3">
+            <div className="space-y-1">
+              <Label htmlFor="site-register">{t("sitePage.registerEnabled")}</Label>
+              <p className="text-sm text-muted-foreground">{t("sitePage.registerEnabledHint")}</p>
+            </div>
+            <Switch
+              id="site-register"
+              checked={registerEnabled}
+              disabled={isPending}
+              onCheckedChange={setRegisterEnabled}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="site-register-role">{t("sitePage.registerDefaultRole")}</Label>
+            <Select
+              value={registerDefaultRole}
+              onValueChange={setRegisterDefaultRole}
+              disabled={isPending}
+            >
+              <SelectTrigger id="site-register-role" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(rolesData?.roles ?? [])
+                  .filter((role) => role.code !== "admin")
+                  .map((role) => (
+                    <SelectItem key={role.code} value={role.code}>
+                      {role.name || role.code}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground">{t("sitePage.registerDefaultRoleHint")}</p>
           </div>
 
           <Can code="site:update">

@@ -103,6 +103,8 @@ export const zh: typeof en = {
     loginLink: "去登录",
     submitting: "创建中…",
     failed: "注册失败",
+    closed: "注册未开放",
+    closedHint: "请联系管理员在网站设置中开启公开注册。",
   },
   dashboard: {
     overviewTitle: "系统概览",
@@ -306,7 +308,7 @@ export const zh: typeof en = {
   },
   sitePage: {
     title: "网站设置",
-    subtitle: "设置网站名称、Logo 与访问域名。",
+    subtitle: "设置网站标识、公开注册开关与新用户默认角色。",
     name: "网站名称",
     namePlaceholder: "请输入网站名称",
     logo: "Logo 地址",
@@ -315,6 +317,10 @@ export const zh: typeof en = {
     uploading: "上传中…",
     domain: "访问域名",
     domainPlaceholder: "例如 example.com",
+    registerEnabled: "开放注册",
+    registerEnabledHint: "默认开启。关闭后将隐藏公开注册入口。",
+    registerDefaultRole: "新注册用户默认角色",
+    registerDefaultRoleHint: "仅在已有管理员之后生效，不可选择管理员。",
     save: "保存",
     saving: "保存中…",
     savedToast: "网站设置已保存",

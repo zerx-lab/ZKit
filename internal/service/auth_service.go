@@ -202,12 +202,16 @@ func (s *AuthService) startSessionTx(ctx context.Context, u model.User, roles []
 	return sid, access, refresh, nil
 }
 
-// Register creates an account. The first user to register becomes admin; all
-// subsequent self-registrations are regular users.
+// Register creates an account. The first user becomes admin even when
+// registration is closed. Later sign-ups require the switch (default on) and
+// receive site.register_default_role (never admin).
 func (s *AuthService) Register(ctx context.Context, req *connect.Request[zerxv1.RegisterRequest]) (*connect.Response[zerxv1.RegisterResponse], error) {
 	count, err := gorm.G[model.User](s.db).Count(ctx, "id")
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	if count > 0 && !siteRegisterEnabled(s.param) {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, errors.New("registration is closed"))
 	}
 
 	_, err = gorm.G[model.User](s.db).Where("email = ?", req.Msg.GetEmail()).First(ctx)
@@ -226,9 +230,17 @@ func (s *AuthService) Register(ctx context.Context, req *connect.Request[zerxv1.
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	roleCode := model.RoleUser
-	if count == 0 {
-		roleCode = model.RoleAdmin
+	roleCode := model.RoleAdmin
+	if count > 0 {
+		roleCode = siteRegisterDefaultRole(s.param)
+		if roleCode == model.RoleAdmin {
+			roleCode = model.RoleUser
+		} else if _, rerr := gorm.G[model.Role](s.db).Where("code = ?", roleCode).First(ctx); rerr != nil {
+			if !errors.Is(rerr, gorm.ErrRecordNotFound) {
+				return nil, connect.NewError(connect.CodeInternal, rerr)
+			}
+			roleCode = model.RoleUser
+		}
 	}
 
 	u := model.User{

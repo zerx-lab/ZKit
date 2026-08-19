@@ -23,12 +23,18 @@ const (
 )
 
 type SiteSettings struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Logo          string                 `protobuf:"bytes,2,opt,name=logo,proto3" json:"logo,omitempty"`
-	Domain        string                 `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Name   string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Logo   string                 `protobuf:"bytes,2,opt,name=logo,proto3" json:"logo,omitempty"`
+	Domain string                 `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
+	// Stored admin switch. Absent or false means closed.
+	RegisterEnabled bool `protobuf:"varint,4,opt,name=register_enabled,json=registerEnabled,proto3" json:"register_enabled,omitempty"`
+	// Computed: register_enabled || the user table is empty (first-admin bootstrap).
+	RegisterOpen bool `protobuf:"varint,5,opt,name=register_open,json=registerOpen,proto3" json:"register_open,omitempty"`
+	// Role assigned to self-registered users after bootstrap. Empty means "user".
+	RegisterDefaultRole string `protobuf:"bytes,6,opt,name=register_default_role,json=registerDefaultRole,proto3" json:"register_default_role,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *SiteSettings) Reset() {
@@ -82,6 +88,27 @@ func (x *SiteSettings) GetDomain() string {
 	return ""
 }
 
+func (x *SiteSettings) GetRegisterEnabled() bool {
+	if x != nil {
+		return x.RegisterEnabled
+	}
+	return false
+}
+
+func (x *SiteSettings) GetRegisterOpen() bool {
+	if x != nil {
+		return x.RegisterOpen
+	}
+	return false
+}
+
+func (x *SiteSettings) GetRegisterDefaultRole() string {
+	if x != nil {
+		return x.RegisterDefaultRole
+	}
+	return ""
+}
+
 type GetSiteSettingsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -119,12 +146,14 @@ func (*GetSiteSettingsRequest) Descriptor() ([]byte, []int) {
 }
 
 type UpdateSiteSettingsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Logo          string                 `protobuf:"bytes,2,opt,name=logo,proto3" json:"logo,omitempty"`
-	Domain        string                 `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	Name                string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Logo                string                 `protobuf:"bytes,2,opt,name=logo,proto3" json:"logo,omitempty"`
+	Domain              string                 `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
+	RegisterEnabled     bool                   `protobuf:"varint,4,opt,name=register_enabled,json=registerEnabled,proto3" json:"register_enabled,omitempty"`
+	RegisterDefaultRole string                 `protobuf:"bytes,5,opt,name=register_default_role,json=registerDefaultRole,proto3" json:"register_default_role,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *UpdateSiteSettingsRequest) Reset() {
@@ -178,20 +207,39 @@ func (x *UpdateSiteSettingsRequest) GetDomain() string {
 	return ""
 }
 
+func (x *UpdateSiteSettingsRequest) GetRegisterEnabled() bool {
+	if x != nil {
+		return x.RegisterEnabled
+	}
+	return false
+}
+
+func (x *UpdateSiteSettingsRequest) GetRegisterDefaultRole() string {
+	if x != nil {
+		return x.RegisterDefaultRole
+	}
+	return ""
+}
+
 var File_zerx_v1_site_proto protoreflect.FileDescriptor
 
 const file_zerx_v1_site_proto_rawDesc = "" +
 	"\n" +
-	"\x12zerx/v1/site.proto\x12\azerx.v1\x1a\x1bbuf/validate/validate.proto\"N\n" +
+	"\x12zerx/v1/site.proto\x12\azerx.v1\x1a\x1bbuf/validate/validate.proto\"\xdb\x01\n" +
 	"\fSiteSettings\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04logo\x18\x02 \x01(\tR\x04logo\x12\x16\n" +
-	"\x06domain\x18\x03 \x01(\tR\x06domain\"\x18\n" +
-	"\x16GetSiteSettingsRequest\"y\n" +
+	"\x06domain\x18\x03 \x01(\tR\x06domain\x12)\n" +
+	"\x10register_enabled\x18\x04 \x01(\bR\x0fregisterEnabled\x12#\n" +
+	"\rregister_open\x18\x05 \x01(\bR\fregisterOpen\x12;\n" +
+	"\x15register_default_role\x18\x06 \x01(\tB\a\xbaH\x04r\x02\x18@R\x13registerDefaultRole\"\x18\n" +
+	"\x16GetSiteSettingsRequest\"\xe1\x01\n" +
 	"\x19UpdateSiteSettingsRequest\x12\x1c\n" +
 	"\x04name\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x01R\x04name\x12\x1c\n" +
 	"\x04logo\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x04R\x04logo\x12 \n" +
-	"\x06domain\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x02R\x06domain2\xb1\x01\n" +
+	"\x06domain\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x02R\x06domain\x12)\n" +
+	"\x10register_enabled\x18\x04 \x01(\bR\x0fregisterEnabled\x12;\n" +
+	"\x15register_default_role\x18\x05 \x01(\tB\a\xbaH\x04r\x02\x18@R\x13registerDefaultRole2\xb1\x01\n" +
 	"\x13SiteSettingsService\x12I\n" +
 	"\x0fGetSiteSettings\x12\x1f.zerx.v1.GetSiteSettingsRequest\x1a\x15.zerx.v1.SiteSettings\x12O\n" +
 	"\x12UpdateSiteSettings\x12\".zerx.v1.UpdateSiteSettingsRequest\x1a\x15.zerx.v1.SiteSettingsB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"

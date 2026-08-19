@@ -102,6 +102,8 @@ export const en = {
     loginLink: "Sign in",
     submitting: "Creating…",
     failed: "Registration failed",
+    closed: "Registration is closed",
+    closedHint: "Ask an administrator to enable public registration in site settings.",
   },
   dashboard: {
     overviewTitle: "System overview",
@@ -305,7 +307,7 @@ export const en = {
   },
   sitePage: {
     title: "Site Settings",
-    subtitle: "Configure your site's name, logo, and access domain.",
+    subtitle: "Configure site identity, public registration, and the default role.",
     name: "Site Name",
     namePlaceholder: "Enter the site name",
     logo: "Logo URL",
@@ -314,6 +316,10 @@ export const en = {
     uploading: "Uploading…",
     domain: "Access Domain",
     domainPlaceholder: "e.g. example.com",
+    registerEnabled: "Public registration",
+    registerEnabledHint: "On by default. Turn off to hide the public register entry.",
+    registerDefaultRole: "Default role for new registrations",
+    registerDefaultRoleHint: "Applied after the first admin exists. Admin cannot be selected.",
     save: "Save",
     saving: "Saving…",
     savedToast: "Site settings saved",

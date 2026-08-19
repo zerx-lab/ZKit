@@ -8,7 +8,7 @@ description: "ZKit 认证与安全机制(JWT/会话/刷新/验证码/防爆破/�
 
 ## JWT 与启动
 - **生产必设 `JWT_SECRET`**:缺失则启动失败(`os.Exit(1)`)。
-- **无默认账号**:不 seed 管理员;`/register`(public)首个注册者(库中用户数为 0 时)角色为 `admin`,其后为 `user`;邮箱唯一(冲突 → `CodeAlreadyExists`)。
+- **无默认账号**:不 seed 管理员;`/register`(public)首个注册者为 `admin`。公开注册默认开启(`site.register_enabled` 缺省/空=开,仅 `"false"` 关闭);关闭后用户数>0 再注册 → `CodeFailedPrecondition`。新用户角色取 `site.register_default_role`(缺省 `user`,禁 `admin`)。邮箱唯一(冲突 → `CodeAlreadyExists`)。开关入口:`SiteSettingsService.UpdateSiteSettings`(后台「网站设置」)。
 - token 时效:access **15m**、refresh **168h**。`Claims{ UserID uint64, Roles []string, TokenType string }`(多角色);`Issuer.IssueAccess(userID uint64, roles []string)`、`IssueRefresh / ParseAccess / ParseRefresh`(`internal/auth/jwt.go`)。
 - h2c(明文 HTTP/2)仅供 `grpcurl` 等工具;浏览器 SPA 走 HTTP/1.1,不依赖 h2c。
 - 前端刷新:`transport.ts` 实现 401 → single-flight 刷新 → 重试一次 → 仍失败清 token 跳登录。

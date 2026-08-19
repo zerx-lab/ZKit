@@ -126,3 +126,85 @@ func TestLoginSingleSessionEvictsOthers(t *testing.T) {
 		t.Errorf("surviving session = %q, want the newest %q", remaining.ID, second.Msg.GetSessionId())
 	}
 }
+
+func TestRegisterFirstUserAllowedWhenClosed(t *testing.T) {
+	db := newTestDB(t)
+	svc := newAuthService(t, db, config.AuthConfig{CaptchaThreshold: 99, LockThreshold: 99, LockFor: time.Hour})
+	ctx := context.Background()
+	if err := svc.param.Set(ctx, siteRegisterEnabledKey, "false"); err != nil {
+		t.Fatalf("disable register: %v", err)
+	}
+
+	res, err := svc.Register(ctx, connect.NewRequest(&zerxv1.RegisterRequest{
+		Email: "first@b.com", Name: "First", Password: "password1",
+	}))
+	if err != nil {
+		t.Fatalf("first register: %v", err)
+	}
+	if got := res.Msg.GetUser().GetRoles(); len(got) != 1 || got[0] != model.RoleAdmin {
+		t.Fatalf("first user roles = %v, want [admin]", got)
+	}
+
+	_, err = svc.Register(ctx, connect.NewRequest(&zerxv1.RegisterRequest{
+		Email: "second@b.com", Name: "Second", Password: "password1",
+	}))
+	if connect.CodeOf(err) != connect.CodeFailedPrecondition {
+		t.Fatalf("second register = %v, want FailedPrecondition", connect.CodeOf(err))
+	}
+}
+
+func TestRegisterUsesConfiguredDefaultRole(t *testing.T) {
+	db := newTestDB(t)
+	svc := newAuthService(t, db, config.AuthConfig{CaptchaThreshold: 99, LockThreshold: 99, LockFor: time.Hour})
+	ctx := context.Background()
+	if err := db.Create(&model.Role{Code: "staff", Name: "Staff"}).Error; err != nil {
+		t.Fatalf("create role: %v", err)
+	}
+	if err := svc.param.Set(ctx, siteRegisterEnabledKey, "true"); err != nil {
+		t.Fatalf("enable register: %v", err)
+	}
+	if err := svc.param.Set(ctx, siteRegisterDefaultRoleKey, "staff"); err != nil {
+		t.Fatalf("set default role: %v", err)
+	}
+
+	if _, err := svc.Register(ctx, connect.NewRequest(&zerxv1.RegisterRequest{
+		Email: "first@b.com", Name: "First", Password: "password1",
+	})); err != nil {
+		t.Fatalf("first register: %v", err)
+	}
+	res, err := svc.Register(ctx, connect.NewRequest(&zerxv1.RegisterRequest{
+		Email: "staff@b.com", Name: "Staff", Password: "password1",
+	}))
+	if err != nil {
+		t.Fatalf("staff register: %v", err)
+	}
+	if got := res.Msg.GetUser().GetRoles(); len(got) != 1 || got[0] != "staff" {
+		t.Fatalf("second user roles = %v, want [staff]", got)
+	}
+}
+
+func TestRegisterFallsBackWhenDefaultRoleIsAdmin(t *testing.T) {
+	db := newTestDB(t)
+	svc := newAuthService(t, db, config.AuthConfig{CaptchaThreshold: 99, LockThreshold: 99, LockFor: time.Hour})
+	ctx := context.Background()
+	if err := svc.param.Set(ctx, siteRegisterEnabledKey, "true"); err != nil {
+		t.Fatalf("enable register: %v", err)
+	}
+	if err := svc.param.Set(ctx, siteRegisterDefaultRoleKey, model.RoleAdmin); err != nil {
+		t.Fatalf("set default role: %v", err)
+	}
+	if _, err := svc.Register(ctx, connect.NewRequest(&zerxv1.RegisterRequest{
+		Email: "first@b.com", Name: "First", Password: "password1",
+	})); err != nil {
+		t.Fatalf("first register: %v", err)
+	}
+	res, err := svc.Register(ctx, connect.NewRequest(&zerxv1.RegisterRequest{
+		Email: "second@b.com", Name: "Second", Password: "password1",
+	}))
+	if err != nil {
+		t.Fatalf("second register: %v", err)
+	}
+	if got := res.Msg.GetUser().GetRoles(); len(got) != 1 || got[0] != model.RoleUser {
+		t.Fatalf("second user roles = %v, want [user]", got)
+	}
+}
