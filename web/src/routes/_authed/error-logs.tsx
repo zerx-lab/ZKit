@@ -123,7 +123,7 @@ function ErrorLogsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t("logPage.errorTitle")}</h1>
@@ -141,74 +141,70 @@ function ErrorLogsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <Input
-            placeholder={t("logPage.searchPlaceholder")}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="w-56"
-          />
-          <Button variant="outline" size="sm" onClick={handleSearch}>
-            {t("common.search")}
-          </Button>
-        </div>
-        <Select
-          value={statusFilter}
-          onValueChange={(v) => { setStatusFilter(v === "_all" ? "" : v); setPage(1); }}
-        >
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder={t("logPage.allStatuses")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="_all">{t("logPage.allStatuses")}</SelectItem>
-            <SelectItem value="permission_denied">permission_denied</SelectItem>
-            <SelectItem value="unauthenticated">unauthenticated</SelectItem>
-            <SelectItem value="invalid_argument">invalid_argument</SelectItem>
-            <SelectItem value="not_found">not_found</SelectItem>
-            <SelectItem value="internal">internal</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex shrink-0 flex-wrap gap-2 rounded-lg border bg-card p-3"><div className="flex items-center gap-2">
         <Input
-          placeholder={t("logPage.methodPlaceholder")}
-          value={methodFilter}
-          onChange={(e) => { setMethodFilter(e.target.value); setPage(1); }}
-          className="w-32"
+          placeholder={t("logPage.searchPlaceholder")}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          className="w-56"
         />
-        <div className="flex items-center gap-1">
-          <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterStartDate")}</Label>
-          <Input
-            type="date"
-            value={startDate}
-            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            className="w-36"
-          />
-        </div>
-        <div className="flex items-center gap-1">
-          <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterEndDate")}</Label>
-          <Input
-            type="date"
-            value={endDate}
-            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            className="w-36"
-          />
-        </div>
+        <Button variant="outline" size="sm" onClick={handleSearch}>
+          {t("common.search")}
+        </Button>
       </div>
+      <Select
+        value={statusFilter}
+        onValueChange={(v) => { setStatusFilter(v === "_all" ? "" : v); setPage(1); }}
+      >
+        <SelectTrigger className="w-40">
+          <SelectValue placeholder={t("logPage.allStatuses")} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="_all">{t("logPage.allStatuses")}</SelectItem>
+          <SelectItem value="permission_denied">permission_denied</SelectItem>
+          <SelectItem value="unauthenticated">unauthenticated</SelectItem>
+          <SelectItem value="invalid_argument">invalid_argument</SelectItem>
+          <SelectItem value="not_found">not_found</SelectItem>
+          <SelectItem value="internal">internal</SelectItem>
+        </SelectContent>
+      </Select>
+      <Input
+        placeholder={t("logPage.methodPlaceholder")}
+        value={methodFilter}
+        onChange={(e) => { setMethodFilter(e.target.value); setPage(1); }}
+        className="w-32"
+      />
+      <div className="flex items-center gap-1">
+        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterStartDate")}</Label>
+        <Input
+          type="date"
+          value={startDate}
+          onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+          className="w-36"
+        />
+      </div>
+      <div className="flex items-center gap-1">
+        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterEndDate")}</Label>
+        <Input
+          type="date"
+          value={endDate}
+          onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+          className="w-36"
+        />
+      </div></div>
 
-      <Card className="overflow-hidden py-0">
+      <Card className="flex min-h-0 flex-1 flex-col overflow-hidden py-0">
         <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead className="w-20">{t("common.id")}</TableHead>
-              <TableHead>{t("logPage.procedure")}</TableHead>
-              <TableHead className="w-24">{t("logPage.status")}</TableHead>
-              <TableHead className="w-32">{t("logPage.ip")}</TableHead>
-              <TableHead>{t("logPage.error")}</TableHead>
-              <TableHead className="w-24">User ID</TableHead>
-              <TableHead className="w-40">{t("common.created")}</TableHead>
-            </TableRow>
-          </TableHeader>
+          <TableHeader><TableRow>
+            <TableHead className="w-20">{t("common.id")}</TableHead>
+            <TableHead>{t("logPage.procedure")}</TableHead>
+            <TableHead className="w-24">{t("logPage.status")}</TableHead>
+            <TableHead className="w-32">{t("logPage.ip")}</TableHead>
+            <TableHead>{t("logPage.error")}</TableHead>
+            <TableHead className="w-24">User ID</TableHead>
+            <TableHead className="w-40">{t("common.created")}</TableHead>
+          </TableRow></TableHeader>
           <TableBody>
             {isPending ? (
               <TableRow>

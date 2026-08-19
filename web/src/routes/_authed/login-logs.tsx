@@ -175,7 +175,7 @@ function LoginLogsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t("logPage.loginTitle")}</h1>
@@ -193,66 +193,62 @@ function LoginLogsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2">
-        <form className="flex items-center gap-2" onSubmit={applySearch}>
-          <Input
-            placeholder={t("logPage.searchPlaceholder")}
-            value={keywordInput}
-            onChange={(e) => setKeywordInput(e.target.value)}
-            className="max-w-xs"
-          />
-          <Button type="submit" variant="secondary" size="sm">
-            {t("common.search")}
-          </Button>
-        </form>
-        <Select
-          value={successFilter}
-          onValueChange={(v) => { setSuccessFilter(v); setPage(1); }}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue placeholder={t("logPage.allResults")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">{t("logPage.allResults")}</SelectItem>
-            <SelectItem value="1">{t("logPage.success")}</SelectItem>
-            <SelectItem value="2">{t("logPage.failure")}</SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="flex items-center gap-1">
-          <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterStartDate")}</Label>
-          <Input
-            type="date"
-            value={startDate}
-            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            className="w-36"
-          />
-        </div>
-        <div className="flex items-center gap-1">
-          <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterEndDate")}</Label>
-          <Input
-            type="date"
-            value={endDate}
-            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            className="w-36"
-          />
-        </div>
+      <div className="flex shrink-0 flex-wrap gap-2 rounded-lg border bg-card p-3"><form className="flex items-center gap-2" onSubmit={applySearch}>
+        <Input
+          placeholder={t("logPage.searchPlaceholder")}
+          value={keywordInput}
+          onChange={(e) => setKeywordInput(e.target.value)}
+          className="max-w-xs"
+        />
+        <Button type="submit" variant="secondary" size="sm">
+          {t("common.search")}
+        </Button>
+      </form>
+      <Select
+        value={successFilter}
+        onValueChange={(v) => { setSuccessFilter(v); setPage(1); }}
+      >
+        <SelectTrigger className="w-32">
+          <SelectValue placeholder={t("logPage.allResults")} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="0">{t("logPage.allResults")}</SelectItem>
+          <SelectItem value="1">{t("logPage.success")}</SelectItem>
+          <SelectItem value="2">{t("logPage.failure")}</SelectItem>
+        </SelectContent>
+      </Select>
+      <div className="flex items-center gap-1">
+        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterStartDate")}</Label>
+        <Input
+          type="date"
+          value={startDate}
+          onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+          className="w-36"
+        />
       </div>
+      <div className="flex items-center gap-1">
+        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterEndDate")}</Label>
+        <Input
+          type="date"
+          value={endDate}
+          onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+          className="w-36"
+        />
+      </div></div>
 
-      <Card className="gap-0 overflow-hidden py-0">
+      <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden py-0">
         <Table>
-          <TableHeader className="bg-muted">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
+          <TableHeader>{table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}</TableHeader>
           <TableBody>
             {isPending ? (
               <TableRow>
@@ -280,30 +276,28 @@ function LoginLogsPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t px-4 py-3">
-          <p className="text-sm text-muted-foreground">{t("common.total", { count: total })}</p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              {t("common.previous")}
-            </Button>
-            <span className="text-sm tabular-nums">
-              {t("common.pageOf", { page, pages: pageCount })}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= pageCount}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              {t("common.next")}
-            </Button>
-          </div>
-        </div>
+        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">{t("common.total", { count: total })}</p>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            {t("common.previous")}
+          </Button>
+          <span className="text-sm tabular-nums">
+            {t("common.pageOf", { page, pages: pageCount })}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= pageCount}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            {t("common.next")}
+          </Button>
+        </div></div>
       </Card>
     </div>
   );

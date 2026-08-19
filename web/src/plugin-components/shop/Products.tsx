@@ -69,7 +69,7 @@ export default function Products() {
   });
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">{t("plg.shop.title")}</h1>
@@ -89,7 +89,7 @@ export default function Products() {
         />
       </div>
 
-      <Card className="p-0">
+      <Card className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
         <Table>
           <TableHeader>
             <TableRow>

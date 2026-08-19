@@ -221,7 +221,7 @@ function UsersPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t("users.title")}</h1>
@@ -243,38 +243,34 @@ function UsersPage() {
         </div>
       </div>
 
-      <Card className="gap-0 overflow-hidden py-0">
-        <div className="border-b px-4 py-3">
-          <form className="flex items-center gap-2" onSubmit={applySearch}>
-            <div className="relative w-full max-w-xs">
-              <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={t("users.searchPlaceholder")}
-                value={keywordInput}
-                onChange={(e) => setKeywordInput(e.target.value)}
-                className="pl-8"
-              />
-            </div>
-            <Button type="submit" variant="secondary">
-              {t("common.search")}
-            </Button>
-          </form>
-        </div>
+      <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden py-0">
+        <div className="border-b bg-card px-4 py-3"><form className="flex items-center gap-2" onSubmit={applySearch}>
+          <div className="relative w-full max-w-xs">
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder={t("users.searchPlaceholder")}
+              value={keywordInput}
+              onChange={(e) => setKeywordInput(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          <Button type="submit" variant="secondary">
+            {t("common.search")}
+          </Button>
+        </form></div>
 
         <Table>
-          <TableHeader className="bg-muted">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
+          <TableHeader>{table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}</TableHeader>
           <TableBody>
             {isPending ? (
               <TableRow>
@@ -302,28 +298,26 @@ function UsersPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t px-4 py-3">
-          <p className="text-sm text-muted-foreground">{t("users.total", { count: total })}</p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              {t("users.previous")}
-            </Button>
-            <span className="text-sm tabular-nums">{t("users.pageOf", { page, pages: pageCount })}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= pageCount}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              {t("users.next")}
-            </Button>
-          </div>
-        </div>
+        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">{t("users.total", { count: total })}</p>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            {t("users.previous")}
+          </Button>
+          <span className="text-sm tabular-nums">{t("users.pageOf", { page, pages: pageCount })}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= pageCount}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            {t("users.next")}
+          </Button>
+        </div></div>
       </Card>
     </div>
   );

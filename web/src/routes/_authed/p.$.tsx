@@ -56,7 +56,7 @@ function PluginPage() {
   }, [menu]);
 
   if (isPending) {
-    return <Skeleton className="h-64 w-full" />;
+    return <Skeleton className="h-full min-h-64 w-full" />;
   }
 
   if (!Lazy) {
@@ -69,8 +69,10 @@ function PluginPage() {
   }
 
   return (
-    <Suspense fallback={<Skeleton className="h-64 w-full" />}>
-      <Lazy />
-    </Suspense>
+    <div className="flex h-full min-h-0 flex-1 flex-col">
+      <Suspense fallback={<Skeleton className="h-full min-h-64 w-full" />}>
+        <Lazy />
+      </Suspense>
+    </div>
   );
 }

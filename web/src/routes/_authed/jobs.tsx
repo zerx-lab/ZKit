@@ -121,7 +121,7 @@ function JobsPage() {
   const table = useReactTable({ data: jobs, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t("jobs.title")}</h1>
@@ -132,19 +132,17 @@ function JobsPage() {
         </Can>
       </div>
 
-      <Card className="gap-0 overflow-hidden py-0">
+      <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden py-0">
         <Table>
-          <TableHeader className="bg-muted">
-            {table.getHeaderGroups().map((hg) => (
-              <TableRow key={hg.id}>
-                {hg.headers.map((h) => (
-                  <TableHead key={h.id}>
-                    {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
+          <TableHeader>{table.getHeaderGroups().map((hg) => (
+            <TableRow key={hg.id}>
+              {hg.headers.map((h) => (
+                <TableHead key={h.id}>
+                  {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}</TableHeader>
           <TableBody>
             {isPending ? (
               <TableRow>
@@ -172,18 +170,16 @@ function JobsPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t px-4 py-3">
-          <p className="text-sm text-muted-foreground">{t("common.total", { count: total })}</p>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-              {t("common.previous")}
-            </Button>
-            <span className="text-sm tabular-nums">{t("common.pageOf", { page, pages: pageCount })}</span>
-            <Button variant="outline" size="sm" disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)}>
-              {t("common.next")}
-            </Button>
-          </div>
-        </div>
+        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">{t("common.total", { count: total })}</p>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+            {t("common.previous")}
+          </Button>
+          <span className="text-sm tabular-nums">{t("common.pageOf", { page, pages: pageCount })}</span>
+          <Button variant="outline" size="sm" disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)}>
+            {t("common.next")}
+          </Button>
+        </div></div>
       </Card>
 
       {historyJob && (
@@ -528,19 +524,17 @@ function JobHistoryDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
         <DialogHeader>
           <DialogTitle>{t("jobs.historyTitle", { name: job.name })}</DialogTitle>
         </DialogHeader>
-        <div className="overflow-auto max-h-[60vh]">
+        <div className="flex max-h-[60vh] min-h-0 flex-col overflow-hidden">
           <Table>
-            <TableHeader className="bg-muted">
-              {table.getHeaderGroups().map((hg) => (
-                <TableRow key={hg.id}>
-                  {hg.headers.map((h) => (
-                    <TableHead key={h.id}>
-                      {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
+            <TableHeader>{table.getHeaderGroups().map((hg) => (
+              <TableRow key={hg.id}>
+                {hg.headers.map((h) => (
+                  <TableHead key={h.id}>
+                    {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}</TableHeader>
             <TableBody>
               {isPending ? (
                 <TableRow>
@@ -561,7 +555,7 @@ function JobHistoryDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               )}
             </TableBody>
           </Table>
-          <div className="mt-3 flex items-center justify-between text-sm text-muted-foreground px-2">
+          <div className="mt-3 flex shrink-0 items-center justify-between px-2 text-sm text-muted-foreground">
             <span>{t("common.total", { count: total })}</span>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>{t("common.previous")}</Button>

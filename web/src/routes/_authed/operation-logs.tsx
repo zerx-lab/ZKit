@@ -128,7 +128,7 @@ function OperationLogsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -148,71 +148,67 @@ function OperationLogsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex shrink-0 flex-wrap gap-2 rounded-lg border bg-card p-3"><Input
+        placeholder={t("logPage.searchPlaceholder")}
+        value={keyword}
+        onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
+        className="max-w-xs"
+      />
+      <Select
+        value={statusFilter}
+        onValueChange={(v) => { setStatusFilter(v === "_all" ? "" : v); setPage(1); }}
+      >
+        <SelectTrigger className="w-40">
+          <SelectValue placeholder={t("logPage.allStatuses")} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="_all">{t("logPage.allStatuses")}</SelectItem>
+          <SelectItem value="ok">{t("logPage.statusOk")}</SelectItem>
+          <SelectItem value="permission_denied">permission_denied</SelectItem>
+          <SelectItem value="unauthenticated">unauthenticated</SelectItem>
+          <SelectItem value="invalid_argument">invalid_argument</SelectItem>
+          <SelectItem value="not_found">not_found</SelectItem>
+          <SelectItem value="internal">internal</SelectItem>
+        </SelectContent>
+      </Select>
+      <Input
+        placeholder={t("logPage.methodPlaceholder")}
+        value={methodFilter}
+        onChange={(e) => { setMethodFilter(e.target.value); setPage(1); }}
+        className="w-32"
+      />
+      <div className="flex items-center gap-1">
+        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterStartDate")}</Label>
         <Input
-          placeholder={t("logPage.searchPlaceholder")}
-          value={keyword}
-          onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
-          className="max-w-xs"
+          type="date"
+          value={startDate}
+          onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+          className="w-36"
         />
-        <Select
-          value={statusFilter}
-          onValueChange={(v) => { setStatusFilter(v === "_all" ? "" : v); setPage(1); }}
-        >
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder={t("logPage.allStatuses")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="_all">{t("logPage.allStatuses")}</SelectItem>
-            <SelectItem value="ok">{t("logPage.statusOk")}</SelectItem>
-            <SelectItem value="permission_denied">permission_denied</SelectItem>
-            <SelectItem value="unauthenticated">unauthenticated</SelectItem>
-            <SelectItem value="invalid_argument">invalid_argument</SelectItem>
-            <SelectItem value="not_found">not_found</SelectItem>
-            <SelectItem value="internal">internal</SelectItem>
-          </SelectContent>
-        </Select>
-        <Input
-          placeholder={t("logPage.methodPlaceholder")}
-          value={methodFilter}
-          onChange={(e) => { setMethodFilter(e.target.value); setPage(1); }}
-          className="w-32"
-        />
-        <div className="flex items-center gap-1">
-          <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterStartDate")}</Label>
-          <Input
-            type="date"
-            value={startDate}
-            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            className="w-36"
-          />
-        </div>
-        <div className="flex items-center gap-1">
-          <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterEndDate")}</Label>
-          <Input
-            type="date"
-            value={endDate}
-            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            className="w-36"
-          />
-        </div>
       </div>
+      <div className="flex items-center gap-1">
+        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("logPage.filterEndDate")}</Label>
+        <Input
+          type="date"
+          value={endDate}
+          onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+          className="w-36"
+        />
+      </div></div>
 
-      <Card className="gap-0 overflow-hidden py-0">
+      <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden py-0">
         <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead>{t("common.id")}</TableHead>
-              <TableHead>{t("logPage.procedure")}</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead>{t("logPage.ip")}</TableHead>
-              <TableHead>{t("logPage.latency")}</TableHead>
-              <TableHead>{t("logPage.status")}</TableHead>
-              <TableHead>User ID</TableHead>
-              <TableHead>{t("common.created")}</TableHead>
-              <TableHead>{t("logPage.detailTitle")}</TableHead>
-            </TableRow>
-          </TableHeader>
+          <TableHeader><TableRow>
+            <TableHead>{t("common.id")}</TableHead>
+            <TableHead>{t("logPage.procedure")}</TableHead>
+            <TableHead>Method</TableHead>
+            <TableHead>{t("logPage.ip")}</TableHead>
+            <TableHead>{t("logPage.latency")}</TableHead>
+            <TableHead>{t("logPage.status")}</TableHead>
+            <TableHead>User ID</TableHead>
+            <TableHead>{t("common.created")}</TableHead>
+            <TableHead>{t("logPage.detailTitle")}</TableHead>
+          </TableRow></TableHeader>
           <TableBody>
             {isPending ? (
               <TableRow>
@@ -239,32 +235,30 @@ function OperationLogsPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t px-4 py-3">
-          <p className="text-sm text-muted-foreground">
-            {t("common.total", { count: total })}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              {t("common.previous")}
-            </Button>
-            <span className="text-sm tabular-nums">
-              {t("common.pageOf", { page, pages: pageCount })}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= pageCount}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              {t("common.next")}
-            </Button>
-          </div>
-        </div>
+        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">
+          {t("common.total", { count: total })}
+        </p>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            {t("common.previous")}
+          </Button>
+          <span className="text-sm tabular-nums">
+            {t("common.pageOf", { page, pages: pageCount })}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= pageCount}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            {t("common.next")}
+          </Button>
+        </div></div>
       </Card>
     </div>
   );

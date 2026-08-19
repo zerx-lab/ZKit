@@ -148,7 +148,7 @@ function FilesPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t("filePage.title")}</h1>
@@ -166,33 +166,31 @@ function FilesPage() {
         onUploaded={() => void invalidate()}
       />
 
-      <Card className="gap-0 overflow-hidden py-0">
-        <div className="flex items-center justify-between gap-2 border-b px-4 py-3">
-          <form className="flex items-center gap-2" onSubmit={applySearch}>
-            <div className="relative w-full max-w-xs">
-              <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={t("filePage.searchPlaceholder")}
-                value={keywordInput}
-                onChange={(e) => setKeywordInput(e.target.value)}
-                className="pl-8"
-              />
-            </div>
-            <Button type="submit" variant="secondary">
-              {t("common.search")}
-            </Button>
-          </form>
-          <Tabs value={view} onValueChange={(v) => setView(v as View)}>
-            <TabsList>
-              <TabsTrigger value="list" aria-label={t("filePage.viewList")} title={t("filePage.viewList")}>
-                <ListIcon className="size-4" />
-              </TabsTrigger>
-              <TabsTrigger value="gallery" aria-label={t("filePage.viewGallery")} title={t("filePage.viewGallery")}>
-                <LayoutGridIcon className="size-4" />
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+      <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden py-0">
+        <div className="flex items-center justify-between gap-2 border-b bg-card px-4 py-3"><form className="flex items-center gap-2" onSubmit={applySearch}>
+          <div className="relative w-full max-w-xs">
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder={t("filePage.searchPlaceholder")}
+              value={keywordInput}
+              onChange={(e) => setKeywordInput(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          <Button type="submit" variant="secondary">
+            {t("common.search")}
+          </Button>
+        </form>
+        <Tabs value={view} onValueChange={(v) => setView(v as View)}>
+          <TabsList>
+            <TabsTrigger value="list" aria-label={t("filePage.viewList")} title={t("filePage.viewList")}>
+              <ListIcon className="size-4" />
+            </TabsTrigger>
+            <TabsTrigger value="gallery" aria-label={t("filePage.viewGallery")} title={t("filePage.viewGallery")}>
+              <LayoutGridIcon className="size-4" />
+            </TabsTrigger>
+          </TabsList>
+        </Tabs></div>
 
         {view === "list" ? (
           <ListView
@@ -210,20 +208,18 @@ function FilesPage() {
           />
         )}
 
-        <div className="flex items-center justify-between gap-4 border-t px-4 py-3">
-          <p className="text-sm text-muted-foreground">{t("common.total", { count: total })}</p>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-              {t("common.previous")}
-            </Button>
-            <span className="text-sm tabular-nums">
-              {t("common.pageOf", { page, pages: pageCount })}
-            </span>
-            <Button variant="outline" size="sm" disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)}>
-              {t("common.next")}
-            </Button>
-          </div>
-        </div>
+        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">{t("common.total", { count: total })}</p>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+            {t("common.previous")}
+          </Button>
+          <span className="text-sm tabular-nums">
+            {t("common.pageOf", { page, pages: pageCount })}
+          </span>
+          <Button variant="outline" size="sm" disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)}>
+            {t("common.next")}
+          </Button>
+        </div></div>
       </Card>
 
       <PreviewDialog file={preview} onClose={() => setPreview(null)} />
@@ -472,16 +468,14 @@ function ListView({
 }) {
   return (
     <Table>
-      <TableHeader className="bg-muted">
-        <TableRow>
-          <TableHead>{t("common.name")}</TableHead>
-          <TableHead>{t("filePage.size")}</TableHead>
-          <TableHead>{t("filePage.contentType")}</TableHead>
-          <TableHead>{t("filePage.visibility")}</TableHead>
-          <TableHead>{t("common.created")}</TableHead>
-          <TableHead className="text-right">{t("common.actions")}</TableHead>
-        </TableRow>
-      </TableHeader>
+      <TableHeader><TableRow>
+        <TableHead>{t("common.name")}</TableHead>
+        <TableHead>{t("filePage.size")}</TableHead>
+        <TableHead>{t("filePage.contentType")}</TableHead>
+        <TableHead>{t("filePage.visibility")}</TableHead>
+        <TableHead>{t("common.created")}</TableHead>
+        <TableHead className="text-right">{t("common.actions")}</TableHead>
+      </TableRow></TableHeader>
       <TableBody>
         {isPending ? (
           <TableRow>
@@ -531,10 +525,10 @@ function GalleryView({
     return <div className="p-8 text-center text-sm text-muted-foreground">{t("common.loading")}</div>;
   }
   if (files.length === 0) {
-    return <div className="p-8 text-center text-sm text-muted-foreground">{t("common.noData")}</div>;
+    return <div className="min-h-0 flex-1 p-8 text-center text-sm text-muted-foreground">{t("common.noData")}</div>;
   }
   return (
-    <div className="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+    <div className="min-h-0 flex-1 overflow-auto grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
       {files.map((f) => {
         const previewable = canPreview(f.contentType);
         return (

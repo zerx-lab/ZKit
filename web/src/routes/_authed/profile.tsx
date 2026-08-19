@@ -40,7 +40,7 @@ function ProfilePage() {
   const user = meData?.user;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-6 overflow-auto">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">{t("profile.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("profile.subtitle")}</p>

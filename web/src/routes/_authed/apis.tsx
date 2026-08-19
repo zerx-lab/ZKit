@@ -143,7 +143,7 @@ function ApisPage() {
   const allCollapsed = groupNames.length > 0 && groupNames.every((n) => collapsed.has(n));
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t("apiPage.title")}</h1>
@@ -157,7 +157,7 @@ function ApisPage() {
         </Can>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex shrink-0 flex-wrap items-center gap-3">
         <Input
           className="max-w-xs"
           placeholder={t("apiPage.searchPlaceholder")}
@@ -196,17 +196,15 @@ function ApisPage() {
         </Button>
       </div>
 
-      <Card className="gap-0 overflow-hidden py-0">
+      <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden py-0">
         <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead>{t("apiPage.procedure")}</TableHead>
-              <TableHead>{t("apiPage.method")}</TableHead>
-              <TableHead>{t("apiPage.group")}</TableHead>
-              <TableHead>{t("common.description")}</TableHead>
-              <TableHead className="text-right">{t("common.actions")}</TableHead>
-            </TableRow>
-          </TableHeader>
+          <TableHeader><TableRow>
+            <TableHead>{t("apiPage.procedure")}</TableHead>
+            <TableHead>{t("apiPage.method")}</TableHead>
+            <TableHead>{t("apiPage.group")}</TableHead>
+            <TableHead>{t("common.description")}</TableHead>
+            <TableHead className="text-right">{t("common.actions")}</TableHead>
+          </TableRow></TableHeader>
           <TableBody>
             {isPending ? (
               <TableRow>
@@ -227,22 +225,19 @@ function ApisPage() {
                 return (
                   <Fragment key={groupName}>
                     <TableRow
-                      className="cursor-pointer bg-muted/40 hover:bg-muted/60"
+                      className="cursor-pointer bg-muted/50 hover:bg-muted/70"
                       onClick={() => toggleGroup(groupName)}
                     >
-                      <TableCell
-                        colSpan={5}
-                        className="py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase"
-                      >
-                        <span className="flex items-center gap-1">
+                      <TableCell colSpan={5} className="h-9 py-0">
+                        <span className="flex items-center gap-2">
                           {isCollapsed ? (
-                            <ChevronRightIcon className="size-3.5" />
+                            <ChevronRightIcon className="size-3.5 text-muted-foreground" />
                           ) : (
-                            <ChevronDownIcon className="size-3.5" />
+                            <ChevronDownIcon className="size-3.5 text-muted-foreground" />
                           )}
-                          {groupName}
-                          <span className="ml-1 normal-case text-muted-foreground/70">
-                            ({rows.length})
+                          <span className="text-sm font-medium">{groupName}</span>
+                          <span className="text-xs tabular-nums text-muted-foreground">
+                            {rows.length}
                           </span>
                         </span>
                       </TableCell>
@@ -250,9 +245,14 @@ function ApisPage() {
                     {!isCollapsed &&
                       rows.map((api) => (
                         <TableRow key={String(api.id)}>
-                          <TableCell className="font-mono text-xs">{api.procedure}</TableCell>
+                          <TableCell className="font-mono text-xs">
+                            <span className="flex items-center gap-2 pl-6">
+                              <span aria-hidden className="h-4 w-px shrink-0 bg-border" />
+                              {api.procedure}
+                            </span>
+                          </TableCell>
                           <TableCell className="text-xs">{api.method}</TableCell>
-                          <TableCell className="text-xs">{api.group || "\u2014"}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{api.group || "\u2014"}</TableCell>
                           <TableCell className="max-w-xs truncate text-muted-foreground">
                             {api.description}
                           </TableCell>
@@ -275,30 +275,28 @@ function ApisPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t px-4 py-3">
-          <p className="text-sm text-muted-foreground">{t("users.total", { count: filtered.length })}</p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={safePage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              {t("users.previous")}
-            </Button>
-            <span className="text-sm tabular-nums">
-              {t("users.pageOf", { page: safePage, pages: pageCount })}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={safePage >= pageCount}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              {t("users.next")}
-            </Button>
-          </div>
-        </div>
+        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">{t("users.total", { count: filtered.length })}</p>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={safePage <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            {t("users.previous")}
+          </Button>
+          <span className="text-sm tabular-nums">
+            {t("users.pageOf", { page: safePage, pages: pageCount })}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={safePage >= pageCount}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            {t("users.next")}
+          </Button>
+        </div></div>
       </Card>
     </div>
   );

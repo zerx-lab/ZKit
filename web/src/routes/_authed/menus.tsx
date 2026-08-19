@@ -2,7 +2,13 @@ import { ConnectError } from "@connectrpc/connect";
 import { createConnectQueryKey, useMutation, useQuery } from "@connectrpc/connect-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDownIcon, ChevronRightIcon, GripVerticalIcon, PlusIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  GripVerticalIcon,
+  InfoIcon,
+  PlusIcon,
+} from "lucide-react";
 import { Fragment, useMemo, useRef, useState, type DragEvent } from "react";
 import { toast } from "sonner";
 
@@ -31,6 +37,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Menu, MenuButton } from "@/gen/zerx/v1/menu_pb";
+import type { PluginInfo } from "@/gen/zerx/v1/plugin_pb";
+import { listPlugins } from "@/gen/zerx/v1/plugin-PluginService_connectquery";
 import {
   createMenu,
   createMenuButton,
@@ -43,6 +51,7 @@ import {
 } from "@/gen/zerx/v1/menu-MenuService_connectquery";
 import { useI18n } from "@/lib/i18n";
 import { usePermissions } from "@/lib/permissions";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authed/menus")({ component: MenusPage });
 
@@ -55,6 +64,20 @@ const PAGE_SIZE = 8;
 interface FlatMenu {
   menu: Menu;
   depth: number;
+}
+
+function menuPlugin(menu: Menu, plugins: PluginInfo[]): PluginInfo | undefined {
+  for (const plugin of plugins) {
+    const prefix = `plg_${plugin.name}`;
+    if (menu.name === prefix || menu.name.startsWith(`${prefix}_`)) {
+      return plugin;
+    }
+  }
+  return undefined;
+}
+
+function pluginMenuLocked(plugin: PluginInfo | undefined): boolean {
+  return plugin !== undefined && (!plugin.enabled || plugin.pendingRemoval);
 }
 
 // Flatten a single top-level menu subtree (root included) into depth-tagged rows.
@@ -109,16 +132,32 @@ function DragHandle({ enabled, label }: { enabled: boolean; label: string }) {
   );
 }
 
-function MenuActionCells({ menu, invalidate }: { menu: Menu; invalidate: () => void }) {
+function MenuActionCells({
+  menu,
+  invalidate,
+  locked,
+}: {
+  menu: Menu;
+  invalidate: () => void;
+  locked: boolean;
+}) {
+  const { t } = useI18n();
+
   return (
     <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-      <Can code="menu:update">
-        <MenuButtonsDialog menu={menu} onDone={invalidate} />
-        <MenuDialog mode="edit" menu={menu} onDone={invalidate} />
-      </Can>
-      <Can code="menu:delete">
-        <DeleteMenuDialog menu={menu} onDone={invalidate} />
-      </Can>
+      {locked ? (
+        <span className="text-xs text-muted-foreground">{t("menuPage.enablePluginToManage")}</span>
+      ) : (
+        <>
+          <Can code="menu:update">
+            <MenuButtonsDialog menu={menu} onDone={invalidate} />
+            <MenuDialog mode="edit" menu={menu} onDone={invalidate} />
+          </Can>
+          <Can code="menu:delete">
+            <DeleteMenuDialog menu={menu} onDone={invalidate} />
+          </Can>
+        </>
+      )}
     </div>
   );
 }
@@ -128,7 +167,9 @@ function MenusPage() {
   const { can } = usePermissions();
   const qc = useQueryClient();
   const { data, isPending } = useQuery(listMenus);
+  const { data: pluginData } = useQuery(listPlugins, {});
   const topMenus = useMemo(() => data?.menus ?? [], [data]);
+  const plugins = useMemo(() => pluginData?.plugins ?? [], [pluginData]);
   const reorderMut = useMutation(reorderMenus);
 
   const [keyword, setKeyword] = useState("");
@@ -162,8 +203,8 @@ function MenusPage() {
     }
   };
 
-  const rowDrag = (menu: Menu) => {
-    if (!canDrag) return {};
+  const rowDrag = (menu: Menu, enabled = true) => {
+    if (!canDrag || !enabled) return {};
     return {
       draggable: true,
       onDragStart: (e: DragEvent) => {
@@ -209,6 +250,14 @@ function MenusPage() {
     return topMenus.filter((m) => matchesKeyword(m, kw));
   }, [topMenus, keyword]);
 
+  const hasInactivePluginMenus = useMemo(
+    () =>
+      topMenus.some((root) =>
+        flattenTree(root).some(({ menu }) => pluginMenuLocked(menuPlugin(menu, plugins))),
+      ),
+    [topMenus, plugins],
+  );
+
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount);
   const pageGroups = useMemo(
@@ -230,7 +279,7 @@ function MenusPage() {
   const allCollapsed = groupKeys.length > 0 && groupKeys.every((k) => collapsed.has(k));
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t("menuPage.title")}</h1>
@@ -241,7 +290,7 @@ function MenusPage() {
         </Can>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex shrink-0 flex-wrap items-center gap-3">
         <Input
           className="max-w-xs"
           placeholder={t("menuPage.searchPlaceholder")}
@@ -262,9 +311,16 @@ function MenusPage() {
         {canDrag ? <p className="text-sm text-muted-foreground">{t("menuPage.dragHint")}</p> : null}
       </div>
 
-      <Card className="gap-0 overflow-hidden py-0">
+      {hasInactivePluginMenus ? (
+        <div className="flex items-start gap-2.5 rounded-lg border border-primary/20 bg-primary/5 px-3.5 py-3 text-sm text-muted-foreground">
+          <InfoIcon className="mt-0.5 size-4 shrink-0 text-primary" />
+          <p>{t("menuPage.disabledPluginHint")}</p>
+        </div>
+      ) : null}
+
+      <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden py-0">
         <Table>
-          <TableHeader className="bg-muted">
+          <TableHeader>
             <TableRow>
               <TableHead className="w-8 px-1" />
               <TableHead>{t("menuPage.title_")}</TableHead>
@@ -294,10 +350,16 @@ function MenusPage() {
                 const isCollapsed = collapsed.has(key);
                 const rows = flattenTree(group);
                 const childCount = rows.length - 1;
+                const groupPlugin = menuPlugin(group, plugins);
+                const groupLocked = pluginMenuLocked(groupPlugin);
                 return (
                   <Fragment key={key}>
                     <TableRow
-                      className={`cursor-pointer bg-muted/40 hover:bg-muted/60 ${dropClass(group.id)}`}
+                      className={cn(
+                        "cursor-pointer bg-card hover:bg-accent/55",
+                        groupLocked && "border-l-2 border-l-muted-foreground/35 bg-muted/65 text-muted-foreground",
+                        dropClass(group.id),
+                      )}
                       onClick={() => {
                         if (didDrag.current) {
                           didDrag.current = false;
@@ -305,10 +367,10 @@ function MenusPage() {
                         }
                         toggleGroup(key);
                       }}
-                      {...rowDrag(group)}
+                      {...rowDrag(group, !groupLocked)}
                     >
                       <TableCell className="w-8 px-1">
-                        <DragHandle enabled={canDrag} label={t("menuPage.dragHandle")} />
+                        <DragHandle enabled={canDrag && !groupLocked} label={t("menuPage.dragHandle")} />
                       </TableCell>
                       <TableCell className="py-2.5 font-semibold">
                         <span className="flex items-center gap-1.5">
@@ -318,6 +380,20 @@ function MenusPage() {
                             <ChevronDownIcon className="size-4 text-muted-foreground" />
                           )}
                           {t(group.title)}
+                          {groupPlugin ? (
+                            <Badge variant="outline" className="ml-1 rounded font-normal">
+                              {t("menuPage.pluginOwned", { name: groupPlugin.name })}
+                            </Badge>
+                          ) : null}
+                          {groupPlugin?.pendingRemoval ? (
+                            <Badge variant="outline" className="ml-1 rounded border-destructive/30 bg-destructive/5 font-normal text-destructive">
+                              {t("pluginPage.pendingRemoval")}
+                            </Badge>
+                          ) : groupPlugin && !groupPlugin.enabled ? (
+                            <Badge variant="secondary" className="ml-1 rounded font-normal">
+                              {t("menuPage.pluginDisabled")}
+                            </Badge>
+                          ) : null}
                           {childCount > 0 ? (
                             <Badge variant="secondary" className="ml-1 font-normal">
                               {t("menuPage.children", { count: childCount })}
@@ -330,38 +406,49 @@ function MenusPage() {
                       <TableCell className="text-muted-foreground">{group.sort}</TableCell>
                       <TableCell>{group.hidden ? t("common.yes") : t("common.no")}</TableCell>
                       <TableCell className="text-right">
-                        <MenuActionCells menu={group} invalidate={invalidate} />
+                        <MenuActionCells menu={group} invalidate={invalidate} locked={groupLocked} />
                       </TableCell>
                     </TableRow>
                     {!isCollapsed &&
-                      rows.slice(1).map(({ menu, depth }) => (
-                        <TableRow key={String(menu.id)} className={dropClass(menu.id)} {...rowDrag(menu)}>
-                          <TableCell className="w-8 px-1">
-                            <DragHandle enabled={canDrag} label={t("menuPage.dragHandle")} />
-                          </TableCell>
-                          <TableCell>
-                            <span className="flex items-center" style={{ paddingLeft: depth * 20 }}>
-                              <span
-                                aria-hidden
-                                className="mr-2 inline-block h-4 w-px bg-border"
-                              />
-                              <span className="font-medium">{t(menu.title)}</span>
-                              {menu.path === "" ? (
-                                <Badge variant="secondary" className="ml-2">
-                                  {t("nav.management")}
-                                </Badge>
-                              ) : null}
-                            </span>
-                          </TableCell>
-                          <TableCell className="font-mono text-xs">{menu.path}</TableCell>
-                          <TableCell className="font-mono text-xs">{menu.icon}</TableCell>
-                          <TableCell>{menu.sort}</TableCell>
-                          <TableCell>{menu.hidden ? t("common.yes") : t("common.no")}</TableCell>
-                          <TableCell className="text-right">
-                            <MenuActionCells menu={menu} invalidate={invalidate} />
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      rows.slice(1).map(({ menu, depth }) => {
+                        const plugin = menuPlugin(menu, plugins);
+                        const locked = pluginMenuLocked(plugin);
+                        return (
+                          <TableRow
+                            key={String(menu.id)}
+                            className={cn(
+                              locked && "border-l-2 border-l-muted-foreground/25 bg-muted/20 text-muted-foreground",
+                              dropClass(menu.id),
+                            )}
+                            {...rowDrag(menu, !locked)}
+                          >
+                            <TableCell className="w-8 px-1">
+                              <DragHandle enabled={canDrag && !locked} label={t("menuPage.dragHandle")} />
+                            </TableCell>
+                            <TableCell>
+                              <span className="flex items-center" style={{ paddingLeft: depth * 20 }}>
+                                <span
+                                  aria-hidden
+                                  className="mr-2 inline-block h-4 w-px bg-border"
+                                />
+                                <span className="font-medium">{t(menu.title)}</span>
+                                {menu.path === "" ? (
+                                  <Badge variant="secondary" className="ml-2">
+                                    {t("nav.management")}
+                                  </Badge>
+                                ) : null}
+                              </span>
+                            </TableCell>
+                            <TableCell className="font-mono text-xs">{menu.path}</TableCell>
+                            <TableCell className="font-mono text-xs">{menu.icon}</TableCell>
+                            <TableCell>{menu.sort}</TableCell>
+                            <TableCell>{menu.hidden ? t("common.yes") : t("common.no")}</TableCell>
+                            <TableCell className="text-right">
+                              <MenuActionCells menu={menu} invalidate={invalidate} locked={locked} />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                   </Fragment>
                 );
               })
@@ -369,30 +456,30 @@ function MenusPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t px-4 py-3">
-          <p className="text-sm text-muted-foreground">{t("common.total", { count: filtered.length })}</p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={safePage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              {t("common.previous")}
-            </Button>
-            <span className="text-sm tabular-nums">
-              {t("common.pageOf", { page: safePage, pages: pageCount })}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={safePage >= pageCount}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              {t("common.next")}
-            </Button>
-          </div>
-        </div>
+        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">
+          {t("common.total", { count: filtered.length })}
+        </p>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={safePage <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            {t("common.previous")}
+          </Button>
+          <span className="text-sm tabular-nums">
+            {t("common.pageOf", { page: safePage, pages: pageCount })}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={safePage >= pageCount}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            {t("common.next")}
+          </Button>
+        </div></div>
       </Card>
     </div>
   );

@@ -58,7 +58,7 @@ function ParamsPage() {
   const params = data?.params ?? [];
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t("paramPage.title")}</h1>
@@ -69,17 +69,15 @@ function ParamsPage() {
         </Can>
       </div>
 
-      <Card className="overflow-hidden py-0">
+      <Card className="flex min-h-0 flex-1 flex-col overflow-hidden py-0">
         <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead>{t("common.key")}</TableHead>
-              <TableHead>{t("common.name")}</TableHead>
-              <TableHead>{t("common.value")}</TableHead>
-              <TableHead>{t("common.description")}</TableHead>
-              <TableHead className="text-right">{t("common.actions")}</TableHead>
-            </TableRow>
-          </TableHeader>
+          <TableHeader><TableRow>
+            <TableHead>{t("common.key")}</TableHead>
+            <TableHead>{t("common.name")}</TableHead>
+            <TableHead>{t("common.value")}</TableHead>
+            <TableHead>{t("common.description")}</TableHead>
+            <TableHead className="text-right">{t("common.actions")}</TableHead>
+          </TableRow></TableHeader>
           <TableBody>
             {isPending ? (
               <TableRow>

@@ -61,7 +61,7 @@ export default function Categories() {
   });
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div>
         <h1 className="text-2xl font-semibold">{t("plg.shop.categories")}</h1>
         <p className="text-sm text-muted-foreground">{t("plg.shop.categoriesSubtitle")}</p>
@@ -84,7 +84,7 @@ export default function Categories() {
         </div>
       )}
 
-      <Card className="p-0">
+      <Card className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
         <Table>
           <TableHeader>
             <TableRow>

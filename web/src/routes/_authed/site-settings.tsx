@@ -82,7 +82,7 @@ function SiteSettingsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-6 overflow-auto">
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">{t("sitePage.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("sitePage.subtitle")}</p>

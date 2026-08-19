@@ -7,7 +7,7 @@ import {
   useLocation,
   useNavigate,
 } from "@tanstack/react-router";
-import { ChevronDownIcon, LogOutIcon, PanelLeftIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronRightIcon, LogOutIcon, PanelLeftIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { BrandLogo } from "@/components/brand-logo";
@@ -128,12 +128,12 @@ function AuthedShell() {
         className={cn(
           "flex h-full flex-col border-r border-sidebar-border bg-sidebar duration-200",
           // Mobile: off-canvas drawer; desktop: static rail with width transition.
-          "fixed inset-y-0 left-0 z-50 w-60 transition-transform md:static md:z-auto md:translate-x-0 md:transition-[width]",
+          "fixed inset-y-0 left-0 z-50 w-[224px] transition-transform md:static md:z-auto md:translate-x-0 md:transition-[width]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
-          railCollapsed ? "md:w-16" : "md:w-60",
+          railCollapsed ? "md:w-[64px]" : "md:w-[224px]",
         )}
       >
-        <div className="flex h-14 items-center gap-2.5 border-b border-sidebar-border px-4">
+        <div className="flex h-[52px] items-center gap-2.5 border-b border-sidebar-border px-4">
           {site.logo ? (
             <img src={site.logo} alt="" className="size-7 shrink-0 rounded object-contain" />
           ) : (
@@ -175,8 +175,10 @@ function AuthedShell() {
           }
           menus={menus}
         />
-        <main className="flex-1 overflow-auto p-4 md:p-6">
-          <Outlet />
+        <main className="flex min-h-0 flex-1 flex-col overflow-hidden p-2 md:p-4">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card p-4 md:p-6">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
@@ -237,7 +239,7 @@ function SidebarNode({
           aria-controls={panelId}
           aria-label={`${t(isOpen ? "common.collapse" : "common.expand")} ${t(menu.title)}`}
           className={cn(
-            "flex w-full items-center justify-between px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide transition-colors",
+            "flex w-full items-center justify-between px-3 pt-3 pb-1 text-[11px] font-semibold tracking-normal transition-colors",
             isActiveGroup ? "text-sidebar-foreground" : "text-sidebar-foreground/60",
           )}
         >
@@ -363,11 +365,15 @@ function Header({
   };
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-card px-4">
+    <header className="flex h-[52px] shrink-0 items-center gap-3 border-b border-border bg-card px-4">
       <Button variant="ghost" size="icon" onClick={onToggle} aria-label="Toggle sidebar">
         <PanelLeftIcon className="size-4" />
       </Button>
-      <span className="min-w-0 truncate text-sm font-medium">{title}</span>
+      <div className="flex min-w-0 items-center gap-2 text-sm">
+        <span className="hidden text-muted-foreground sm:inline">{t("nav.workspace")}</span>
+        <ChevronRightIcon className="hidden size-3.5 text-muted-foreground/60 sm:block" />
+        <span className="truncate font-medium">{title}</span>
+      </div>
       {collapsed ? <span className="sr-only">collapsed</span> : null}
 
       <div className="ml-auto flex items-center gap-1">
