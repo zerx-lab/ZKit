@@ -30,6 +30,10 @@ linters:
         # trees (0644/0755 is the correct mode for source, not secrets).
         - G301
         - G306
+        # G120: ParseMultipartForm calls here follow http.MaxBytesReader,
+        # so the read is already size-bounded (new gosec 2.26 rule, false
+        # positive on this pattern).
+        - G120
   exclusions:
     # Generated code is detected by header and skipped; these are belt-and-suspenders.
     generated: lax

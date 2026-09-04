@@ -7,19 +7,21 @@ import (
 )
 
 var UserTOTP = struct {
-	UserID      field.Number[uint64]
-	Secret      field.String
-	Enabled     field.Bool
-	ConfirmedAt field.Time
-	CreatedAt   field.Time
-	UpdatedAt   field.Time
+	UserID       field.Number[uint64]
+	Secret       field.String
+	Enabled      field.Bool
+	LastUsedStep field.Number[int64]
+	ConfirmedAt  field.Time
+	CreatedAt    field.Time
+	UpdatedAt    field.Time
 }{
-	UserID:      field.Number[uint64]{}.WithColumn("user_id"),
-	Secret:      field.String{}.WithColumn("secret"),
-	Enabled:     field.Bool{}.WithColumn("enabled"),
-	ConfirmedAt: field.Time{}.WithColumn("confirmed_at"),
-	CreatedAt:   field.Time{}.WithColumn("created_at"),
-	UpdatedAt:   field.Time{}.WithColumn("updated_at"),
+	UserID:       field.Number[uint64]{}.WithColumn("user_id"),
+	Secret:       field.String{}.WithColumn("secret"),
+	Enabled:      field.Bool{}.WithColumn("enabled"),
+	LastUsedStep: field.Number[int64]{}.WithColumn("last_used_step"),
+	ConfirmedAt:  field.Time{}.WithColumn("confirmed_at"),
+	CreatedAt:    field.Time{}.WithColumn("created_at"),
+	UpdatedAt:    field.Time{}.WithColumn("updated_at"),
 }
 
 var TOTPRecoveryCode = struct {

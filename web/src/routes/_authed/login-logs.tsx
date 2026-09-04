@@ -5,8 +5,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
-  useReactTable,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table";
 import { DownloadIcon, Trash2Icon } from "lucide-react";
 import { type FormEvent, useMemo, useState } from "react";
@@ -83,7 +83,8 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-const columnHelper = createColumnHelper<LoginLog>();
+const features = tableFeatures({});
+const columnHelper = createColumnHelper<typeof features, LoginLog>();
 
 function LoginLogsPage() {
   const { t } = useI18n();
@@ -110,7 +111,7 @@ function LoginLogsPage() {
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const columns = useMemo(
-    () => [
+    () => columnHelper.columns([
       columnHelper.accessor("id", {
         header: t("common.id"),
         cell: (info) => <span className="font-mono text-xs">{String(info.getValue())}</span>,
@@ -149,11 +150,11 @@ function LoginLogsPage() {
         header: t("common.created"),
         cell: (info) => new Date(info.getValue()).toLocaleString(),
       }),
-    ],
+    ]),
     [t],
   );
 
-  const table = useReactTable({ data: logs, columns, getCoreRowModel: getCoreRowModel() });
+  const table = useTable({ features, data: logs, columns });
 
   const applySearch = (e: FormEvent) => {
     e.preventDefault();
@@ -265,7 +266,7 @@ function LoginLogsPage() {
             ) : (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getAllCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>

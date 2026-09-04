@@ -6,8 +6,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
-  useReactTable,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table";
 import { DownloadIcon, PlusIcon, SearchIcon, UploadIcon } from "lucide-react";
 import { type FormEvent, useMemo, useRef, useState } from "react";
@@ -126,7 +126,8 @@ function RolesField({ field }: { field: AnyFieldApi }) {
   );
 }
 
-const columnHelper = createColumnHelper<User>();
+const features = tableFeatures({});
+const columnHelper = createColumnHelper<typeof features, User>();
 
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -162,7 +163,7 @@ function UsersPage() {
   }, [rolesData]);
 
   const columns = useMemo(
-    () => [
+    () => columnHelper.columns([
       columnHelper.accessor("id", {
         header: t("common.id"),
         cell: (info) => String(info.getValue()),
@@ -198,11 +199,11 @@ function UsersPage() {
         header: () => <span className="sr-only">{t("common.actions")}</span>,
         cell: (info) => <UserRowActions user={info.row.original} />,
       }),
-    ],
+    ]),
     [t, roleNames],
   );
 
-  const table = useReactTable({ data: users, columns, getCoreRowModel: getCoreRowModel() });
+  const table = useTable({ features, data: users, columns });
 
   const applySearch = (e: FormEvent) => {
     e.preventDefault();
@@ -287,7 +288,7 @@ function UsersPage() {
             ) : (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getAllCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>

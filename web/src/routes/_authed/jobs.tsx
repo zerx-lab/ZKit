@@ -6,8 +6,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
-  useReactTable,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table";
 import { PlayIcon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -71,7 +71,8 @@ function useInvalidateJobs() {
     });
 }
 
-const columnHelper = createColumnHelper<Job>();
+const features = tableFeatures({});
+const columnHelper = createColumnHelper<typeof features, Job>();
 
 function JobsPage() {
   const { t } = useI18n();
@@ -87,7 +88,7 @@ function JobsPage() {
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const columns = useMemo(
-    () => [
+    () => columnHelper.columns([
       columnHelper.accessor("name", { header: t("jobs.nameLabel") }),
       columnHelper.accessor("handler", { header: t("jobs.handlerLabel") }),
       columnHelper.accessor("cronExpr", { header: t("jobs.cronLabel") }),
@@ -114,11 +115,11 @@ function JobsPage() {
           />
         ),
       }),
-    ],
+    ]),
     [t],
   );
 
-  const table = useReactTable({ data: jobs, columns, getCoreRowModel: getCoreRowModel() });
+  const table = useTable({ features, data: jobs, columns });
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
@@ -159,7 +160,7 @@ function JobsPage() {
             ) : (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getAllCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
@@ -474,7 +475,7 @@ function DeleteJobDialog({ job }: { job: Job }) {
   );
 }
 
-const execColHelper = createColumnHelper<JobExecution>();
+const execColHelper = createColumnHelper<typeof features, JobExecution>();
 
 function JobHistoryDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const { t } = useI18n();
@@ -488,7 +489,7 @@ function JobHistoryDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const pageCount = Math.max(1, Math.ceil(total / EXEC_PAGE_SIZE));
 
   const columns = useMemo(
-    () => [
+    () => execColHelper.columns([
       execColHelper.accessor("startedAt", {
         header: t("jobs.execStarted"),
         cell: (info) => (info.getValue() ? new Date(info.getValue()).toLocaleString() : "—"),
@@ -512,11 +513,11 @@ function JobHistoryDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <span className="text-xs text-destructive">{info.getValue()}</span>
           ) : null,
       }),
-    ],
+    ]),
     [t],
   );
 
-  const table = useReactTable({ data: execs, columns, getCoreRowModel: getCoreRowModel() });
+  const table = useTable({ features, data: execs, columns });
 
   return (
     <Dialog open onOpenChange={(v) => { if (!v) onClose(); }}>
@@ -547,7 +548,7 @@ function JobHistoryDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               ) : (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
+                    {row.getAllCells().map((cell) => (
                       <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                     ))}
                   </TableRow>
