@@ -13,7 +13,6 @@ import (
 	"github.com/zerx-lab/zkit/internal/auth"
 	"github.com/zerx-lab/zkit/internal/media"
 	"github.com/zerx-lab/zkit/internal/model"
-	"github.com/zerx-lab/zkit/internal/query"
 )
 
 const (
@@ -36,25 +35,9 @@ func NewUserService(db *gorm.DB, policy *auth.Policy, m *media.Media) *UserServi
 	return &UserService{db: db, policy: policy, media: m}
 }
 
-// ListUsers returns a page of users, or name-matched users when a keyword is
-// supplied (demonstrating the GORM-CLI generated query).
+// ListUsers returns a page of users, optionally filtered by a keyword matched
+// against name or email. Both paths share the same pagination.
 func (s *UserService) ListUsers(ctx context.Context, req *connect.Request[zerxv1.ListUsersRequest]) (*connect.Response[zerxv1.ListUsersResponse], error) {
-	if keyword := req.Msg.GetKeyword(); keyword != "" {
-		users, err := query.Query[model.User](s.db).SearchByName(ctx, "%"+keyword+"%")
-		if err != nil {
-			return nil, connect.NewError(connect.CodeInternal, err)
-		}
-		out, err := s.enrichUsers(ctx, users)
-		if err != nil {
-			return nil, connect.NewError(connect.CodeInternal, err)
-		}
-
-		return connect.NewResponse(&zerxv1.ListUsersResponse{
-			Users: out,
-			Total: int64(len(users)),
-		}), nil
-	}
-
 	page := int(req.Msg.GetPage().GetPage())
 	if page < 1 {
 		page = 1
@@ -64,13 +47,19 @@ func (s *UserService) ListUsers(ctx context.Context, req *connect.Request[zerxv1
 		pageSize = defaultPageSize
 	}
 
-	total, err := gorm.G[model.User](s.db).Count(ctx, "id")
+	// Count strips ORDER BY, so the ordered chain is safe to share.
+	base := gorm.G[model.User](s.db).Order("id ASC")
+	if keyword := req.Msg.GetKeyword(); keyword != "" {
+		like := "%" + keyword + "%"
+		base = base.Where("name LIKE ? OR email LIKE ?", like, like)
+	}
+
+	total, err := base.Count(ctx, "id")
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	users, err := gorm.G[model.User](s.db).
-		Order("id ASC").
+	users, err := base.
 		Limit(pageSize).
 		Offset((page - 1) * pageSize).
 		Find(ctx)
@@ -224,17 +213,44 @@ func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[zerxv
 	return connect.NewResponse(toProtoUser(u, roles, totpOn, s.media)), nil
 }
 
-// DeleteUser soft-deletes a user. Authorization is enforced by the Casbin
-// interceptor.
+// DeleteUser soft-deletes a user. The email is tombstoned so the unique index
+// is released for re-registration, and per-user rows (roles, sessions, TOTP,
+// recovery codes, password history, reset tokens) are removed in the same
+// transaction. Authorization is enforced by the Casbin interceptor.
 func (s *UserService) DeleteUser(ctx context.Context, req *connect.Request[zerxv1.DeleteUserRequest]) (*connect.Response[zerxv1.DeleteUserResponse], error) {
 	id := req.Msg.GetId()
-	before, _ := gorm.G[model.User](s.db).Where("id = ?", id).First(ctx)
-	rows, err := gorm.G[model.User](s.db).Where("id = ?", id).Delete(ctx)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	if rows == 0 {
+	var before model.User
+	txErr := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		u, err := gorm.G[model.User](tx).Where("id = ?", id).First(ctx)
+		if err != nil {
+			return err
+		}
+		before = u
+		if err := tx.Model(&model.User{}).Where("id = ?", id).Update("email", model.TombstoneEmail(u.ID, u.Email)).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", id).Delete(&model.User{}).Error; err != nil {
+			return err
+		}
+		for _, m := range []any{
+			&model.UserRole{},
+			&model.UserSession{},
+			&model.UserTOTP{},
+			&model.TOTPRecoveryCode{},
+			&model.PasswordHistory{},
+			&model.PasswordResetToken{},
+		} {
+			if err := tx.Where("user_id = ?", id).Delete(m).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if errors.Is(txErr, gorm.ErrRecordNotFound) {
 		return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
+	}
+	if txErr != nil {
+		return nil, connect.NewError(connect.CodeInternal, txErr)
 	}
 	audit.Record(ctx, auditJSON(map[string]any{"before": map[string]any{"id": before.ID, "email": before.Email, "name": before.Name}}))
 

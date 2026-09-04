@@ -4,13 +4,14 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import { file_buf_validate_validate } from "../../buf/validate/validate_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file zerx/v1/common.proto.
  */
 export const file_zerx_v1_common: GenFile = /*@__PURE__*/
-  fileDesc("ChR6ZXJ4L3YxL2NvbW1vbi5wcm90bxIHemVyeC52MSIuCgtQYWdlUmVxdWVzdBIMCgRwYWdlGAEgASgFEhEKCXBhZ2Vfc2l6ZRgCIAEoBSIdCgxQYWdlUmVzcG9uc2USDQoFdG90YWwYASABKANCMFouZ2l0aHViLmNvbS96ZXJ4LWxhYi96a2l0L2dlbi9nby96ZXJ4L3YxO3plcnh2MWIGcHJvdG8z");
+  fileDesc("ChR6ZXJ4L3YxL2NvbW1vbi5wcm90bxIHemVyeC52MSJCCgtQYWdlUmVxdWVzdBIVCgRwYWdlGAEgASgFQge6SAQaAigAEhwKCXBhZ2Vfc2l6ZRgCIAEoBUIJukgGGgQYZCgAIh0KDFBhZ2VSZXNwb25zZRINCgV0b3RhbBgBIAEoA0IwWi5naXRodWIuY29tL3plcngtbGFiL3praXQvZ2VuL2dvL3plcngvdjE7emVyeHYxYgZwcm90bzM", [file_buf_validate_validate]);
 
 /**
  * PageRequest is a reusable pagination request fragment.
@@ -19,11 +20,15 @@ export const file_zerx_v1_common: GenFile = /*@__PURE__*/
  */
 export type PageRequest = Message<"zerx.v1.PageRequest"> & {
   /**
+   * 0 means default (first page).
+   *
    * @generated from field: int32 page = 1;
    */
   page: number;
 
   /**
+   * 0 means default (20); capped at 100 to match service maxPageSize.
+   *
    * @generated from field: int32 page_size = 2;
    */
   pageSize: number;

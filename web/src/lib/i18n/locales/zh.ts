@@ -475,4 +475,16 @@ export const zh: typeof en = {
     label: "双因素验证码",
     placeholder: "请输入 6 位验证码",
   },
+  notFound: {
+    title: "页面不存在",
+    description: "您访问的页面不存在或已被移动。",
+    home: "返回首页",
+  },
+  errorPage: {
+    title: "出错了",
+    forbidden: "您没有权限访问该页面。",
+    internal: "服务器发生错误，请稍后重试。",
+    retry: "重试",
+    home: "返回首页",
+  },
 };

@@ -16,12 +16,22 @@ services:
       #   DB_DSN: zerx:zerx@tcp(mysql:3306)/zerxlab?charset=utf8mb4&parseTime=True&loc=Local
       DB_DRIVER: postgres
       DB_DSN: host=postgres user=zerx password=zerx dbname=zerxlab port=5432 sslmode=disable
-      JWT_SECRET: ${JWT_SECRET:-please-change-this-secret}
-      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@example.com}
-      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-please-change-me}
+      # APP_ENV=prod refuses the .env.example placeholder and secrets < 32 bytes:
+      # export JWT_SECRET (e.g. `openssl rand -base64 48`) before `docker compose up`.
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET to a random value of at least 32 bytes}
+      # When a reverse proxy (nginx/traefik/cloud LB) fronts the app, list its
+      # CIDRs so X-Forwarded-For is honored for rate limiting / login lockout /
+      # audit IPs. Leave unset when clients hit :8080 directly.
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-}
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/server", "healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   postgres:
     image: postgres:17-alpine

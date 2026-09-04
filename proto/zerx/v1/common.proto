@@ -2,12 +2,19 @@ syntax = "proto3";
 
 package zerx.v1;
 
+import "buf/validate/validate.proto";
+
 option go_package = "github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1";
 
 // PageRequest is a reusable pagination request fragment.
 message PageRequest {
-  int32 page = 1;
-  int32 page_size = 2;
+  // 0 means default (first page).
+  int32 page = 1 [(buf.validate.field).int32 = {gte: 0}];
+  // 0 means default (20); capped at 100 to match service maxPageSize.
+  int32 page_size = 2 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 100
+  }];
 }
 
 // PageResponse is a reusable pagination response fragment.

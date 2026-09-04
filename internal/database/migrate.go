@@ -17,7 +17,7 @@ import (
 //
 // casbin_rule is never listed here: the gorm-adapter inside casbin.New
 // auto-migrates it (later, in server.New), independent of the migrations table.
-// extra holds plugin-supplied migrations appended after the core 0001-0007 set;
+// extra holds plugin-supplied migrations appended after the core 0001-0009 set;
 // cmd/server/main.go passes plugin.CollectMigrations() (database does not import
 // the plugin package, avoiding the database->plugin->jobs import cycle).
 func Migrate(db *gorm.DB, extra []*gormigrate.Migration) error {
@@ -150,6 +150,36 @@ func Migrate(db *gorm.DB, extra []*gormigrate.Migration) error {
 					}
 				}
 				return nil
+			},
+			Rollback: func(*gorm.DB) error { return nil },
+		},
+		{
+			ID: "0008_tombstone_deleted_user_emails",
+			Migrate: func(tx *gorm.DB) error {
+				// Free the unique email index for rows soft-deleted before
+				// DeleteUser started tombstoning (see model.TombstoneEmail).
+				var rows []model.User
+				if err := tx.Unscoped().Select("id", "email").
+					Where("deleted_at IS NOT NULL").Find(&rows).Error; err != nil {
+					return err
+				}
+				for _, u := range rows {
+					if model.IsTombstonedEmail(u.Email) {
+						continue
+					}
+					if err := tx.Unscoped().Model(&model.User{}).Where("id = ?", u.ID).
+						Update("email", model.TombstoneEmail(u.ID, u.Email)).Error; err != nil {
+						return err
+					}
+				}
+				return nil
+			},
+			Rollback: func(*gorm.DB) error { return nil },
+		},
+		{
+			ID: "0009_totp_last_used_step",
+			Migrate: func(tx *gorm.DB) error {
+				return tx.AutoMigrate(&model.UserTOTP{})
 			},
 			Rollback: func(*gorm.DB) error { return nil },
 		},

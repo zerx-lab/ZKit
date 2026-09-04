@@ -38,8 +38,8 @@ description: "ZKit 前端开发规约(React 19 + TanStack + connect-query + Zod4
 ## 表单(react-form)
 `useForm({ defaultValues, validators: { onChange: zodSchema }, onSubmit: async ({ value }) => … })`;`<form.Field name="...">`;错误用 `firstErrorMessage(field.state.meta.errors)`(`web/src/lib/form.ts`);可复用字段组件用 `AnyFieldApi` 类型。
 
-## i18n(`web/src/lib/i18n.tsx`)
-- 结构锁:`const en = {...}; const zh: typeof en = {...}`。新增文案 **en/zh 同步加同名 key**(缺 key 编译失败)。
+## i18n(`web/src/lib/i18n/index.tsx` + `locales/{en,zh}.ts`)
+- 结构锁:`locales/en.ts` 导出 `en`,`locales/zh.ts` 为 `zh: typeof en`。新增文案 **en/zh 同步加同名 key**(缺 key 编译失败;勿用可选属性,否则结构锁失效)。
 - 用法:`const { t, locale, setLocale, toggleLocale } = useI18n(); t(key, params?)`;缺失回退 en 再回退 key。
 
 ## 主题(`web/src/lib/theme.tsx`)
@@ -61,7 +61,7 @@ description: "ZKit 前端开发规约(React 19 + TanStack + connect-query + Zod4
 
 ## 权限显隐(纯 UX,非安全边界)
 - `<Can code="user:create">…</Can>`(组件 `web/src/components/can.tsx`,props `{ code, children }`)。
-- 判定源 `web/src/lib/permissions.tsx`:`usePermissions().can(code)` = `roles.includes("admin") || codes.has(code)`(`roles: string[]` 多角色;接口 `PermissionContextValue{ roles, can }`;`me` 返 `user.roles`);数据来自 `me` + `getUserButtons` query。
+- 判定源 `web/src/lib/permissions.tsx`:`usePermissions().can(code)` = `roles.includes("admin") || codes.has(code)`(`roles: string[]` 多角色;接口 `PermissionContextValue{ roles, can, isLoading }`,`isLoading` = `me` 或 `getUserButtons` 任一 `isPending`,页面据此渲染骨架而非误判无权限;`me` 返 `user.roles`);数据来自 `me` + `getUserButtons` query。
 - 真正鉴权在同名 procedure 的 Casbin 策略上,见 `skill://zerx-authz`。
 
 ## lib 速查
@@ -70,7 +70,10 @@ description: "ZKit 前端开发规约(React 19 + TanStack + connect-query + Zod4
 - `auth.ts`:`getAccessToken/setTokens/clearTokens/isAuthenticated/auth`。
 - `menu-icons.ts`:`iconByName: Record<string, LucideIcon>`、`menuIcon(name)`(fallback `CircleIcon`)。
 - 生成物命名:`web/src/gen/zerx/v1/<entity>_pb.ts`、`<entity>-<Service>_connectquery.ts`、`web/src/gen/buf/validate/validate_pb.ts`。
-- 路由:`web/vite.config.ts` 用 `tanstackRouter({ target:"react", autoCodeSplitting:true })` 生成并提交 `src/routeTree.gen.ts`。
+- 路由:`web/vite.config.ts` 用 `tanstackRouter({ target:"react", autoCodeSplitting:true })` 生成并提交 `src/routeTree.gen.ts`;404 / 错误边界在 `router.tsx`(`defaultNotFoundComponent` / `defaultErrorComponent` → `components/{not-found,error-view}.tsx`,`error-view` 按 `ConnectError.code` 区分 403 / 服务器错误)。
+- CSP:后端对 SPA 下发 `script-src 'self'`,**禁止 inline `<script>`**;主题预加载脚本在 `web/public/theme-init.js`(`index.html` 以 `src` 引用)。
+- 构建:Vite 8 底层是 rolldown,**不用 `manualChunks`**(兼容层会递归吞依赖);分包用 `rollupOptions.output.codeSplitting.groups`(first-match-wins):`vendor`(react/react-dom/scheduler/@tanstack)→ `connect`(@connectrpc/@bufbuild)→ `charts`(recharts + d3-*,`includeDependenciesRecursively:false`);`sourcemap:false`、`target:"es2022"`。
+- 测试:vitest + jsdom + Testing Library(`web/vitest.config.ts`,`bun run test`,文件 `src/**/*.test.{ts,tsx}`,显式 `import { … } from "vitest"`);现有用例 `lib/transport.test.ts`(401 单飞刷新)、`lib/permissions.test.tsx`。
 
 ## 源码锚点
 `web/src/routes/_authed/users.tsx`、`web/src/components/ui/button.tsx`、`web/src/components/can.tsx`、`web/src/lib/{permissions.tsx,i18n.tsx,transport.ts,theme.tsx,query-client.ts,form.ts,auth.ts,menu-icons.ts}`。

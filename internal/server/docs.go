@@ -35,6 +35,10 @@ func docsHandler() http.HandlerFunc {
 </html>`
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		// Scalar is loaded from jsDelivr and evals templates, so the strict
+		// SPA policy set by withSecurityHeaders is replaced for this page only.
+		w.Header().Set("Content-Security-Policy",
+			"default-src 'self' https://cdn.jsdelivr.net data: blob: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'none'")
 		_, _ = w.Write([]byte(page))
 	}
 }

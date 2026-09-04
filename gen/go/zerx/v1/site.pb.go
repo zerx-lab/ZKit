@@ -27,7 +27,7 @@ type SiteSettings struct {
 	Name   string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Logo   string                 `protobuf:"bytes,2,opt,name=logo,proto3" json:"logo,omitempty"`
 	Domain string                 `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
-	// Stored admin switch. Absent or false means closed.
+	// Stored admin switch. Absent or empty means open; only explicit false closes.
 	RegisterEnabled bool `protobuf:"varint,4,opt,name=register_enabled,json=registerEnabled,proto3" json:"register_enabled,omitempty"`
 	// Computed: register_enabled || the user table is empty (first-admin bootstrap).
 	RegisterOpen bool `protobuf:"varint,5,opt,name=register_open,json=registerOpen,proto3" json:"register_open,omitempty"`

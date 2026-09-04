@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -25,10 +26,50 @@ import (
 var version = "dev"
 
 func main() {
+	// Subcommands keep the distroless image self-sufficient: it has no curl, so
+	// the container HEALTHCHECK re-enters this binary.
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "healthcheck":
+			os.Exit(healthcheck())
+		case "version":
+			fmt.Println(version)
+			return
+		}
+	}
 	if err := run(); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "fatal: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+// healthcheck probes /readyz on the configured address and maps the result to
+// a process exit code (0 ready, 1 not ready), for Docker/compose HEALTHCHECK.
+func healthcheck() int {
+	addr := os.Getenv("SERVER_ADDR")
+	if addr == "" {
+		addr = ":8080"
+	}
+	if strings.HasPrefix(addr, ":") {
+		addr = "127.0.0.1" + addr
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	// The target is our own listen address from SERVER_ADDR, not user input.
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://"+addr+"/readyz", nil) //nolint:gosec // G704: self-probe
+	if err != nil {
+		return 1
+	}
+	res, err := http.DefaultClient.Do(req) //nolint:gosec // G704: self-probe
+	if err != nil {
+		return 1
+	}
+	defer func() { _ = res.Body.Close() }()
+	if res.StatusCode != http.StatusOK {
+		return 1
+	}
+
+	return 0
 }
 
 func run() error {
@@ -37,7 +78,11 @@ func run() error {
 		return fmt.Errorf("load config: %w", err)
 	}
 
-	logger := newLogger(cfg.Env)
+	logger, err := newLogger(cfg)
+	if err != nil {
+		return err
+	}
+	slog.SetDefault(logger)
 
 	// Register compiled-in plugins (pure in-memory) and validate them before any
 	// DB work. ValidateAll enforces naming/namespacing and the procedure-ownership
@@ -93,7 +138,7 @@ func run() error {
 	}
 	scheduler.SetHandlerEnabled(pluginState.IsJobHandlerEnabled)
 
-	handler, err := server.New(cfg, db, logger, scheduler, pluginState)
+	app, err := server.New(cfg, db, logger, scheduler, registry, pluginState)
 	if err != nil {
 		return fmt.Errorf("build server: %w", err)
 	}
@@ -104,13 +149,18 @@ func run() error {
 
 	protocols := new(http.Protocols)
 	protocols.SetHTTP1(true)
-	protocols.SetUnencryptedHTTP2(true) // h2c, for grpc tooling; SPA uses HTTP/1.1
+	// h2c (cleartext HTTP/2) serves grpcurl-style tooling; the SPA uses HTTP/1.1.
+	// Disable via SERVER_H2C_ENABLED=false when the port is exposed without a
+	// TLS-terminating proxy.
+	protocols.SetUnencryptedHTTP2(cfg.Server.H2C)
 
 	srv := &http.Server{
 		Addr:              cfg.Server.Addr,
-		Handler:           handler,
+		Handler:           app.Handler,
 		Protocols:         protocols,
 		ReadHeaderTimeout: 10 * time.Second,
+		WriteTimeout:      cfg.Server.WriteTimeout,
+		IdleTimeout:       cfg.Server.IdleTimeout,
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -131,11 +181,16 @@ func run() error {
 		return fmt.Errorf("serve: %w", serveErr)
 	}
 
-	_ = scheduler.Shutdown()
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	if err := scheduler.Shutdown(); err != nil {
+		logger.Warn("scheduler shutdown", "err", err)
+	}
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.Server.ShutdownTimeout)
 	defer cancel()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		return fmt.Errorf("shutdown: %w", err)
+	}
+	if err := app.Close(shutdownCtx); err != nil {
+		logger.Warn("operation log drain incomplete", "err", err)
 	}
 
 	logger.Info("server stopped")
@@ -178,10 +233,15 @@ func toMenuSeeds(in []plugin.MenuNode) []database.MenuSeed {
 	return out
 }
 
-func newLogger(env string) *slog.Logger {
-	if env == "dev" {
-		return slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug}))
+func newLogger(cfg *config.Config) (*slog.Logger, error) {
+	level, err := cfg.LogLevel()
+	if err != nil {
+		return nil, err
+	}
+	opts := &slog.HandlerOptions{Level: level}
+	if cfg.LogJSON() {
+		return slog.New(slog.NewJSONHandler(os.Stderr, opts)), nil
 	}
 
-	return slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelInfo}))
+	return slog.New(slog.NewTextHandler(os.Stderr, opts)), nil
 }

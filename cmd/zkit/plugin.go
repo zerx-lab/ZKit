@@ -264,7 +264,7 @@ func patchAll(path, name, module string) error {
 	src = insertBeforeAnchorLine(src, importAnchor, importLine)
 	src = insertBeforeAnchorLine(src, registerAnchor, registerLine)
 
-	return os.WriteFile(path, []byte(src), 0o644)
+	return os.WriteFile(path, []byte(src), 0o644) //nolint:gosec // G703: path is <root>/internal/plugins/all.go, not user input
 }
 
 // insertBeforeAnchorLine inserts line immediately before the full line that

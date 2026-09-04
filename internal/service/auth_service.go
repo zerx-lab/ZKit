@@ -3,19 +3,18 @@ package service
 import (
 	"context"
 	"errors"
-	"net"
 	"slices"
 	"time"
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	"github.com/pquerna/otp/totp"
 	"gorm.io/gorm"
 
 	zerxv1 "github.com/zerx-lab/zkit/gen/go/zerx/v1"
 	"github.com/zerx-lab/zkit/gen/go/zerx/v1/zerxv1connect"
 	"github.com/zerx-lab/zkit/internal/auth"
 	"github.com/zerx-lab/zkit/internal/captcha"
+	"github.com/zerx-lab/zkit/internal/clientip"
 	"github.com/zerx-lab/zkit/internal/config"
 	"github.com/zerx-lab/zkit/internal/mailer"
 	"github.com/zerx-lab/zkit/internal/media"
@@ -44,16 +43,6 @@ func NewAuthService(db *gorm.DB, issuer *auth.Issuer, guard *ratelimit.LoginGuar
 	return &AuthService{db: db, issuer: issuer, guard: guard, captcha: cap, cfg: cfg, mailer: m, policy: policy, param: paramCache, media: mr}
 }
 
-// clientIP returns the request peer's host portion (port stripped).
-func clientIP(req connect.AnyRequest) string {
-	addr := req.Peer().Addr
-	if host, _, err := net.SplitHostPort(addr); err == nil {
-		return host
-	}
-
-	return addr
-}
-
 func userAgent(req connect.AnyRequest) string {
 	return req.Header().Get("User-Agent")
 }
@@ -71,7 +60,7 @@ func (s *AuthService) GetCaptcha(_ context.Context, _ *connect.Request[zerxv1.Ge
 // Login verifies credentials, enforces brute-force protection, records a login
 // log, creates a session, and issues an access + refresh token pair.
 func (s *AuthService) Login(ctx context.Context, req *connect.Request[zerxv1.LoginRequest]) (*connect.Response[zerxv1.LoginResponse], error) {
-	ip := clientIP(req)
+	ip := clientip.Of(ctx, req)
 	ua := userAgent(req)
 	email := req.Msg.GetEmail()
 	key := email + "|" + ip
@@ -115,7 +104,7 @@ func (s *AuthService) Login(ctx context.Context, req *connect.Request[zerxv1.Log
 			// Not a failure: prompt the client for the second factor.
 			return connect.NewResponse(&zerxv1.LoginResponse{TotpRequired: true}), nil
 		}
-		if !totp.Validate(code, tt.Secret) {
+		if !s.consumeTOTP(ctx, u.ID, tt.Secret, code) {
 			if !s.consumeRecoveryCode(ctx, u.ID, code) {
 				return nil, fail(u.ID, connect.NewError(connect.CodeUnauthenticated, errors.New("两步验证码错误")))
 			}
@@ -261,12 +250,13 @@ func (s *AuthService) Register(ctx context.Context, req *connect.Request[zerxv1.
 	_ = s.policy.RecordHistory(ctx, s.db, u.ID, hash)
 
 	roles := []string{roleCode}
-	sid, access, refresh, err := s.startSessionTx(ctx, u, roles, clientIP(req), userAgent(req))
+	ip, ua := clientip.Of(ctx, req), userAgent(req)
+	sid, access, refresh, err := s.startSessionTx(ctx, u, roles, ip, ua)
 	if err != nil {
 		return nil, err
 	}
 
-	s.writeLoginLog(model.LoginLog{UserID: u.ID, Email: u.Email, Success: true})
+	s.writeLoginLog(model.LoginLog{UserID: u.ID, Email: u.Email, IP: ip, UserAgent: ua, Success: true})
 
 	return connect.NewResponse(&zerxv1.RegisterResponse{
 		AccessToken:  access,

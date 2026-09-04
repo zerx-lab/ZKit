@@ -33,7 +33,7 @@ export type SiteSettings = Message<"zerx.v1.SiteSettings"> & {
   domain: string;
 
   /**
-   * Stored admin switch. Absent or false means closed.
+   * Stored admin switch. Absent or empty means open; only explicit false closes.
    *
    * @generated from field: bool register_enabled = 4;
    */

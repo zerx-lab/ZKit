@@ -55,10 +55,12 @@ func (c *Cache) Get(key string) (string, bool) {
 }
 
 // Set upserts a parameter value in the database and refreshes the cache entry.
+// The unique index spans soft-deleted rows, so a conflict on a deleted key
+// also clears deleted_at; otherwise the value would vanish on the next Load.
 func (c *Cache) Set(ctx context.Context, key, val string) error {
 	if err := c.db.WithContext(ctx).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "key"}},
-		DoUpdates: clause.AssignmentColumns([]string{"value"}),
+		DoUpdates: clause.Assignments(map[string]any{"value": val, "deleted_at": nil, "updated_at": time.Now()}),
 	}).Create(&model.SysParam{Key: key, Value: val}).Error; err != nil {
 		return fmt.Errorf("upsert param: %w", err)
 	}

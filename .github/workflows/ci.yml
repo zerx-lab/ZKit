@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (lint + test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Verify go.mod is tidy
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+      - name: golangci-lint
+        run: go tool golangci-lint run ./...
+      - name: nilaway
+        run: go tool nilaway -include-pkgs=github.com/zerx-lab/zkit -exclude-pkgs=github.com/zerx-lab/zkit/gen,github.com/zerx-lab/zkit/internal/query,github.com/zerx-lab/zkit/web ./...
+      - name: go test (race)
+        run: go test -race -count=1 ./...
+
+  frontend:
+    name: Frontend (lint + typecheck + test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bun run typecheck
+      - run: bun run test
+
+  build:
+    name: Build single binary
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+      - name: Build SPA
+        working-directory: web
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+      - name: Build static linux/amd64 binary
+        env:
+          CGO_ENABLED: "0"
+          GOOS: linux
+          GOARCH: amd64
+        run: |
+          VERSION=$(git describe --tags --always --dirty)
+          go build -trimpath -tags netgo,osusergo -ldflags "-s -w -X main.version=${VERSION}" -o bin/zkit-linux-amd64 ./cmd/server
+          ./bin/zkit-linux-amd64 version
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zkit-linux-amd64
+          path: bin/zkit-linux-amd64
+          retention-days: 7

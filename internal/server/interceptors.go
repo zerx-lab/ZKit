@@ -8,11 +8,12 @@ import (
 
 	"connectrpc.com/connect"
 
+	"github.com/zerx-lab/zkit/internal/clientip"
 	"github.com/zerx-lab/zkit/internal/ratelimit"
 )
 
-// NewLoggingInterceptor logs every unary RPC with its procedure, duration, and
-// (on failure) connect error code.
+// NewLoggingInterceptor logs every unary RPC with its request id, procedure,
+// duration, and (on failure) connect error code plus the unsanitized message.
 func NewLoggingInterceptor(logger *slog.Logger) connect.UnaryInterceptorFunc {
 	return func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
@@ -21,12 +22,15 @@ func NewLoggingInterceptor(logger *slog.Logger) connect.UnaryInterceptorFunc {
 
 			if err != nil {
 				logger.LogAttrs(ctx, slog.LevelWarn, "rpc failed",
+					slog.String("request_id", requestIDFrom(ctx)),
 					slog.String("procedure", req.Spec().Procedure),
 					slog.Duration("duration", time.Since(start)),
 					slog.String("code", connect.CodeOf(err).String()),
+					slog.String("err", err.Error()),
 				)
 			} else {
 				logger.LogAttrs(ctx, slog.LevelInfo, "rpc ok",
+					slog.String("request_id", requestIDFrom(ctx)),
 					slog.String("procedure", req.Spec().Procedure),
 					slog.Duration("duration", time.Since(start)),
 				)
@@ -43,7 +47,7 @@ func NewLoggingInterceptor(logger *slog.Logger) connect.UnaryInterceptorFunc {
 func NewRateLimitInterceptor(l *ratelimit.Limiter) connect.UnaryInterceptorFunc {
 	return func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-			if !l.Allow(auditClientIP(req)) {
+			if !l.Allow(clientip.Of(ctx, req)) {
 				return nil, connect.NewError(connect.CodeResourceExhausted, errors.New("请求过于频繁"))
 			}
 

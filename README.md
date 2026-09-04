@@ -116,7 +116,7 @@ task docker:up    # 起整套 compose(app + postgres)
 ```
 浏览器 SPA ──/api/...──► connectRPC handler
                           │
-              拦截器链:日志 → 认证 → 校验 → recover
+              拦截器链:错误脱敏 → 日志 → 限流 → 认证 → 操作日志+recover → Casbin → 校验
                           │
                        service ──► GORM ──► 数据库
 ```

@@ -12,7 +12,7 @@
 - **契约**:proto 声明式校验(protovalidate)、JWT 认证、最小 RBAC;无默认账号——首次注册的用户自动成为管理员。
 - **质量门禁**:Go 空指针静态分析(nilaway)、govet nilness、golangci-lint;前端严格 TypeScript + ESLint。
 
-数据流:浏览器 SPA → `/api/...`(同源)→ connectRPC handler → 拦截器链(日志 → 认证 → 校验 → recover)→ service → GORM → 数据库。生产为单二进制同源部署;开发用 Vite 代理(`:5173` → `:8080`)。
+数据流:浏览器 SPA → `/api/...`(同源)→ HTTP 中间件(客户端 IP / request-id / 安全头 / CORS)→ 拦截器链(错误脱敏 → 日志 → 限流 → 认证 → 操作日志+recover → Casbin → 校验)→ service → GORM → 数据库。生产为单二进制同源部署;开发用 Vite 代理(`:5173` → `:8080`)。
 
 ## 2. 目录结构
 
@@ -24,19 +24,26 @@
 ├── gen/go/zerx/v1/                             # 生成(提交):*.pb.go + zerxv1connect/*.connect.go
 ├── cmd/server/main.go                          # 入口:config→db→migrate→seed→serve(h2c)
 ├── internal/
-│   ├── config/      # 12-factor 类型化配置(caarlos0/env + godotenv);含 Auth/Storage
-│   ├── database/    # Open(多数据源)/ Migrate / Seed(角色/菜单/按钮/API 目录)/ gen.go
+│   ├── config/      # 12-factor 类型化配置(caarlos0/env + godotenv)+ Validate(prod 密钥强度等)
+│   ├── database/    # Open(多数据源 + 连接池)/ Migrate(gormigrate 0001-0009)/ Seed / gen.go
 │   ├── model/       # GORM 模型 + querier.go(GORM CLI 输入接口)
 │   ├── query/       # GORM CLI 生成(提交):Query[T] + 字段助手
-│   ├── auth/        # bcrypt / JWT(jti=会话)/ ctx claims / 认证拦截器 / Casbin 接口鉴权拦截器
+│   ├── auth/        # bcrypt / JWT(jti=会话)/ ctx claims / 认证拦截器 / Casbin 接口鉴权拦截器 / 密码策略
 │   ├── casbin/      # SyncedCachedEnforcer 封装(sub=角色 code, obj=procedure);gorm-adapter
-│   ├── captcha/     # base64Captcha 内存验证码(进程内)
-│   ├── ratelimit/   # 登录防爆破(内存滑动窗口:验证码阈值/锁定阈值)
-│   ├── param/       # 系统参数运行时缓存(进程内)
+│   ├── clientip/    # 真实客户端 IP 解析(TRUSTED_PROXIES 内才采信 XFF);限流/防爆破/审计共用
+│   ├── captcha/     # base64Captcha 验证码(DB 共享)
+│   ├── ratelimit/   # 全局 per-IP 令牌桶(进程内)+ 登录防爆破 LoginGuard(DB 共享)
+│   ├── param/       # 系统参数运行时缓存(进程内,多副本定时重载)
 │   ├── apispec/     # proto 反射枚举 procedure(API 目录种子/同步)
+│   ├── audit/       # handler → 操作日志拦截器的 ctx 传递(Record/WithHolder)
 │   ├── storage/     # 对象存储抽象:local(磁盘)/ s3(minio-go)
+│   ├── media/       # blob 可见性 + 签名 URL 解析(ResolveFile/Avatar/Logo)
+│   ├── mailer/      # SMTP 出站邮件(未启用时仅记日志)
+│   ├── jobs/        # cron 调度器 + handler 注册表 + DB 分布式锁
+│   ├── plugin/      # 编译期插件接口 / 注册 / ValidateAll / 运行时启停状态 / installer(zip 安装)
+│   ├── plugins/     # all.go:编译进二进制的插件清单(脚手架自动改写)
 │   ├── service/     # connectRPC handler 实现 + convert.go
-│   ├── server/      # New() 装配:拦截器链 + 操作日志/审计拦截器 + /api 路由 + /api/upload + SPA + /healthz
+│   ├── server/      # New() 装配:HTTP 中间件(clientip/request-id/安全头/CORS)+ 拦截器链 + 路由 + 上传/导入导出/媒体/文档
 │   └── web/         # embed.go(go:embed all:dist)+ dist/(前端产物落点)
 └── web/
     ├── vite.config.ts / tsconfig*.json / eslint.config.js / components.json
@@ -72,7 +79,7 @@
 | `task build` | 构建 SPA → 本机单二进制(内嵌 SPA),产物 `bin/zkit[.exe]` |
 | `task build:dist` | 构建 SPA → 静态 `linux/amd64` 二进制 `bin/zkit-linux-amd64` |
 | `task lint` | 后端 golangci-lint + nilaway;前端 ESLint + `tsc --noEmit` |
-| `task test` | `go test ./...`(前端暂无测试) |
+| `task test` | `go test ./...` + 前端 `vitest`(`web/src/**/*.test.{ts,tsx}`) |
 | `task run` | 运行已构建二进制(需 `JWT_SECRET`,`.env` 在 dev 即可) |
 | `task docker:build` / `docker:up` / `docker:down` / `db:up` / `db:down` | 构建镜像 / 起停整套 compose(app + postgres,数据持久化于命名卷 `zkit_pgdata`)/ 起停本地 dev PostgreSQL。MySQL 在 `docker-compose.yml` 中默认注释,需手动取消注释启用 |
 | `task deps:update` / `deps:rollback` | 升级全部依赖(先快照)/ 从快照回退 |

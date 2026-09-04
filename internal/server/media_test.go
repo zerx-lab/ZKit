@@ -103,3 +103,62 @@ func TestMediaHandlerAuthorization(t *testing.T) {
 		}
 	}
 }
+
+func TestMediaHandlerContentDisposition(t *testing.T) {
+	dsn := "file:" + t.Name() + "?mode=memory&cache=shared"
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	if err := database.Migrate(db, nil); err != nil {
+		t.Fatalf("migrate: %v", err)
+	}
+
+	dir := t.TempDir()
+	scfg := config.StorageConfig{Driver: "local", LocalDir: dir, LocalBaseURL: "/uploads", SignedURLTTL: time.Hour}
+	store, err := storage.New(scfg)
+	if err != nil {
+		t.Fatalf("storage.New: %v", err)
+	}
+	m := media.New(store, scfg, []byte("test-sign-key"))
+	issuer := auth.NewIssuer(config.JWTConfig{Secret: "test", AccessTTL: time.Minute, RefreshTTL: time.Hour})
+	h := mediaHandler(issuer, m, db, "/uploads")
+	ctx := context.Background()
+
+	files := []struct {
+		key, ct, body, wantDisposition string
+	}{
+		{"2026/01/pic.png", "image/png", "\x89PNG\r\n\x1a\n0000", ""},
+		{"2026/01/vec.svg", "image/svg+xml", "<svg xmlns='http://www.w3.org/2000/svg'/>", `attachment; filename="vec.svg"`},
+		{"2026/01/note.txt", "text/plain", "hello", `attachment; filename="note.txt"`},
+		// Declared type disagrees with the extension: never inline.
+		{"2026/01/fake.svg", "image/png", "<svg/>", `attachment; filename="fake.svg"`},
+	}
+	for _, f := range files {
+		if err := store.Save(ctx, f.key, strings.NewReader(f.body), int64(len(f.body)), f.ct); err != nil {
+			t.Fatalf("save %s: %v", f.key, err)
+		}
+		rec := model.File{Name: f.key, Key: f.key, ContentType: f.ct, Visibility: model.VisibilityPublic, UploadedBy: 1}
+		if err := gorm.G[model.File](db).Create(ctx, &rec); err != nil {
+			t.Fatalf("create row %s: %v", f.key, err)
+		}
+	}
+
+	for _, f := range files {
+		req := httptest.NewRequest(http.MethodGet, "/uploads/"+f.key, nil)
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, req)
+		if rec.Code != http.StatusOK {
+			t.Errorf("%s status = %d, want 200", f.key, rec.Code)
+		}
+		if got := rec.Header().Get("Content-Disposition"); got != f.wantDisposition {
+			t.Errorf("%s Content-Disposition = %q, want %q", f.key, got, f.wantDisposition)
+		}
+		if got := rec.Header().Get("X-Content-Type-Options"); got != "nosniff" {
+			t.Errorf("%s X-Content-Type-Options = %q, want nosniff", f.key, got)
+		}
+		if got := rec.Header().Get("Content-Security-Policy"); got != "sandbox" {
+			t.Errorf("%s Content-Security-Policy = %q, want sandbox", f.key, got)
+		}
+	}
+}

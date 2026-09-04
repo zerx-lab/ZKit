@@ -474,4 +474,16 @@ export const en = {
     label: "Two-factor code",
     placeholder: "Enter 6-digit code",
   },
+  notFound: {
+    title: "Page not found",
+    description: "The page you are looking for does not exist or has been moved.",
+    home: "Back to home",
+  },
+  errorPage: {
+    title: "Something went wrong",
+    forbidden: "You do not have permission to access this page.",
+    internal: "The server encountered an error. Please try again later.",
+    retry: "Retry",
+    home: "Back to home",
+  },
 };

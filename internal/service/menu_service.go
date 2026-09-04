@@ -114,6 +114,13 @@ func (s *MenuService) DeleteMenu(ctx context.Context, req *connect.Request[zerxv
 		}
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
+	children, err := gorm.G[model.Menu](s.db).Where("parent_id = ?", id).Count(ctx, "id")
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	if children > 0 {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, errors.New("menu has children"))
+	}
 	txErr := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("menu_id = ?", id).Delete(&model.MenuButton{}).Error; err != nil {
 			return err

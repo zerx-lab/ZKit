@@ -4665,11 +4665,16 @@ components:
         page:
           type: integer
           title: page
+          minimum: 0
           format: int32
+          description: 0 means default (first page).
         pageSize:
           type: integer
           title: page_size
+          maximum: 100
+          minimum: 0
           format: int32
+          description: 0 means default (20); capped at 100 to match service maxPageSize.
       title: PageRequest
       additionalProperties: false
       description: PageRequest is a reusable pagination request fragment.
@@ -5079,7 +5084,7 @@ components:
         registerEnabled:
           type: boolean
           title: register_enabled
-          description: Stored admin switch. Absent or false means closed.
+          description: Stored admin switch. Absent or empty means open; only explicit false closes.
         registerOpen:
           type: boolean
           title: register_open

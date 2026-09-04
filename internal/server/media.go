@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"net/http"
+	"path"
 	"slices"
 	"strconv"
 	"strings"
@@ -58,8 +59,27 @@ func mediaHandler(issuer *auth.Issuer, m *media.Media, db *gorm.DB, prefix strin
 		defer func() { _ = rc.Close() }()
 
 		w.Header().Set("Content-Type", f.ContentType)
+		if !servesInline(key, f.ContentType) {
+			w.Header().Set("Content-Disposition", "attachment; filename="+strconv.Quote(path.Base(key)))
+		}
 		http.ServeContent(w, r, f.Name, modtime, rc)
 	}
+}
+
+// inlineTypes are the only media types a browser may render inline; everything
+// else (SVG, text, archives, office documents, unknown) is forced to download.
+var inlineTypes = map[string]bool{
+	"image/png": true, "image/jpeg": true, "image/gif": true, "image/webp": true,
+	"application/pdf": true, "video/mp4": true, "audio/mpeg": true,
+}
+
+// servesInline reports whether a blob stored under key with the recorded
+// contentType may be displayed inline. Both the declared type and the key's
+// extension must agree, so a mislabelled upload never renders as a richer type.
+func servesInline(key, contentType string) bool {
+	ct, _, _ := strings.Cut(contentType, ";")
+	ct = strings.TrimSpace(ct)
+	return inlineTypes[ct] && slices.Contains(allowedContentTypes[strings.ToLower(path.Ext(key))], ct)
 }
 
 // authorizeMedia decides whether the request may read f, writing the appropriate

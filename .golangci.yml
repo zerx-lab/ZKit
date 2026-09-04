@@ -7,13 +7,44 @@ linters:
     - ineffassign
     - staticcheck
     - unused
+    # Resource / correctness
+    - bodyclose
+    - noctx
+    - sqlclosecheck
+    - errorlint
+    - rowserrcheck
+    # Security (G-rules tuned below)
+    - gosec
   settings:
     govet:
       enable:
         - nilness
+    gosec:
+      excludes:
+        # G115: int<->int32/uint conversions; proto int32 fields and pagination
+        # math are bounded by protovalidate / normalizePage.
+        - G115
+        # G304: file paths come from config (storage dir) or validated keys.
+        - G304
+        # G301/G306: the scaffolder and plugin installer write Go/TS source
+        # trees (0644/0755 is the correct mode for source, not secrets).
+        - G301
+        - G306
   exclusions:
     # Generated code is detected by header and skipped; these are belt-and-suspenders.
     generated: lax
     paths:
       - gen/
       - internal/query/
+      # npm packages (e.g. flatted) ship Go sources that ./... would pick up.
+      - web/node_modules/
+    rules:
+      # Tests may ignore Close errors and use weak randomness freely.
+      - path: _test\.go
+        linters: [gosec, errcheck, noctx, bodyclose]
+      # cmd/zkit is a dev-time CLI that shells out to git/gofmt by design.
+      - path: cmd/zkit/
+        linters: [noctx]
+      - path: cmd/zkit/
+        linters: [gosec]
+        text: "G(204|122)"

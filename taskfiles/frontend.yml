@@ -30,7 +30,7 @@ tasks:
       - bun run typecheck
 
   test:
-    desc: Frontend tests (none configured yet)
+    desc: Frontend unit tests (vitest)
+    dir: "{{.ROOT_DIR}}/web"
     cmds:
-      - cmd: 'echo "no frontend tests configured"'
-        silent: true
+      - bun run test

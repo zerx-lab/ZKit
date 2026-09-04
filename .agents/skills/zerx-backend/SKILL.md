@@ -18,7 +18,9 @@ description: "ZKit 后端开发规约(Go + connectRPC + GORM)。当新增/修改
 - 签名:`func (s *XxxService) Method(ctx, req *connect.Request[zerxv1.XReq]) (*connect.Response[zerxv1.XResp], error)`。
 - 返回:`connect.NewResponse(&zerxv1.XResp{...})`;转换用 `convert.go` 的 `toProto<Struct>(model.X) *zerxv1.X`(命名 `toPro+原型 struct`,列表 `toProto<Struct>s`)。
 - **含媒体 URL 的转换多传 `*media.Media`**:`toProtoFile(f, m)`(`Url=m.ResolveFile(f.Key,f.Visibility)`)、`toProtoUser(u, roles, totp, m)`(`Avatar=m.ResolveAvatar(u.Avatar)`)。service 结构体持 `media *media.Media` 字段,经 `NewXxxService(..., m)` 注入(见 `server.go` 的 `mediaResolver`);blob 鉴权/签名 URL 详见 `skill://zerx-security`。
-- 错误映射:`gorm.ErrRecordNotFound → CodeNotFound`;业务冲突 → `CodeAlreadyExists`;内部 → `CodeInternal`;无权限由拦截器返 `CodePermissionDenied`(handler 不主动返)。
+- 错误映射:`gorm.ErrRecordNotFound → CodeNotFound`;业务冲突 → `CodeAlreadyExists`;前置条件(如删有子菜单的菜单)→ `CodeFailedPrecondition`;内部 → `connect.NewError(connect.CodeInternal, err)` **直接包原始 err**(最外层 `NewErrorSanitizerInterceptor` 对客户端统一改写为 `internal error`,原始 err 进 slog 与操作日志);无权限由拦截器返 `CodePermissionDenied`(handler 不主动返)。
+- 分页:`PageRequest` 在 proto 层约束 `page >= 0`、`0 <= page_size <= 100`(`common.proto`);handler 内仍用 `normalizePage`(0 → 默认 20)。keyword 搜索走同一 `Where + Count(ctx,"id") + Limit/Offset` 链,不要绕过分页。
+- 软删用户:`DeleteUser` 事务内把 email 改写为 `model.TombstoneEmail(id, email)`(`deleted:<id>:<email>`)再软删并级联清 `user_roles/user_sessions/user_totps/totp_recovery_codes/password_history/password_reset_tokens`——email 是普通唯一索引,不改写就无法用同邮箱重新注册。
 
 ## GORM 坑表
 | 错误写法 | 正解 |
@@ -43,7 +45,7 @@ description: "ZKit 后端开发规约(Go + connectRPC + GORM)。当新增/修改
 - 例:`// SELECT * FROM @@table WHERE name LIKE @keyword AND deleted_at IS NULL` → `SearchByName(keyword string) ([]T, error)`,调用 `query.Query[model.User](db).SearchByName(ctx, "%"+kw+"%")`。
 
 ## 模型字段块(`internal/model/*.go`)
-`ID uint64 [gorm:"primaryKey"]` … `CreatedAt/UpdatedAt time.Time` … `DeletedAt gorm.DeletedAt [gorm:"index"]`。迁移走 **gormigrate**(`internal/database/migrate.go`,记录表 `migrations`):新模型加进 `0001_baseline` 的 `tx.AutoMigrate(...)` 快照列表(增量:既存库自动补缺表/列)。`casbin_rule` 不在此处(gorm-adapter 在 `server.New` 内自动迁移)。需数据回填/删列时另加 `000N_*` 迁移并用 `tx.Migrator().HasColumn(...)` 守卫。
+`ID uint64 [gorm:"primaryKey"]` … `CreatedAt/UpdatedAt time.Time` … `DeletedAt gorm.DeletedAt [gorm:"index"]`。迁移走 **gormigrate**(`internal/database/migrate.go`,记录表 `migrations`):新模型加进 `0001_baseline` 的 `tx.AutoMigrate(...)` 快照列表(增量:既存库自动补缺表/列)。核心迁移现为 `0001`–`0009`(`0008` 追平历史软删用户 email、`0009` 加 `user_totps.last_used_step`);**AutoMigrate 只增不删不收窄**,删列/改类型必须另写迁移并用 `Migrator().HasColumn` 守卫。`casbin_rule` 不在此处(gorm-adapter 在 `server.New` 内自动迁移)。需数据回填/删列时另加 `000N_*` 迁移并用 `tx.Migrator().HasColumn(...)` 守卫。
 
 ## codegen 版本同步
 - `buf.gen.yaml` 内 Go 插件的 `@version`(`protoc-gen-go`、`protoc-gen-connect-go`)需与 `go.mod` 对应库版本**手动一致**;升级库后同步改字符串再 `task gen`。

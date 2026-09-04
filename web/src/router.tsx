@@ -1,5 +1,7 @@
 import { createRouter } from "@tanstack/react-router";
 
+import { ErrorView } from "@/components/error-view";
+import { NotFound } from "@/components/not-found";
 import { auth } from "@/lib/auth";
 import { queryClient } from "@/lib/query-client";
 
@@ -10,6 +12,8 @@ export const router = createRouter({
   context: { queryClient, auth },
   defaultPreload: "intent",
   scrollRestoration: true,
+  defaultNotFoundComponent: NotFound,
+  defaultErrorComponent: ErrorView,
 });
 
 declare module "@tanstack/react-router" {

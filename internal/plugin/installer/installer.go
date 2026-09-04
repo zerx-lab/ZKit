@@ -334,7 +334,7 @@ func writeAllGo(path, src string) error {
 	if _, err := parser.ParseFile(token.NewFileSet(), "all.go", src, parser.AllErrors); err != nil {
 		return fmt.Errorf("refusing to write malformed all.go: %w", err)
 	}
-	return os.WriteFile(path, []byte(src), 0o644)
+	return os.WriteFile(path, []byte(src), 0o644) //nolint:gosec // G703: path is <root>/internal/plugins/all.go, not user input
 }
 
 func patchAllInsert(path, name, module string) error {

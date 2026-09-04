@@ -23,6 +23,7 @@ import (
 	"github.com/zerx-lab/zkit/internal/auth"
 	"github.com/zerx-lab/zkit/internal/captcha"
 	"github.com/zerx-lab/zkit/internal/casbin"
+	"github.com/zerx-lab/zkit/internal/clientip"
 	"github.com/zerx-lab/zkit/internal/config"
 	"github.com/zerx-lab/zkit/internal/jobs"
 	"github.com/zerx-lab/zkit/internal/mailer"
@@ -35,9 +36,25 @@ import (
 	"github.com/zerx-lab/zkit/internal/web"
 )
 
-// New builds the root HTTP handler: connectRPC services under /api, a multipart
-// upload endpoint at /api/upload, the embedded SPA at /, and /healthz.
-func New(cfg *config.Config, db *gorm.DB, logger *slog.Logger, scheduler *jobs.Scheduler, pluginState *plugin.State) (http.Handler, error) {
+// Server is the assembled HTTP surface plus the background resources it owns.
+type Server struct {
+	// Handler serves connectRPC under /api, the multipart upload endpoint, the
+	// embedded SPA at /, and the /healthz + /readyz probes.
+	Handler http.Handler
+
+	opLog *opLogWriter
+}
+
+// Close drains the asynchronous operation-log queue; call after http.Server
+// shutdown so records for in-flight requests are persisted.
+func (s *Server) Close(ctx context.Context) error {
+	return s.opLog.Close(ctx)
+}
+
+// New wires services, interceptors, and HTTP middleware into a Server. registry
+// is the job registry shared with the scheduler (built once in main so both the
+// JobService UI and the executor see the same handler set).
+func New(cfg *config.Config, db *gorm.DB, logger *slog.Logger, scheduler *jobs.Scheduler, registry jobs.Registry, pluginState *plugin.State) (*Server, error) {
 	issuer := auth.NewIssuer(cfg.JWT)
 
 	enforcer, err := casbin.New(db)
@@ -45,19 +62,16 @@ func New(cfg *config.Config, db *gorm.DB, logger *slog.Logger, scheduler *jobs.S
 		return nil, err
 	}
 
+	proxies, err := clientip.NewResolver(cfg.Server.TrustedProxies)
+	if err != nil {
+		return nil, fmt.Errorf("TRUSTED_PROXIES: %w", err)
+	}
+
 	guard := ratelimit.New(cfg.Auth.CaptchaThreshold, cfg.Auth.LockThreshold, cfg.Auth.LockFor, db)
 	cap := captcha.New(db)
 	limiter := ratelimit.NewLimiter(cfg.RateLimit.RPS, cfg.RateLimit.Burst, cfg.RateLimit.TTL)
 	policy := auth.NewPolicy(cfg.Password)
 	mail := mailer.NewMailer(cfg.SMTP, logger)
-	registry := jobs.NewRegistry(db)
-	// Merge plugin job handlers so the JobService UI can list them as schedulable.
-	// The scheduler that actually executes jobs receives the same merge in main.go.
-	for _, p := range plugin.All() {
-		for k, jh := range p.JobHandlers() {
-			registry[k] = jobs.Descriptor{Handler: jh.Run, Description: jh.Description}
-		}
-	}
 
 	store, err := storage.New(cfg.Storage)
 	if err != nil {
@@ -123,10 +137,16 @@ func New(cfg *config.Config, db *gorm.DB, logger *slog.Logger, scheduler *jobs.S
 		}
 	}
 
-	// Interceptor chain (outermost first): logging -> auth -> operation log
-	// (also recovers panics) -> casbin -> validate. WithRecover is intentionally
-	// omitted; the operation-log interceptor records handler panics with stack.
+	opLog := newOpLogWriter(db, logger)
+
+	// Interceptor chain (outermost first): error sanitizer -> logging -> rate
+	// limit -> auth -> operation log (also recovers panics) -> casbin -> validate.
+	// The sanitizer is outermost so logging/op-log still see raw errors while
+	// clients only ever get a fixed CodeInternal message. WithRecover is
+	// intentionally omitted; the operation-log interceptor records handler
+	// panics with stack.
 	chain := []connect.Interceptor{
+		NewErrorSanitizerInterceptor(),
 		NewLoggingInterceptor(logger),
 	}
 	if cfg.RateLimit.Enabled {
@@ -134,11 +154,16 @@ func New(cfg *config.Config, db *gorm.DB, logger *slog.Logger, scheduler *jobs.S
 	}
 	chain = append(chain,
 		auth.NewAuthInterceptor(issuer, public),
-		NewOperationLogInterceptor(db),
+		NewOperationLogInterceptor(opLog),
 		auth.NewCasbinInterceptor(enforcer, public, selfServe, pluginState.IsProcedureEnabled),
 		validate.NewInterceptor(),
 	)
-	opts := connect.WithInterceptors(chain...)
+	// ReadMaxBytes caps every RPC body (connect buffers it before the handler);
+	// the plugin upload endpoint widens this below.
+	opts := connect.WithOptions(
+		connect.WithInterceptors(chain...),
+		connect.WithReadMaxBytes(int(cfg.Server.MaxRequestBytes)),
+	)
 
 	api := http.NewServeMux()
 	var registered []string
@@ -222,7 +247,15 @@ func New(cfg *config.Config, db *gorm.DB, logger *slog.Logger, scheduler *jobs.S
 	})
 	root.Handle("/", web.SPAHandler())
 
-	return root, nil
+	// HTTP middleware (outermost first): client IP resolution -> request id ->
+	// security headers -> CORS (no-op unless origins configured) -> mux.
+	handler := withCORS(cfg.Server.CORSOrigins, root)
+	if cfg.Server.SecurityHeaders {
+		handler = withSecurityHeaders(cfg.Server.CSP, proxies, handler)
+	}
+	handler = proxies.Middleware(withRequestID(handler))
+
+	return &Server{Handler: handler, opLog: opLog}, nil
 }
 
 // pluginUploadMaxBytes caps the plugin install request body (source-only zip).

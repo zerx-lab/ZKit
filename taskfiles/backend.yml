@@ -4,6 +4,9 @@ vars:
   GOBIN: "{{.ROOT_DIR}}/.bin"
   BIN: 'bin/zkit{{if eq OS "windows"}}.exe{{end}}'
   MODULE: github.com/zerx-lab/zkit
+  # Injected via -ldflags -X main.version (shown by `zkit version` and startup logs).
+  VERSION:
+    sh: git describe --tags --always --dirty 2>/dev/null || echo dev
 
 tasks:
   tools:
@@ -25,7 +28,7 @@ tasks:
     env:
       CGO_ENABLED: "0"
     cmds:
-      - go build -trimpath -ldflags "-s -w -X main.version={{.VERSION | default "dev"}}" -o {{.BIN}} ./cmd/server
+      - go build -trimpath -ldflags "-s -w -X main.version={{.VERSION}}" -o {{.BIN}} ./cmd/server
 
   build:linux:
     desc: Build a static linux/amd64 binary (netgo,osusergo; no glibc)
@@ -34,13 +37,14 @@ tasks:
       GOOS: linux
       GOARCH: amd64
     cmds:
-      - go build -trimpath -tags netgo,osusergo -ldflags "-s -w -X main.version={{.VERSION | default "dev"}}" -o bin/zkit-linux-amd64 ./cmd/server
+      - go build -trimpath -tags netgo,osusergo -ldflags "-s -w -X main.version={{.VERSION}}" -o bin/zkit-linux-amd64 ./cmd/server
 
   lint:
     desc: Run golangci-lint and nilaway (generated code excluded)
     cmds:
       - go tool golangci-lint run
-      - go tool nilaway -include-pkgs={{.MODULE}} -exclude-pkgs={{.MODULE}}/gen,{{.MODULE}}/internal/query ./...
+      # web/node_modules excluded: npm packages (flatted) ship Go sources that ./... picks up.
+      - go tool nilaway -include-pkgs={{.MODULE}} -exclude-pkgs={{.MODULE}}/gen,{{.MODULE}}/internal/query,{{.MODULE}}/web ./...
 
   test:
     desc: Run Go tests

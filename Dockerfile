@@ -32,6 +32,9 @@ WORKDIR /home/nonroot
 COPY --from=backend /server /server
 EXPOSE 8080
 USER 65532:65532
+# distroless has no curl; the binary probes its own /readyz (DB ping).
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
+    CMD ["/server", "healthcheck"]
 # DB_DRIVER/DB_DSN and JWT_SECRET are provided at runtime (docker compose
 # defaults the app to PostgreSQL). With no DB_DRIVER set, it falls back to
 # file-based SQLite, which is ephemeral unless a volume is mounted.

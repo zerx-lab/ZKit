@@ -1,8 +1,11 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 	"path/filepath"
 	"slices"
@@ -26,6 +29,66 @@ var allowedExt = map[string]bool{
 	".svg": true, ".pdf": true, ".txt": true, ".csv": true, ".json": true,
 	".zip": true, ".doc": true, ".docx": true, ".xls": true, ".xlsx": true,
 	".ppt": true, ".pptx": true, ".md": true, ".mp4": true, ".mp3": true,
+}
+
+// sniffLen is how many leading bytes are inspected for content validation:
+// http.DetectContentType uses at most 512, the SVG marker check uses up to 1 KiB.
+const sniffLen = 1024
+
+// allowedContentTypes maps an allowed extension to the sniffed media types
+// (from http.DetectContentType, parameters stripped) that its bytes may
+// legitimately produce. A leading "text/" entry means any text/* subtype.
+var allowedContentTypes = map[string][]string{
+	".png":  {"image/png"},
+	".jpg":  {"image/jpeg"},
+	".jpeg": {"image/jpeg"},
+	".gif":  {"image/gif"},
+	".webp": {"image/webp"},
+	// Sniffing yields text/xml for <?xml prologues and text/plain for bare
+	// <svg ...> documents; sniffAllowed additionally requires an <svg marker
+	// and rejects <script.
+	".svg":  {"text/xml", "image/svg+xml", "text/plain"},
+	".pdf":  {"application/pdf"},
+	".txt":  {"text/"},
+	".csv":  {"text/"},
+	".md":   {"text/"},
+	".json": {"text/"},
+	".zip":  {"application/zip"},
+	".docx": {"application/zip"},
+	".xlsx": {"application/zip"},
+	".pptx": {"application/zip"},
+	// Legacy OLE containers sniff as octet-stream; OOXML saved with a legacy
+	// extension is a zip.
+	".doc": {"application/octet-stream", "application/zip"},
+	".xls": {"application/octet-stream", "application/zip"},
+	".ppt": {"application/octet-stream", "application/zip"},
+	".mp4": {"video/mp4"},
+	// Bare MPEG frames without an ID3 tag are not recognised by the sniffer.
+	".mp3": {"audio/mpeg", "application/octet-stream"},
+}
+
+// sniffAllowed reports whether head (the first bytes of an upload) is
+// consistent with ext. Files without an extension are accepted unless they
+// sniff as HTML.
+func sniffAllowed(ext string, head []byte) bool {
+	ct, _, _ := strings.Cut(http.DetectContentType(head), ";")
+	ct = strings.TrimSpace(ct)
+	if ext == "" {
+		return ct != "text/html"
+	}
+	if !slices.ContainsFunc(allowedContentTypes[ext], func(allowed string) bool {
+		if strings.HasSuffix(allowed, "/") {
+			return strings.HasPrefix(ct, allowed)
+		}
+		return ct == allowed
+	}) {
+		return false
+	}
+	if ext == ".svg" {
+		body := strings.ToLower(string(bytes.TrimLeft(bytes.TrimPrefix(head, []byte("\xef\xbb\xbf")), " \t\r\n")))
+		return strings.Contains(body, "<svg") && !strings.Contains(body, "<script")
+	}
+	return true
 }
 
 // uploadHandler accepts a single multipart "file" from any authenticated user,
@@ -64,6 +127,21 @@ func uploadHandler(issuer *auth.Issuer, store storage.Storage, m *media.Media, d
 		ext := strings.ToLower(filepath.Ext(hdr.Filename))
 		if ext != "" && !allowedExt[ext] {
 			http.Error(w, "unsupported file type", http.StatusBadRequest)
+			return
+		}
+
+		head := make([]byte, sniffLen)
+		n, err := io.ReadFull(f, head)
+		if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) && !errors.Is(err, io.EOF) {
+			http.Error(w, "read failed", http.StatusBadRequest)
+			return
+		}
+		if !sniffAllowed(ext, head[:n]) {
+			http.Error(w, "unsupported file content", http.StatusBadRequest)
+			return
+		}
+		if _, err := f.Seek(0, io.SeekStart); err != nil {
+			http.Error(w, "read failed", http.StatusBadRequest)
 			return
 		}
 

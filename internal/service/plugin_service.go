@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -158,16 +159,27 @@ func (s *PluginService) UninstallPlugin(ctx context.Context, req *connect.Reques
 	name := req.Msg.GetName()
 	// Purge data (tables/apis/casbin/jobs/migrations/plugin_states) BEFORE
 	// removing source, while we can still introspect; menus self-prune on restart.
+	// A partial purge does NOT abort the uninstall: the source removal and
+	// all.go rewrite still run (teardown is best-effort and the failing steps
+	// are already logged), but the RPC then reports the incomplete purge so the
+	// admin knows to finish cleanup by hand (<name>_teardown.sql).
+	var purgeErr error
 	if req.Msg.GetPurgeData() {
-		if err := s.teardownData(ctx, name); err != nil {
-			return nil, connect.NewError(connect.CodeInternal, err)
-		}
+		purgeErr = s.teardownData(ctx, name)
 	}
 	if _, err := installer.Uninstall(s.projectRoot, s.module, name); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	audit.Record(ctx, auditJSON(map[string]any{"after": map[string]any{"uninstalled": name, "purged": req.Msg.GetPurgeData()}}))
+	audit.Record(ctx, auditJSON(map[string]any{"after": map[string]any{
+		"uninstalled":      name,
+		"purged":           req.Msg.GetPurgeData(),
+		"purge_incomplete": purgeErr != nil,
+	}}))
 	s.maybeGen()
+	if purgeErr != nil {
+		s.logger.Error("plugin uninstalled but data purge incomplete", "name", name, "err", purgeErr)
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("plugin uninstalled but data purge incomplete: %w", purgeErr))
+	}
 	return connect.NewResponse(&zerxv1.UninstallPluginResponse{
 		PendingRestart: true,
 		Message:        pendingCode(s.devGen),
@@ -210,7 +222,9 @@ func pendingCode(devGen bool) string {
 // declared tables. Uses GORM model deletes (per-dialect identifier quoting, so
 // the reserved `procedure` column is safe) and ESCAPE '!' (not special in
 // pg/mysql/sqlite string literals, unlike backslash on MySQL). Best-effort: a
-// failing step is logged, the rest continue.
+// failing step is logged and the remaining steps still run, but every failure
+// is collected and returned joined so the caller can surface an incomplete
+// purge instead of silently reporting success.
 func (s *PluginService) teardownData(ctx context.Context, name string) error {
 	db := s.db.WithContext(ctx)
 	groupName := "plg_" + name
@@ -219,9 +233,11 @@ func (s *PluginService) teardownData(ctx context.Context, name string) error {
 	procLike := "/zerx.v1." + pascalCaseSvc(name) + "%"
 	migLike := "plg!_" + name + "!_%"
 
+	var errs []error
 	log := func(step string, err error) {
 		if err != nil {
 			s.logger.Warn("plugin teardown step failed", "name", name, "step", step, "err", err)
+			errs = append(errs, fmt.Errorf("%s: %w", step, err))
 		}
 	}
 
@@ -262,7 +278,7 @@ func (s *PluginService) teardownData(ctx context.Context, name string) error {
 
 	// 6. Runtime enable/disable state.
 	log("plugin_states", db.Where("name = ?", name).Delete(&model.PluginState{}).Error)
-	return nil
+	return errors.Join(errs...)
 }
 
 // pascalCaseSvc converts a plugin name to its service PascalCase prefix

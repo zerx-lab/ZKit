@@ -27,7 +27,9 @@ claims.Roles 任一 ==admin    → 放行(绕过 Casbin)
 ```
 签名:`NewCasbinInterceptor(enforcer *casbin.SyncedCachedEnforcer, public, selfServe map[string]bool)`。
 - `obj = req.Spec().Procedure`;`sub` **逐个**取自 `claims.Roles`(多角色,`[]string`);claims 来自 `auth.ClaimsFromContext(ctx)`。任一角色被授予即放行。
-- 拦截器链(`server.go`,洋葱,数组靠前=外层先执行):`NewLoggingInterceptor → [NewRateLimitInterceptor(若 cfg.RateLimit.Enabled)] → auth.NewAuthInterceptor(issuer, public) → NewOperationLogInterceptor → auth.NewCasbinInterceptor(enforcer, public, selfServe) → validate.NewInterceptor`。
+- 拦截器链(`server.go`,洋葱,数组靠前=外层先执行):`NewErrorSanitizerInterceptor → NewLoggingInterceptor → [NewRateLimitInterceptor(若 cfg.RateLimit.Enabled)] → auth.NewAuthInterceptor(issuer, public) → NewOperationLogInterceptor(opLog) → auth.NewCasbinInterceptor(enforcer, public, selfServe, pluginState.IsProcedureEnabled) → validate.NewInterceptor`。
+  - ErrorSanitizer **最外层**:`CodeInternal`/`CodeUnknown` 对客户端统一改写为固定文案 `internal error`;内层日志/操作日志仍看到原始错误。
+  - HTTP 中间件在拦截器之外(`server.go` 末尾):`clientip.Middleware → withRequestID → withSecurityHeaders → withCORS → mux`;`server.New` 返回 `*Server{Handler}`(`Close(ctx)` 排空操作日志队列)。
   - RateLimit **故意置于 OperationLog 外层**:被限流的请求不落库(避免高压下 DB 放大),返回 `CodeResourceExhausted`。
   - OperationLog 拦截器**兼 panic 兜底**,已替代 `connect.WithRecover`(无单独 recover)。
 

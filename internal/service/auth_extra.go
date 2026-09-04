@@ -195,7 +195,7 @@ func (s *AuthService) ActivateTotp(ctx context.Context, req *connect.Request[zer
 	if err != nil {
 		return nil, connect.NewError(connect.CodeFailedPrecondition, errors.New("请先初始化两步验证"))
 	}
-	if !totp.Validate(req.Msg.GetCode(), tt.Secret) {
+	if !s.consumeTOTP(ctx, claims.UserID, tt.Secret, req.Msg.GetCode()) {
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("验证码错误"))
 	}
 	now := time.Now()
@@ -242,7 +242,7 @@ func (s *AuthService) DisableTotp(ctx context.Context, req *connect.Request[zerx
 		return connect.NewResponse(&zerxv1.DisableTotpResponse{}), nil //nolint:nilerr // already disabled
 	}
 	code := req.Msg.GetCode()
-	if !totp.Validate(code, tt.Secret) && !s.consumeRecoveryCode(ctx, claims.UserID, code) {
+	if !s.consumeTOTP(ctx, claims.UserID, tt.Secret, code) && !s.consumeRecoveryCode(ctx, claims.UserID, code) {
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("验证码错误"))
 	}
 	txErr := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {

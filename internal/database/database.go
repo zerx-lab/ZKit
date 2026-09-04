@@ -42,5 +42,16 @@ func Open(cfg config.DBConfig, env string) (*gorm.DB, error) {
 		return nil, fmt.Errorf("open %s database: %w", cfg.Driver, err)
 	}
 
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("access %s pool: %w", cfg.Driver, err)
+	}
+	// Bound the pool: without limits postgres/mysql can be exhausted by a burst
+	// of concurrent RPCs. sqlite (WAL, busy_timeout) tolerates the same defaults.
+	sqlDB.SetMaxOpenConns(cfg.MaxOpenConns)
+	sqlDB.SetMaxIdleConns(cfg.MaxIdleConns)
+	sqlDB.SetConnMaxLifetime(cfg.ConnMaxLifetime)
+	sqlDB.SetConnMaxIdleTime(cfg.ConnMaxIdleTime)
+
 	return db, nil
 }

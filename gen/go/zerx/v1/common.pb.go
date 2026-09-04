@@ -7,6 +7,7 @@
 package zerxv1
 
 import (
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -23,9 +24,11 @@ const (
 
 // PageRequest is a reusable pagination request fragment.
 type PageRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 0 means default (first page).
+	Page int32 `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	// 0 means default (20); capped at 100 to match service maxPageSize.
+	PageSize      int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -123,10 +126,10 @@ var File_zerx_v1_common_proto protoreflect.FileDescriptor
 
 const file_zerx_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"\x14zerx/v1/common.proto\x12\azerx.v1\">\n" +
-	"\vPageRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"$\n" +
+	"\x14zerx/v1/common.proto\x12\azerx.v1\x1a\x1bbuf/validate/validate.proto\"R\n" +
+	"\vPageRequest\x12\x1b\n" +
+	"\x04page\x18\x01 \x01(\x05B\a\xbaH\x04\x1a\x02(\x00R\x04page\x12&\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\t\xbaH\x06\x1a\x04\x18d(\x00R\bpageSize\"$\n" +
 	"\fPageResponse\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\x03R\x05totalB0Z.github.com/zerx-lab/zkit/gen/go/zerx/v1;zerxv1b\x06proto3"
 
