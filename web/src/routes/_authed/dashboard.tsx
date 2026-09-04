@@ -210,7 +210,7 @@ function DashboardPage() {
         </Button>
       </div>
 
-      <section className="grid overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid shrink-0 overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-2 lg:grid-cols-4">
         <Metric
           icon={UsersIcon}
           label={t("dashboard.totalUsers")}
