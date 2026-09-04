@@ -9,44 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as RegisterRouteImport } from './routes/register'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PubSplatRouteImport } from './routes/pub.$'
-import { Route as AuthedUsersRouteImport } from './routes/_authed/users'
-import { Route as AuthedSiteSettingsRouteImport } from './routes/_authed/site-settings'
-import { Route as AuthedSessionsRouteImport } from './routes/_authed/sessions'
-import { Route as AuthedRolesRouteImport } from './routes/_authed/roles'
-import { Route as AuthedProfileRouteImport } from './routes/_authed/profile'
-import { Route as AuthedPluginsRouteImport } from './routes/_authed/plugins'
-import { Route as AuthedParamsRouteImport } from './routes/_authed/params'
-import { Route as AuthedOperationLogsRouteImport } from './routes/_authed/operation-logs'
-import { Route as AuthedMenusRouteImport } from './routes/_authed/menus'
-import { Route as AuthedLoginLogsRouteImport } from './routes/_authed/login-logs'
-import { Route as AuthedJobsRouteImport } from './routes/_authed/jobs'
-import { Route as AuthedFilesRouteImport } from './routes/_authed/files'
-import { Route as AuthedErrorLogsRouteImport } from './routes/_authed/error-logs'
-import { Route as AuthedDictsRouteImport } from './routes/_authed/dicts'
-import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
+import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthedApisRouteImport } from './routes/_authed/apis'
+import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
+import { Route as AuthedDictsRouteImport } from './routes/_authed/dicts'
+import { Route as AuthedErrorLogsRouteImport } from './routes/_authed/error-logs'
+import { Route as AuthedFilesRouteImport } from './routes/_authed/files'
+import { Route as AuthedJobsRouteImport } from './routes/_authed/jobs'
+import { Route as AuthedLoginLogsRouteImport } from './routes/_authed/login-logs'
+import { Route as AuthedMenusRouteImport } from './routes/_authed/menus'
+import { Route as AuthedOperationLogsRouteImport } from './routes/_authed/operation-logs'
+import { Route as AuthedParamsRouteImport } from './routes/_authed/params'
+import { Route as AuthedPluginsRouteImport } from './routes/_authed/plugins'
+import { Route as AuthedProfileRouteImport } from './routes/_authed/profile'
+import { Route as AuthedRolesRouteImport } from './routes/_authed/roles'
+import { Route as AuthedSessionsRouteImport } from './routes/_authed/sessions'
+import { Route as AuthedSiteSettingsRouteImport } from './routes/_authed/site-settings'
+import { Route as AuthedUsersRouteImport } from './routes/_authed/users'
+import { Route as PubSplatRouteImport } from './routes/pub.$'
 import { Route as AuthedPSplatRouteImport } from './routes/_authed/p.$'
 
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const AuthedRouteRoute = AuthedRouteRouteImport.update({
+  id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -54,88 +48,24 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedRouteRoute = AuthedRouteRouteImport.update({
-  id: '/_authed',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PubSplatRoute = PubSplatRouteImport.update({
-  id: '/pub/$',
-  path: '/pub/$',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedUsersRoute = AuthedUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedSiteSettingsRoute = AuthedSiteSettingsRouteImport.update({
-  id: '/site-settings',
-  path: '/site-settings',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedSessionsRoute = AuthedSessionsRouteImport.update({
-  id: '/sessions',
-  path: '/sessions',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedRolesRoute = AuthedRolesRouteImport.update({
-  id: '/roles',
-  path: '/roles',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedProfileRoute = AuthedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedPluginsRoute = AuthedPluginsRouteImport.update({
-  id: '/plugins',
-  path: '/plugins',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedParamsRoute = AuthedParamsRouteImport.update({
-  id: '/params',
-  path: '/params',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedOperationLogsRoute = AuthedOperationLogsRouteImport.update({
-  id: '/operation-logs',
-  path: '/operation-logs',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedMenusRoute = AuthedMenusRouteImport.update({
-  id: '/menus',
-  path: '/menus',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedLoginLogsRoute = AuthedLoginLogsRouteImport.update({
-  id: '/login-logs',
-  path: '/login-logs',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedJobsRoute = AuthedJobsRouteImport.update({
-  id: '/jobs',
-  path: '/jobs',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedFilesRoute = AuthedFilesRouteImport.update({
-  id: '/files',
-  path: '/files',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedErrorLogsRoute = AuthedErrorLogsRouteImport.update({
-  id: '/error-logs',
-  path: '/error-logs',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedDictsRoute = AuthedDictsRouteImport.update({
-  id: '/dicts',
-  path: '/dicts',
+const AuthedApisRoute = AuthedApisRouteImport.update({
+  id: '/apis',
+  path: '/apis',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
 const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
@@ -143,10 +73,80 @@ const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
-const AuthedApisRoute = AuthedApisRouteImport.update({
-  id: '/apis',
-  path: '/apis',
+const AuthedDictsRoute = AuthedDictsRouteImport.update({
+  id: '/dicts',
+  path: '/dicts',
   getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedErrorLogsRoute = AuthedErrorLogsRouteImport.update({
+  id: '/error-logs',
+  path: '/error-logs',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedFilesRoute = AuthedFilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedJobsRoute = AuthedJobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedLoginLogsRoute = AuthedLoginLogsRouteImport.update({
+  id: '/login-logs',
+  path: '/login-logs',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedMenusRoute = AuthedMenusRouteImport.update({
+  id: '/menus',
+  path: '/menus',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedOperationLogsRoute = AuthedOperationLogsRouteImport.update({
+  id: '/operation-logs',
+  path: '/operation-logs',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedParamsRoute = AuthedParamsRouteImport.update({
+  id: '/params',
+  path: '/params',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedPluginsRoute = AuthedPluginsRouteImport.update({
+  id: '/plugins',
+  path: '/plugins',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedProfileRoute = AuthedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedRolesRoute = AuthedRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedSessionsRoute = AuthedSessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedSiteSettingsRoute = AuthedSiteSettingsRouteImport.update({
+  id: '/site-settings',
+  path: '/site-settings',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedUsersRoute = AuthedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const PubSplatRoute = PubSplatRouteImport.update({
+  id: '/pub/$',
+  path: '/pub/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedPSplatRoute = AuthedPSplatRouteImport.update({
   id: '/p/$',
@@ -322,32 +322,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed': {
@@ -357,116 +336,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pub/$': {
-      id: '/pub/$'
-      path: '/pub/$'
-      fullPath: '/pub/$'
-      preLoaderRoute: typeof PubSplatRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authed/users': {
-      id: '/_authed/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthedUsersRouteImport
-      parentRoute: typeof AuthedRouteRoute
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authed/site-settings': {
-      id: '/_authed/site-settings'
-      path: '/site-settings'
-      fullPath: '/site-settings'
-      preLoaderRoute: typeof AuthedSiteSettingsRouteImport
-      parentRoute: typeof AuthedRouteRoute
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authed/sessions': {
-      id: '/_authed/sessions'
-      path: '/sessions'
-      fullPath: '/sessions'
-      preLoaderRoute: typeof AuthedSessionsRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/roles': {
-      id: '/_authed/roles'
-      path: '/roles'
-      fullPath: '/roles'
-      preLoaderRoute: typeof AuthedRolesRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/profile': {
-      id: '/_authed/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthedProfileRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/plugins': {
-      id: '/_authed/plugins'
-      path: '/plugins'
-      fullPath: '/plugins'
-      preLoaderRoute: typeof AuthedPluginsRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/params': {
-      id: '/_authed/params'
-      path: '/params'
-      fullPath: '/params'
-      preLoaderRoute: typeof AuthedParamsRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/operation-logs': {
-      id: '/_authed/operation-logs'
-      path: '/operation-logs'
-      fullPath: '/operation-logs'
-      preLoaderRoute: typeof AuthedOperationLogsRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/menus': {
-      id: '/_authed/menus'
-      path: '/menus'
-      fullPath: '/menus'
-      preLoaderRoute: typeof AuthedMenusRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/login-logs': {
-      id: '/_authed/login-logs'
-      path: '/login-logs'
-      fullPath: '/login-logs'
-      preLoaderRoute: typeof AuthedLoginLogsRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/jobs': {
-      id: '/_authed/jobs'
-      path: '/jobs'
-      fullPath: '/jobs'
-      preLoaderRoute: typeof AuthedJobsRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/files': {
-      id: '/_authed/files'
-      path: '/files'
-      fullPath: '/files'
-      preLoaderRoute: typeof AuthedFilesRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/error-logs': {
-      id: '/_authed/error-logs'
-      path: '/error-logs'
-      fullPath: '/error-logs'
-      preLoaderRoute: typeof AuthedErrorLogsRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/dicts': {
-      id: '/_authed/dicts'
-      path: '/dicts'
-      fullPath: '/dicts'
-      preLoaderRoute: typeof AuthedDictsRouteImport
+    '/_authed/apis': {
+      id: '/_authed/apis'
+      path: '/apis'
+      fullPath: '/apis'
+      preLoaderRoute: typeof AuthedApisRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
     '/_authed/dashboard': {
@@ -476,12 +378,110 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedDashboardRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
-    '/_authed/apis': {
-      id: '/_authed/apis'
-      path: '/apis'
-      fullPath: '/apis'
-      preLoaderRoute: typeof AuthedApisRouteImport
+    '/_authed/dicts': {
+      id: '/_authed/dicts'
+      path: '/dicts'
+      fullPath: '/dicts'
+      preLoaderRoute: typeof AuthedDictsRouteImport
       parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/error-logs': {
+      id: '/_authed/error-logs'
+      path: '/error-logs'
+      fullPath: '/error-logs'
+      preLoaderRoute: typeof AuthedErrorLogsRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/files': {
+      id: '/_authed/files'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof AuthedFilesRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/jobs': {
+      id: '/_authed/jobs'
+      path: '/jobs'
+      fullPath: '/jobs'
+      preLoaderRoute: typeof AuthedJobsRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/login-logs': {
+      id: '/_authed/login-logs'
+      path: '/login-logs'
+      fullPath: '/login-logs'
+      preLoaderRoute: typeof AuthedLoginLogsRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/menus': {
+      id: '/_authed/menus'
+      path: '/menus'
+      fullPath: '/menus'
+      preLoaderRoute: typeof AuthedMenusRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/operation-logs': {
+      id: '/_authed/operation-logs'
+      path: '/operation-logs'
+      fullPath: '/operation-logs'
+      preLoaderRoute: typeof AuthedOperationLogsRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/params': {
+      id: '/_authed/params'
+      path: '/params'
+      fullPath: '/params'
+      preLoaderRoute: typeof AuthedParamsRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/plugins': {
+      id: '/_authed/plugins'
+      path: '/plugins'
+      fullPath: '/plugins'
+      preLoaderRoute: typeof AuthedPluginsRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/profile': {
+      id: '/_authed/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthedProfileRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/roles': {
+      id: '/_authed/roles'
+      path: '/roles'
+      fullPath: '/roles'
+      preLoaderRoute: typeof AuthedRolesRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/sessions': {
+      id: '/_authed/sessions'
+      path: '/sessions'
+      fullPath: '/sessions'
+      preLoaderRoute: typeof AuthedSessionsRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/site-settings': {
+      id: '/_authed/site-settings'
+      path: '/site-settings'
+      fullPath: '/site-settings'
+      preLoaderRoute: typeof AuthedSiteSettingsRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/users': {
+      id: '/_authed/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthedUsersRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/pub/$': {
+      id: '/pub/$'
+      path: '/pub/$'
+      fullPath: '/pub/$'
+      preLoaderRoute: typeof PubSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authed/p/$': {
       id: '/_authed/p/$'
