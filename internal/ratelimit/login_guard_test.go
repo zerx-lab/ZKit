@@ -59,7 +59,10 @@ func TestLoginGuardThresholds(t *testing.T) {
 }
 
 func TestLoginGuardWindowReset(t *testing.T) {
-	g := New(2, 4, time.Millisecond, newTestDB(t))
+	// Window must be long enough that two Fail + one NeedCaptcha round-trip
+	// under -race on a slow CI runner still land inside it.
+	const window = 200 * time.Millisecond
+	g := New(2, 4, window, newTestDB(t))
 	const key = "x"
 
 	g.Fail(key)
@@ -68,7 +71,7 @@ func TestLoginGuardWindowReset(t *testing.T) {
 		t.Fatal("should need captcha before window elapses")
 	}
 
-	time.Sleep(2 * time.Millisecond)
+	time.Sleep(window + 50*time.Millisecond)
 	// A new fail after the window resets the counter.
 	g.Fail(key)
 	if g.NeedCaptcha(key) {
