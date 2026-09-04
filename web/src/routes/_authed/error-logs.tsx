@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/pagination";
 import { Can } from "@/components/can";
 import { Card } from "@/components/ui/card";
 import {
@@ -81,6 +82,7 @@ function ErrorLogsPage() {
   const { t } = useI18n();
   const { roles } = usePermissions();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -89,7 +91,7 @@ function ErrorLogsPage() {
   const [endDate, setEndDate] = useState("");
 
   const queryInput = {
-    page: { page, pageSize: PAGE_SIZE },
+    page: { page, pageSize },
     keyword,
     status: statusFilter,
     method: methodFilter,
@@ -101,7 +103,6 @@ function ErrorLogsPage() {
 
   const logs = data?.logs ?? [];
   const total = Number(data?.total ?? 0n);
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const handleSearch = () => {
     setKeyword(searchInput);
@@ -259,30 +260,17 @@ function ErrorLogsPage() {
             )}
           </TableBody>
         </Table>
+        <Pagination
+          className="border-t bg-card px-4 py-3"
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onChange={(p, ps) => {
+            setPage(p);
+            setPageSize(ps);
+          }}
+        />
       </Card>
-
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>{t("common.total", { count: total })}</span>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            {t("common.previous")}
-          </Button>
-          <span>{t("common.pageOf", { page, pages: totalPages })}</span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            {t("common.next")}
-          </Button>
-        </div>
-      </div>
     </div>
   );
 }

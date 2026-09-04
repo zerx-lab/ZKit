@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { Can } from "@/components/can";
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/pagination";
 import { Card } from "@/components/ui/card";
 import {
   Dialog,
@@ -71,6 +72,7 @@ function ApisPage() {
   const [keyword, setKeyword] = useState("");
   const [groupFilter, setGroupFilter] = useState(ALL_GROUPS);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   const handleSync = async () => {
@@ -110,11 +112,11 @@ function ApisPage() {
     });
   }, [apis, keyword, groupFilter]);
 
-  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, pageCount);
   const pageItems = useMemo(
-    () => filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
-    [filtered, safePage],
+    () => filtered.slice((safePage - 1) * pageSize, safePage * pageSize),
+    [filtered, safePage, pageSize],
   );
 
   // Group the current page's items, preserving order.
@@ -275,28 +277,16 @@ function ApisPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">{t("users.total", { count: filtered.length })}</p>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={safePage <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            {t("users.previous")}
-          </Button>
-          <span className="text-sm tabular-nums">
-            {t("users.pageOf", { page: safePage, pages: pageCount })}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={safePage >= pageCount}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            {t("users.next")}
-          </Button>
-        </div></div>
+        <Pagination
+          className="border-t bg-card px-4 py-3"
+          page={safePage}
+          pageSize={pageSize}
+          total={filtered.length}
+          onChange={(p, ps) => {
+            setPage(p);
+            setPageSize(ps);
+          }}
+        />
       </Card>
     </div>
   );

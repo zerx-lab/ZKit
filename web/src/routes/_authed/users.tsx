@@ -16,6 +16,7 @@ import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/pagination";
 import { Can } from "@/components/can";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -141,17 +142,17 @@ function downloadBlob(blob: Blob, filename: string) {
 function UsersPage() {
   const { t } = useI18n();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [keywordInput, setKeywordInput] = useState("");
   const [keyword, setKeyword] = useState("");
 
   const { data, isPending } = useQuery(listUsers, {
-    page: { page, pageSize: PAGE_SIZE },
+    page: { page, pageSize },
     keyword,
   });
 
   const users = data?.users ?? [];
   const total = data ? Number(data.total) : 0;
-  const pageCount = keyword ? 1 : Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const { data: rolesData } = useQuery(listRoles);
   const roleNames = useMemo(() => {
@@ -299,26 +300,16 @@ function UsersPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">{t("users.total", { count: total })}</p>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            {t("users.previous")}
-          </Button>
-          <span className="text-sm tabular-nums">{t("users.pageOf", { page, pages: pageCount })}</span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page >= pageCount}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            {t("users.next")}
-          </Button>
-        </div></div>
+        <Pagination
+          className="border-t bg-card px-4 py-3"
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onChange={(p, ps) => {
+            setPage(p);
+            setPageSize(ps);
+          }}
+        />
       </Card>
     </div>
   );

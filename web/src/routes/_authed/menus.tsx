@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Can } from "@/components/can";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/pagination";
 import { Card } from "@/components/ui/card";
 import {
   Dialog,
@@ -59,7 +60,7 @@ function errMsg(err: unknown, fallback: string) {
   return err instanceof ConnectError ? err.message : fallback;
 }
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 10;
 
 interface FlatMenu {
   menu: Menu;
@@ -174,6 +175,7 @@ function MenusPage() {
 
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [dragging, setDragging] = useState<{ id: bigint; parentId: bigint } | null>(null);
   const [overId, setOverId] = useState<bigint | null>(null);
@@ -258,11 +260,11 @@ function MenusPage() {
     [topMenus, plugins],
   );
 
-  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, pageCount);
   const pageGroups = useMemo(
-    () => filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
-    [filtered, safePage],
+    () => filtered.slice((safePage - 1) * pageSize, safePage * pageSize),
+    [filtered, safePage, pageSize],
   );
 
   const groupKeys = pageGroups.map((m) => String(m.id));
@@ -456,30 +458,16 @@ function MenusPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">
-          {t("common.total", { count: filtered.length })}
-        </p>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={safePage <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            {t("common.previous")}
-          </Button>
-          <span className="text-sm tabular-nums">
-            {t("common.pageOf", { page: safePage, pages: pageCount })}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={safePage >= pageCount}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            {t("common.next")}
-          </Button>
-        </div></div>
+        <Pagination
+          className="border-t bg-card px-4 py-3"
+          page={safePage}
+          pageSize={pageSize}
+          total={filtered.length}
+          onChange={(p, ps) => {
+            setPage(p);
+            setPageSize(ps);
+          }}
+        />
       </Card>
     </div>
   );

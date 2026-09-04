@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/pagination";
 import { Can } from "@/components/can";
 import { Card } from "@/components/ui/card";
 import {
@@ -91,6 +92,7 @@ function OperationLogsPage() {
   const isAdmin = roles.includes("admin");
 
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [methodFilter, setMethodFilter] = useState("");
@@ -99,7 +101,7 @@ function OperationLogsPage() {
   const [expandedId, setExpandedId] = useState<bigint | null>(null);
 
   const queryInput = {
-    page: { page, pageSize: PAGE_SIZE },
+    page: { page, pageSize },
     keyword,
     status: statusFilter,
     method: methodFilter,
@@ -111,7 +113,6 @@ function OperationLogsPage() {
 
   const logs = data?.logs ?? [];
   const total = data ? Number(data.total) : 0;
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const handleExport = async () => {
     toast.info(t("logPage.exportToast"));
@@ -235,30 +236,16 @@ function OperationLogsPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">
-          {t("common.total", { count: total })}
-        </p>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            {t("common.previous")}
-          </Button>
-          <span className="text-sm tabular-nums">
-            {t("common.pageOf", { page, pages: pageCount })}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page >= pageCount}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            {t("common.next")}
-          </Button>
-        </div></div>
+        <Pagination
+          className="border-t bg-card px-4 py-3"
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onChange={(p, ps) => {
+            setPage(p);
+            setPageSize(ps);
+          }}
+        />
       </Card>
     </div>
   );

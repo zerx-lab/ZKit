@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/pagination";
 import { Card } from "@/components/ui/card";
 import {
   Dialog,
@@ -125,6 +126,7 @@ function VisibilityBadge({ value, t }: { value: string; t: TranslateFn }) {
 function FilesPage() {
   const { t } = useI18n();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [keywordInput, setKeywordInput] = useState("");
   const [keyword, setKeyword] = useState("");
   const [view, setView] = useState<View>("list");
@@ -132,12 +134,11 @@ function FilesPage() {
   const [uploadOpen, setUploadOpen] = useState(false);
 
   const { data, isPending } = useQuery(listFiles, {
-    page: { page, pageSize: PAGE_SIZE },
+    page: { page, pageSize },
     keyword,
   });
   const files = data?.files ?? [];
   const total = data ? Number(data.total) : 0;
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const invalidate = useInvalidate();
 
@@ -208,18 +209,17 @@ function FilesPage() {
           />
         )}
 
-        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">{t("common.total", { count: total })}</p>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-            {t("common.previous")}
-          </Button>
-          <span className="text-sm tabular-nums">
-            {t("common.pageOf", { page, pages: pageCount })}
-          </span>
-          <Button variant="outline" size="sm" disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)}>
-            {t("common.next")}
-          </Button>
-        </div></div>
+        <Pagination
+          className="border-t bg-card px-4 py-3"
+          page={page}
+          pageSize={pageSize}
+          pageSizeOptions={[12, 24, 48, 96]}
+          total={total}
+          onChange={(p, ps) => {
+            setPage(p);
+            setPageSize(ps);
+          }}
+        />
       </Card>
 
       <PreviewDialog file={preview} onClose={() => setPreview(null)} />

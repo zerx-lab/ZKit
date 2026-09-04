@@ -16,6 +16,7 @@ import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/pagination";
 import { Can } from "@/components/can";
 import { Card } from "@/components/ui/card";
 import {
@@ -77,15 +78,15 @@ const columnHelper = createColumnHelper<typeof features, Job>();
 function JobsPage() {
   const { t } = useI18n();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [historyJob, setHistoryJob] = useState<Job | null>(null);
 
   const { data, isPending } = useQuery(listJobs, {
-    page: { page, pageSize: PAGE_SIZE },
+    page: { page, pageSize },
   });
 
   const jobs = data?.jobs ?? [];
   const total = data ? Number(data.total) : 0;
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const columns = useMemo(
     () => columnHelper.columns([
@@ -171,16 +172,16 @@ function JobsPage() {
           </TableBody>
         </Table>
 
-        <div className="flex items-center justify-between gap-4 border-t bg-card px-4 py-3"><p className="text-sm text-muted-foreground">{t("common.total", { count: total })}</p>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-            {t("common.previous")}
-          </Button>
-          <span className="text-sm tabular-nums">{t("common.pageOf", { page, pages: pageCount })}</span>
-          <Button variant="outline" size="sm" disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)}>
-            {t("common.next")}
-          </Button>
-        </div></div>
+        <Pagination
+          className="border-t bg-card px-4 py-3"
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onChange={(p, ps) => {
+            setPage(p);
+            setPageSize(ps);
+          }}
+        />
       </Card>
 
       {historyJob && (
@@ -480,13 +481,13 @@ const execColHelper = createColumnHelper<typeof features, JobExecution>();
 function JobHistoryDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const { t } = useI18n();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(EXEC_PAGE_SIZE);
   const { data, isPending } = useQuery(listJobExecutions, {
     jobId: job.id,
-    page: { page, pageSize: EXEC_PAGE_SIZE },
+    page: { page, pageSize },
   });
   const execs = data?.executions ?? [];
   const total = data ? Number(data.total) : 0;
-  const pageCount = Math.max(1, Math.ceil(total / EXEC_PAGE_SIZE));
 
   const columns = useMemo(
     () => execColHelper.columns([
@@ -556,14 +557,16 @@ function JobHistoryDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               )}
             </TableBody>
           </Table>
-          <div className="mt-3 flex shrink-0 items-center justify-between px-2 text-sm text-muted-foreground">
-            <span>{t("common.total", { count: total })}</span>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>{t("common.previous")}</Button>
-              <span>{t("common.pageOf", { page, pages: pageCount })}</span>
-              <Button variant="outline" size="sm" disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)}>{t("common.next")}</Button>
-            </div>
-          </div>
+          <Pagination
+            className="mt-3 shrink-0 px-2"
+            page={page}
+            pageSize={pageSize}
+            total={total}
+            onChange={(p, ps) => {
+              setPage(p);
+              setPageSize(ps);
+            }}
+          />
         </div>
       </DialogContent>
     </Dialog>
